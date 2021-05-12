@@ -28,6 +28,9 @@ class AuthController extends Controller
         // add token to user data
         $user->token = $token->plainTextToken;
 
+	// Add site name
+	$user->site_name = $user->site->name;
+
         return $this->json->data($user);
     }
 

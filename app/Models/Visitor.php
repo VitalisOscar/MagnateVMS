@@ -28,7 +28,7 @@ class Visitor extends Model
         // For check out purpose
         // Visitor must not have checked out, and user checking them out must be on same site
 
-        return $this->hasOne(Visit::class);
+        return $this->hasOne(Visit::class)->today();
     }
 
     function can(){

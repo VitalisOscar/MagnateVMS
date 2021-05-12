@@ -20,7 +20,7 @@ class User extends Authenticatable
     protected $hidden = ['password', 'created_at', 'updated_at', 'site_id'];
 
     function site(){
-        return $this->belongsTo(Site::class);
+        return $this->belongsTo(Site::class, 'site_id');
     }
 
     function check_ins(){
