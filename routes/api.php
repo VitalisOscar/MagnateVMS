@@ -1,7 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
-use App\Http\Controllers\Api\Staff\StaffVisitEnquiryController;
+use App\Http\Controllers\Api\Staff\StaffController;
 use App\Http\Controllers\Api\VisitEnquiryController;
 use App\Http\Controllers\Api\Vehicle\VehicleCheckInController;
 use App\Http\Controllers\Api\Vehicle\VehicleCheckOutController;
@@ -38,10 +38,11 @@ Route::prefix('user')->group(function(){
         Route::get('visitor', [VisitEnquiryController::class, 'getVisitor'])->name('api.get.visitor');
         Route::get('visit', [VisitEnquiryController::class, 'getVisitForCheckOut'])->name('api.get.visit');
 
-        Route::get('staff/in', [StaffVisitEnquiryController::class, 'getCheckedIn'])->name('api.get.checkins.staff');
-	Route::get('visitors/in', [VisitorEnquiryController::class, 'getCheckedIn'])->name('api.get.checkins.visitors');
+        Route::get('staff', [StaffController::class, 'getAll'])->name('api.get.all.staff');
+        Route::get('staff/in', [StaffController::class, 'getCheckedIn'])->name('api.get.checkins.staff');
+        Route::get('visitors/in', [VisitorEnquiryController::class, 'getCheckedIn'])->name('api.get.checkins.visitors');
 
-	Route::get('summary', [SummaryController::class, 'basic'])->name('api.get.summary');
+        Route::get('summary', [SummaryController::class, 'basic'])->name('api.get.summary');
     });
 
 //});

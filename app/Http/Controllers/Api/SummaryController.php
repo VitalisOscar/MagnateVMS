@@ -7,11 +7,13 @@ use App\Models\Staff;
 use App\Repository\VisitorRepository;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class SummaryController extends Controller
 {
 
     function basic(Request $request){
+        // $s = DB::select();
         return $this->json->data(['visitors' => [
 	    ['name'=>'John Doe', 'time'=>'08:44', 'about'=>'Visitor', 'activity'=>'check_in', 'type'=>'visitor', 'data' => ''],
 ['name'=>'Calvin Harris', 'time'=>'08:50', 'about'=>'Visitor', 'activity'=>'check_in', 'type'=>'visitor', 'data' => ''],

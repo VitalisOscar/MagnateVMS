@@ -8,7 +8,7 @@ use App\Models\StaffCheckIn;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
-class StaffVisitEnquiryController extends Controller
+class StaffController extends Controller
 {
     function getCheckedIn(Request $request){
         return $this->json->mixed(null,
@@ -33,5 +33,9 @@ class StaffVisitEnquiryController extends Controller
                     $checkin->time_in = $m;
                 })
         );
+    }
+
+    function getAll(){
+        return $this->json->items(Staff::all());
     }
 }
