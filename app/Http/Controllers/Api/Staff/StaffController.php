@@ -36,6 +36,6 @@ class StaffController extends Controller
     }
 
     function getAll(){
-        return $this->json->items(Staff::orderBy('name')->get());
+        return $this->json->items(Staff::orderBy('name')->with('company')->get()->each(function($s){ $s->company_name = $s->company->name; }));
     }
 }
