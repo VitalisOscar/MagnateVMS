@@ -36,7 +36,7 @@ class StaffCheckInController extends Controller
         ]);
 
         try{
-            if($checkin->save()) return $this->json->success($staff->name.' has been checked in and can proceed');
+            if($checkin->save()) return $this->json->data($staff->name.' has been checked in and can proceed', $checkin);
         }catch(Exception $e){}
 
         return $this->json->error('Something went wrong and we cannot check in for now. Please retry or report to admin');
