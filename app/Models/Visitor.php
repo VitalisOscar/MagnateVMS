@@ -24,6 +24,14 @@ class Visitor extends Model
         return $this->hasMany(Visit::class);
     }
 
+    function checkedin(){
+        return $this->hasMany(Visit::class)->today()->stillIn()->atSite();
+    }
+
+    function checkedout(){
+        return $this->hasMany(Visit::class)->today()->atSite()->gone();
+    }
+
     function last_visit(){
         // For check out purpose
         // Visitor must not have checked out, and user checking them out must be on same site

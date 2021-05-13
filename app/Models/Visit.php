@@ -61,6 +61,10 @@ class Visit extends Model
         $q->where('time_out', null);
     }
 
+    function scopeGone($q){
+        $q->where('time_out', '<>', null);
+    }
+
     function scopeAtSite($q){
         $q->where('site_id', auth('sanctum')->user()->site_id);
     }
