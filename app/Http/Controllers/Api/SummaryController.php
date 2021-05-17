@@ -26,6 +26,12 @@ class SummaryController extends Controller
 	$visitor_list = Visit::latest('time_in')->today()->limit(5)->with('visitor')->get()->each(function($v){
 	    $v->activity = ($v->time_out == null) ? 'check_in':'check_out';
 	    $v->name = $v->visitor->name;
+	    $v->about = $v->reason;
+	    $v->type = 'Visitor';
+
+	    $t = Carbon::createFromTimeString($v->time_out == null ? $v->time_in:$v->time_out)->format('H:i');
+
+	    $v->time = $t;
 	    $v->data = $v->visitor;
 	});
 
