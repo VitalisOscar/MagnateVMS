@@ -29,7 +29,7 @@ class SummaryController extends Controller
 	    $v->data = $visitor;
 	});
 
-        return $this->json->data(['visitors' => $visitors, 'summary' => [
+        return $this->json->data(['visitors' => $visitor_list, 'summary' => [
 		'checked_in' => $visitors_in,
 		'checked_out' => $visitors_out,
 		'staff' => $staff
