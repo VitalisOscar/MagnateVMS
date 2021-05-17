@@ -23,11 +23,7 @@ class SummaryController extends Controller
         $q->stillIn()->atSite()->today();
     })->count();
 
-	$visitor_list = Visitor::whereHas('visit', function($q){
-	    $q->today()->latest('time_in');
-	});
-
-	$visitor_list = Visit::latest('time_in')->limit(5)->with('visitor')->each(function($v){
+	$visitor_list = Visit::latest('time_in')->limit(5)->with('visitor')->get()->each(function($v){
 	    $v->activity = ($v->time_out == null) ? 'check_in':'check_out';
 	    $v->name = $v->visitor->name;
 	    $v->data = $visitor;
