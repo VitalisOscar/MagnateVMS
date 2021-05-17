@@ -26,7 +26,7 @@ class SummaryController extends Controller
 	$visitor_list = Visit::latest('time_in')->limit(5)->with('visitor')->get()->each(function($v){
 	    $v->activity = ($v->time_out == null) ? 'check_in':'check_out';
 	    $v->name = $v->visitor->name;
-	    $v->data = $visitor;
+	    $v->data = $v->visitor;
 	});
 
         return $this->json->data(['visitors' => $visitor_list, 'summary' => [
