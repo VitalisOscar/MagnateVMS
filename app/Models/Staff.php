@@ -33,6 +33,6 @@ class Staff extends Model
     }
 
     function isCheckedIn(){
-        return $this->check_ins()->latest('time_in')->stillIn()->atSite()->first() != null;
+        return $this->check_ins()->latest('time_in')->stillIn()->atSite()->today()->first() != null;
     }
 }

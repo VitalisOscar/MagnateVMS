@@ -19,7 +19,7 @@ class SummaryController extends Controller
 
 	$visitors_out = Visit::today()->atSite()->gone()->count();
 	$visitors_in = Visit::today()->stillIn()->atSite()->count();
-	$staff = 10;
+    $staff = 10;
 
         return $this->json->data(['visitors' => [
 	    ['name'=>'John Doe', 'time'=>'08:44', 'about'=>'Visitor', 'activity'=>'check_in', 'type'=>'visitor', 'data' => ''],

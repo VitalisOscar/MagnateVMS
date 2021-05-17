@@ -14,6 +14,7 @@ class StaffController extends Controller
         return $this->json->mixed(null,
             StaffCheckIn::latest('time_in')
                 ->stillIn()
+                ->today()
                 ->atSite()
                 ->with('staff', 'staff.company')
                 ->get()
