@@ -11,6 +11,7 @@ use App\Http\Controllers\Api\Visitor\VisitorEnquiryController;
 use App\Http\Controllers\Api\Staff\StaffCheckInController;
 use App\Http\Controllers\Api\Staff\StaffCheckOutController;
 use App\Http\Controllers\Api\SummaryController;
+use App\Http\Controllers\Api\Visitor\VisitorRecordsController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -43,6 +44,10 @@ Route::prefix('user')->group(function(){
         Route::get('visitors/in', [VisitorEnquiryController::class, 'getCheckedIn'])->name('api.get.checkins.visitors');
 
         Route::get('summary', [SummaryController::class, 'basic'])->name('api.get.summary');
+    });
+
+    Route::prefix('history')->group(function(){
+        Route::get('visitors', VisitorRecordsController::class)->name('api.records.visitor');
     });
 
 //});

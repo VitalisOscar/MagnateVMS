@@ -9,25 +9,25 @@ use App\Models\Visitor;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
-class VisitorEnquiryController extends Controller
+class VisitorRecordsController extends Controller
 {
-    function getCheckedIn(Request $request){
-        return $this->json->mixed(null,
-	    Visitor::whereHas('last_visit', function($q){
-		$q->stillIn()->atSite()->today();
-    	})
-	//->orderByRaw('last_visit.time_in ASC')
-	->with('last_visit', 'last_visit.staff', 'last_visit.staff.company', 'last_visit.check_in_user')
-        ->get()
-        ->each(function ($visitor){
-            $visit = $visitor->last_visit;
+    function __invoke(Request $request){
+        $date = $request->filled('date') ?
+            Carbon::createFromFormat('Y-m-d', $request->get('date')):
+            Carbon::today()->format('Y-m-d');
 
+        $q = Visit::whereDate('time_in', $date);
+
+        $total = $q->count();
+
+        $q->with('visitor', 'visitor.visits');
+
+        $res = $q->get()->each(function($visit){
+            $visitor = $visit->visitor;
+
+            $visit->name = $visitor->name;
             $visit->staff_name = $visit->staff->name;
             $visit->company = $visit->staff->company->name;
-
-            $visitor->reason = $visit->reason;
-            $visitor->from = $visit->from;
-            $visitor->visitor_id = $visitor->id;
 
             $in = Carbon::createFromTimeString($visit->time_in);
 
@@ -40,9 +40,9 @@ class VisitorEnquiryController extends Controller
 
             $visit->check_in_time = $m;
 
-	        $visitor->visit = $visit;
-        })
-        );
+            $visit->time_in = '11:23';
+        });
 
+        return $this->json->mixed(['total' => $total], $res);
     }
 }
