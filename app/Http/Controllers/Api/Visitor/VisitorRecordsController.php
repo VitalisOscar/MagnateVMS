@@ -40,7 +40,7 @@ class VisitorRecordsController extends Controller
 
             $visit->name = $visitor->name;
             $visit->staff_name = $visit->staff->name;
-            $visit->company = $visit->staff->company->name;
+            $visit->staff_company = $visit->staff->company->name;
 
             $in = Carbon::createFromTimeString($visit->time_in);
 
@@ -63,6 +63,7 @@ class VisitorRecordsController extends Controller
             $visit->check_in_time = $m;
 
             $visit->time_in = $time_in;
+            $visit->time_out = Carbon::createFromTimeString($visit->time_out)->format('H:i');
         });
 
         return $this->json->mixed([
