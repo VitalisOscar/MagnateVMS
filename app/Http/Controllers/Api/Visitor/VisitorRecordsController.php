@@ -16,7 +16,8 @@ class VisitorRecordsController extends Controller
             Carbon::createFromFormat('Y-m-d', $request->get('date')):
             Carbon::today()->format('Y-m-d');
 
-        $q = Visit::whereDate('time_in', $date);
+        $q = Visit::atSite()
+            ->whereDate('time_in', $date);
 
         $total = $q->count();
 
@@ -24,7 +25,7 @@ class VisitorRecordsController extends Controller
         $page = $request->filled('page') ?
             intval($request->get('page')) : 1;
 
-        $limit = 1;
+        $limit = 15;
         $offset = $limit * ($page - 1);
 
         $q->limit($limit)->offset($offset);
