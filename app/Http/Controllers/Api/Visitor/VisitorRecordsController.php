@@ -64,6 +64,7 @@ class VisitorRecordsController extends Controller
 
             $visit->time_in = $time_in;
             $visit->time_out = $visit->time_out == null ? null:Carbon::createFromTimeString($visit->time_out)->format('H:i');
+
         });
 
         return $this->json->mixed([
