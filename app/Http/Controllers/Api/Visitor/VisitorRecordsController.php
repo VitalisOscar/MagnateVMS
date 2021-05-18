@@ -13,7 +13,7 @@ class VisitorRecordsController extends Controller
 {
     function __invoke(Request $request){
         $date = $request->filled('date') ?
-            Carbon::createFromFormat('Y-m-d', $request->get('date')):
+            $request->get('date'):
             Carbon::today()->format('Y-m-d');
 
         $q = Visit::atSite()
