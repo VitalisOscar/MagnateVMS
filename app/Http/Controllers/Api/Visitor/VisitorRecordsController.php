@@ -20,6 +20,18 @@ class VisitorRecordsController extends Controller
 
         $total = $q->count();
 
+        // paginate
+        $page = $request->filled('page') ?
+            intval($request->get('page')) : 1;
+
+        $limit = 1;
+        $offset = $limit * ($page - 1);
+
+        $q->limit($limit)->offset($offset);
+
+        $last_page = ceil($total/$limit);
+
+
         $q->with('visitor', 'visitor.visits');
 
         $res = $q->get()->each(function($visit){
@@ -33,16 +45,28 @@ class VisitorRecordsController extends Controller
 
             $m = "Visitor was checked in <time> by ".$visit->check_in_user->username;
             $in = Carbon::createFromTimeString($visit->time_in);
-            if($in->isToday()) $m = str_replace("<time>", 'at '.$in->format('H:i'), $m);
-            elseif($in->isYesterday()) $m = str_replace("<time>", 'yesterday at '.$in->format('H:i'), $m);
-            elseif($in->isCurrentYear()) $m = str_replace("<time>", (substr($in->monthName, 0, 3).' '.$in->day).' at '.$in->format('H:i'), $m);
-            else $m = str_replace("<time>", (substr($in->monthName, 0, 3).' '.$in->day.', '.$in->year).' at '.$in->format('H:i'), $m);
+            if($in->isToday()){
+                $time_in = $in->format('H:i');
+                $m = str_replace("<time>", 'at '.$time_in, $m);
+            }elseif($in->isYesterday()){
+                $time_in = $in->format('H:i');
+                $m = str_replace("<time>", 'yesterday at '.$time_in, $m);
+            }elseif($in->isCurrentYear()){
+                $time_in = substr($in->monthName, 0, 3).' '.$in->day.' '.$in->format('H:i');
+                $m = str_replace("<time>", (substr($in->monthName, 0, 3).' '.$in->day).' at '.$in->format('H:i'), $m);
+            }else{
+                $time_in = substr($in->monthName, 0, 3).' '.$in->day.', '.$in->year.' '.$in->format('H:i');
+                $m = str_replace("<time>", (substr($in->monthName, 0, 3).' '.$in->day.', '.$in->year).' at '.$in->format('H:i'), $m);
+            }
 
             $visit->check_in_time = $m;
 
-            $visit->time_in = '11:23';
+            $visit->time_in = $time_in;
         });
 
-        return $this->json->mixed(['total' => $total], $res);
+        return $this->json->mixed([
+            'total' => $total,
+            'last_page' => $last_page
+        ], $res);
     }
 }
