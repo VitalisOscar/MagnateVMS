@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\Visitor\VisitorCheckOutController;
 use App\Http\Controllers\Api\Visitor\VisitorEnquiryController;
 use App\Http\Controllers\Api\Staff\StaffCheckInController;
 use App\Http\Controllers\Api\Staff\StaffCheckOutController;
+use App\Http\Controllers\Api\Staff\StaffRecordsController;
 use App\Http\Controllers\Api\SummaryController;
 use App\Http\Controllers\Api\Visitor\VisitorRecordsController;
 use Illuminate\Http\Request;
@@ -48,6 +49,7 @@ Route::prefix('user')->group(function(){
 
     Route::prefix('history')->group(function(){
         Route::get('visitors', VisitorRecordsController::class)->name('api.records.visitor');
+        Route::get('staff', StaffRecordsController::class)->name('api.records.staff');
     });
 
 //});
