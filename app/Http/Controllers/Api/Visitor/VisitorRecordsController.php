@@ -69,7 +69,8 @@ class VisitorRecordsController extends Controller
 
         return $this->json->mixed([
             'total' => $total,
-            'last_page' => $last_page
+            'last_page' => $last_page,
+            'date' => $date
         ], $res);
     }
 }
