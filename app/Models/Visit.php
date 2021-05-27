@@ -19,7 +19,7 @@ class Visit extends Model
         'time_in',
         'time_out',
 	    'items_in',
-	'site_id',
+	    'site_id',
         'car_registration',
         'from', // company from
         'card_number',
@@ -71,6 +71,14 @@ class Visit extends Model
 
     function scopeToday($q){
         $q->whereDate('time_in', Carbon::today()->format('Y-m-d'));
+    }
+
+    function scopeNoCardIssued($q){
+        $q->where('card_number', null);
+    }
+
+    function scopeCardIssued($q){
+        $q->where('card_number', '<>', null);
     }
 
 }
