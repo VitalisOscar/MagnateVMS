@@ -14,6 +14,8 @@ class Company extends Model
         'name',
     ];
 
+    public $withCount = ['staff'];
+
     public $timestamps = false;
 
     function staff(){

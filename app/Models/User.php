@@ -17,7 +17,13 @@ class User extends Authenticatable
         'password',
     ];
 
-    protected $hidden = ['password', 'created_at', 'updated_at', 'site_id'];
+    protected $casts = [
+        'created_at' => 'datetime'
+    ];
+
+    protected $with = ['last_login'];
+
+    protected $hidden = ['password'];
 
     function site(){
         return $this->belongsTo(Site::class, 'site_id');
@@ -29,5 +35,17 @@ class User extends Authenticatable
 
     function check_outs(){
         return $this->hasMany(Visit::class, 'checked_out_by');
+    }
+
+    function logins(){
+        return $this->hasMany(Login::class, 'identifier');
+    }
+
+    function last_login(){
+        return $this->hasOne(Login::class, 'identifier')->latest('time')->successful();
+    }
+
+    function getSiteIdAttribute(){
+        return $this->last_login->site_id;
     }
 }

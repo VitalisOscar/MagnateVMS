@@ -27,7 +27,7 @@ class ResultSet{
     function __construct($query, $limit, $callable = null, $data = null)
     {
         $this->data = $data;
-        
+
         if($query != null){
             $this->limit = $limit;
 
@@ -82,5 +82,26 @@ class ResultSet{
      */
     static function empty($data = null){
         return new ResultSet(null, null, null, $data);
+    }
+
+    /**
+     * Check if the result has no items
+     */
+    function isEmpty(){
+        return count($this->items) == 0;
+    }
+
+    /**
+     * Check if the result set has a previous page
+     */
+    function hasPreviousPage(){
+        return $this->page > 1;
+    }
+
+    /**
+     * Check if the result set has a next
+     */
+    function hasNextPage(){
+        return $this->max_pages > $this->page;
     }
 }

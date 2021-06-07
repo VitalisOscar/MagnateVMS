@@ -65,7 +65,7 @@ trait CapturesVisitors{
             'visitor_id' => $visitor->id,
             'reason' => $data['reason'],
             'staff_id' => $data['staff_id'],
-	    'site_id' => auth('sanctum')->user()->site_id,
+	        'site_id' => auth('sanctum')->user()->site_id,
             'car_registration' => isset($data['car_registration']) ? $data['car_registration']:null,
             'from' => $visitor->from,
             'card_number' => isset($data['card_number']) ? $data['card_number']:null,

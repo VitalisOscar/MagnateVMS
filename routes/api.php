@@ -46,6 +46,7 @@ Route::prefix('user')->group(function(){
         Route::get('visitors/in', [VisitorEnquiryController::class, 'getCheckedIn'])->name('api.get.checkins.visitors');
 
         Route::get('summary', [SummaryController::class, 'basic'])->name('api.get.summary');
+        Route::get('sites', [SummaryController::class, 'getSites'])->name('api.get.sites');
     });
 
     Route::prefix('history')->group(function(){

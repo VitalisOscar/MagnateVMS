@@ -66,7 +66,7 @@ class Visit extends Model
     }
 
     function scopeAtSite($q){
-        $q->where('site_id', auth('sanctum')->user()->site_id);
+        // $q->where('site_id', auth('sanctum')->user()->site_id);
     }
 
     function scopeToday($q){
