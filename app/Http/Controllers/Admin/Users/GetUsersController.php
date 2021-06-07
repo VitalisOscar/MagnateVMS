@@ -16,7 +16,7 @@ class GetUsersController extends Controller
 
         $order = $request->get('order');
 
-        $q = User::query();
+        $q = User::query()->with('last_login', 'last_login.site');
         if($order == 'recent') $q->latest();
         elseif($order == 'az') $q->orderBy('name', 'ASC');
         elseif($order == 'za') $q->orderBy('name', 'DESC');

@@ -116,7 +116,7 @@ $current_route = \Illuminate\Support\Facades\Route::current()->getName();
                             </li>
 
                             <li class="nav-item">
-                                <a class="nav-link @if($current_route == 'admin.users.add'){{ __('active') }}@endif " href="{{ route('admin.users.add') }}">
+                                <a class="nav-link @if($current_route == 'admin.vehicles.drivers'){{ __('active') }}@endif " href="{{ route('admin.vehicles.drivers') }}">
                                     <i class="fa fa-user text-default mr-1"></i>
                                     <span class="nav-link-text">Drivers</span>
                                 </a>

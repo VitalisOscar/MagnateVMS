@@ -1,14 +1,14 @@
 @extends('admin.root')
 
-@section('title', 'Add and Manage Users')
+@section('title', 'Add and Manage Drivers')
 
-@section('page_heading', 'User Accounts')
+@section('page_heading', 'Drivers')
 
 @section('content')
 
 <div class="breadcrumb bg-transparent p-0">
     <a href="{{ route('admin.dashboard') }}" class="breadcrumb-item">Dashboard</a>
-    <a class="breadcrumb-item active">Users</a>
+    <a class="breadcrumb-item active">Drivers</a>
 </div>
 
 <div class="p-0 bg-white border rounded">
@@ -20,8 +20,8 @@
     <div class="">
 
         <div class="px-4 py-3 d-flex align-items-center">
-            <h4 class="font-weight-600 mb-0">Existing Users {{ '('.$result->total.' total)' }}</h4>
-            <a href="{{ route('admin.users.add') }}" class="ml-auto btn btn-primary btn-sm shadow-none">Add User</a>
+            <h4 class="font-weight-600 mb-0">Existing Drivers {{ '('.$result->total.' total)' }}</h4>
+            <a href="{{ route('admin.vehicles.drivers.add') }}" class="ml-auto btn btn-primary btn-sm shadow-none">Add New</a>
         </div>
 
         <form class="px-4 pb-3 d-flex align-items-center">
@@ -34,10 +34,9 @@
 
             <select name="order" class="custom-select mr-3" style="width: auto !important">
                 <option value="">Sort by Default</option>
-                <option value="recent" @if($r->get('order') == 'recent'){{ __('selected') }}@endif>Added Recently</option>
                 <option value="az" @if($r->get('order') == 'az'){{ __('selected') }}@endif>Name (A-Z)</option>
                 <option value="za" @if($r->get('order') == 'za'){{ __('selected') }}@endif>Name (Z-A)</option>
-            </select>
+             </select>
 
             <button class="btn btn-default shadow-none">Go</button>
         </form>
@@ -46,17 +45,15 @@
             <tr class="card-header">
                 <th class="text-center">#</th>
                 <th>Name</th>
-                <th>Username</th>
-                <th>Date Added</th>
-                <th>Last Login</th>
+                <th>Phone</th>
                 <th></th>
             </tr>
 
             @if($result->isEmpty())
             <tr>
-                <td colspan="5">
+                <td colspan="4">
                     <p class="my-0">
-                        There are no users who can log into the app. Once users are added, they'll appear here
+                        Once drivers are added to the system, they'll appear here
                     </p>
                 </td>
             </tr>
@@ -65,19 +62,15 @@
             @php
                 $i = 0;
             @endphp
-            @foreach ($result->items as $user)
+            @foreach ($result->items as $driver)
             <tr>
                 <td class="text-center">{{ $result->from + $i }}</td>
                 <td>
-                    <a href="{{ route('admin.users.single', $user->username) }}">{{ $user->name }}</a>
+                    <a href="{{ route('admin.vehicles.drivers.single', $driver->id) }}">{{ $driver->name }}</a>
                 </td>
-                <td>{{ $user->username }}</td>
-                <td>{{ $user->time }}</td>
+                <td>{{ $driver->phone }}</td>
                 <td>
-                    {!! $user->last_login ? $user->last_login->time.'<br>'.$user->last_login->site->name:'No Logins Yet' !!}
-                </td>
-                <td>
-                    <a href="{{ route('admin.users.single', $user->username) }}">View User&nbsp;<i class="fa fa-share"></i></a>
+                    <a href="{{ route('admin.vehicles.drivers.single', $driver->id) }}">View Driver&nbsp;<i class="fa fa-share"></i></a>
                 </td>
             </tr>
 

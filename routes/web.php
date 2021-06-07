@@ -56,6 +56,14 @@ Route::prefix('admin')
         Route::get('{vehicle_id}', [\App\Http\Controllers\Admin\Vehicles\SingleVehicleController::class, 'get'])->name('admin.vehicles.single');
     });
 
+    // Drivers
+    Route::prefix('drivers')->group(function () {
+        Route::get('', \App\Http\Controllers\Admin\Drivers\GetDriversController::class)->name('admin.vehicles.drivers');
+        Route::view('add', 'admin.drivers.add')->name('admin.vehicles.drivers.add');
+        Route::post('add', \App\Http\Controllers\Admin\Drivers\AddDriverController::class)->name('admin.vehicles.drivers.add');
+        Route::get('{driver_id}', [\App\Http\Controllers\Admin\Drivers\SingleDriverController::class, 'get'])->name('admin.vehicles.drivers.single');
+    });
+
 
     // Staff
 

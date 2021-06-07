@@ -43,7 +43,7 @@
                 <td>{{ $login->time }}</td>
                 <td>{{ $login->status }}</td>
             </tr>
-            @endforeach)
+            @endforeach
         </table>
 
     </div>
