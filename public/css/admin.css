@@ -91,6 +91,12 @@ body{
     transition: .2s all !important;
 }
 
+.nav-item img{
+    width: 16px;
+    margin: 0 calc(2rem - 8px) 0 0;
+    display: inline-block;
+}
+
 .nav-item:hover i{
     color: #fff !important;
 }

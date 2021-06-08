@@ -18,6 +18,7 @@ class GetDriversController extends Controller
         $q = Driver::query();
         if($order == 'az') $q->orderBy('name', 'ASC');
         elseif($order == 'za') $q->orderBy('name', 'DESC');
+        elseif($order == 'department') $q->orderBy('department', 'ASC');
 
         return response()->view('admin.drivers.all',[
             'result' => new ResultSet($q, $limit)

@@ -49,22 +49,46 @@
             <div class="form-group">
                 <div class="form-row">
                     <div class="col-md-4 col-lg-3">
-                        <label for=""><strong>Description:</strong></label>
+                        <label for=""><strong>Phone:</strong></label>
                     </div>
 
                     <div class="col-md-8 col-lg-9">
                         <div class="input-group input-group-alternative border shadow-none">
                             <div class="input-group-prepend">
                                 <span class="input-group-text">
-                                    <i class="fa fa-car"></i>
+                                    <i class="fa fa-phone"></i>
                                 </span>
                             </div>
-                            <input value="{{ old('description') }}" type="text" class="form-control" placeholder="e.g White Pickup Truck" name="description">
+                            <input value="{{ old('phone') }}" type="text" class="form-control" placeholder="e.g 0700123456" name="phone">
                         </div>
-                        @if($errors->has('description'))
-                        <small class="text-danger">{{ $errors->get('description')[0] }}</small>
+                        @if($errors->has('department'))
+                        <small class="text-danger">{{ $errors->get('phone')[0] }}</small>
                         @else
-                        <small>A short description of the vehicle e.g color, make etc</small>
+                        <small>Enter the driver's phone number</small>
+                        @endif
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="form-row">
+                    <div class="col-md-4 col-lg-3">
+                        <label for=""><strong>Department:</strong></label>
+                    </div>
+
+                    <div class="col-md-8 col-lg-9">
+                        <div class="input-group input-group-alternative border shadow-none">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">
+                                    <i class="fa fa-book"></i>
+                                </span>
+                            </div>
+                            <input value="{{ old('department') }}" type="text" class="form-control" placeholder="e.g Sales" name="department">
+                        </div>
+                        @if($errors->has('department'))
+                        <small class="text-danger">{{ $errors->get('department')[0] }}</small>
+                        @else
+                        <small>Enter the department the driver is attached to</small>
                         @endif
                     </div>
                 </div>

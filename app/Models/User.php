@@ -46,6 +46,6 @@ class User extends Authenticatable
     }
 
     function getSiteIdAttribute(){
-        return $this->last_login->site_id;
+        return $this->last_login ? $this->last_login->site_id:null;
     }
 }

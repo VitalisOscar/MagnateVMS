@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin\Drivers;
 
 use App\Http\Controllers\Controller;
+use App\Models\Driver;
 use App\Models\Site;
 use App\Models\Vehicle;
 use Exception;
@@ -11,7 +12,7 @@ use Illuminate\Http\Request;
 class SingleDriverController extends Controller
 {
     function get($driver_id){
-        $driver = Vehicle::whereId($driver_id)
+        $driver = Driver::whereId($driver_id)
             ->first();
 
         if($driver == null){
@@ -23,39 +24,35 @@ class SingleDriverController extends Controller
         ]);
     }
 
-    function update(Request $request, $site_id){
-        $v = validator($request->post(), [
-            'name' => 'required|string'
-        ], [
-            'name.required' => 'Please enter the site name',
-            'name.string' => 'Please enter a valid site name',
+    function update(Request $request, $driver_id){
+        $validator = validator($request->post(), [
+            'name' => 'required',
+            'department' => 'required',
+            'phone' => 'required|regex:/0([0-9]){9}/',
+        ],[
+            'phone.regex' => 'Provide a valid phone number'
         ]);
 
-        if($v->fails()){
-            return back()->withInput()->withErrors($v->errors());
+        if($validator->fails()){
+            return back()
+                ->withInput()
+                ->withErrors($validator->errors());
         }
 
-        $site = Site::whereId($site_id)
+        $driver = Driver::whereId($driver_id)
             ->first();
 
-        if($site == null){
-            return redirect()->route('admin.sites');
+        if($driver == null){
+            return redirect()->route('admin.vehicles.drivers');
         }
 
-        $options = [
-            'logins' => $request->boolean('logins'),
-        ];
-
-        foreach(Site::TRACKABLES as $key => $trackable){
-            $options['tracking'][$key] = $request->boolean('track_'.$key);
-        }
-
-        $site->options = $options;
-        $site->name = $request->post('name');
+        $driver->name = $request->post('name');
+        $driver->phone = $request->post('phone');
+        $driver->department = $request->post('department');
 
         try{
-            if($site->save()){
-                return back()->with(['status' => 'Site settings for '.$site->name.' have been updated', 'to' => 'options']);
+            if($driver->save()){
+                return back()->with(['status' => 'Driver details have been updated']);
             }
         }catch(Exception $e){}
 

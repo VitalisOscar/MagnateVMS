@@ -39,6 +39,10 @@ class Visitor extends Model
         return $this->hasOne(Visit::class)->today()->latest('time_in');
     }
 
+    function any_last_visit(){
+        return $this->hasOne(Visit::class)->latest('time_in');
+    }
+
     function can(){
         // is user already checked in?
         $last_visit = $this->visits()->latest('time_in')->first();

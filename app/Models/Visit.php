@@ -29,8 +29,8 @@ class Visit extends Model
     public $timestamps = false;
 
     function wasToday(){
-	$in = Carbon::createFromTimeString($this->time_in);
-	return $in->isToday();
+        $in = Carbon::createFromTimeString($this->time_in);
+        return $in->isToday();
     }
 
     function check_in_user(){
@@ -43,6 +43,10 @@ class Visit extends Model
 
     function staff(){
         return $this->belongsTo(Staff::class);
+    }
+
+    function site(){
+        return $this->belongsTo(Site::class);
     }
 
     function visitor(){
@@ -66,7 +70,7 @@ class Visit extends Model
     }
 
     function scopeAtSite($q){
-        // $q->where('site_id', auth('sanctum')->user()->site_id);
+        $q->where('site_id', auth('sanctum')->user()->site_id);
     }
 
     function scopeToday($q){
@@ -79,6 +83,60 @@ class Visit extends Model
 
     function scopeCardIssued($q){
         $q->where('card_number', '<>', null);
+    }
+
+    function getTimeAttribute(){
+        /** @var Carbon */
+        $t = Carbon::createFromTimeString($this->time_in);
+        $now = Carbon::now();
+
+        if($t->isToday()){
+            return 'Today ' .$t->format('H:i');
+        }else if($t->isYesterday()){
+            return 'Yesterday at ' .$t->format('H:i');
+        }
+
+        if($t->isCurrentYear())
+        return substr($t->monthName, 0, 3).' '.$t->day.' at '.$t->format('H:i');
+
+        return substr($t->monthName, 0, 3).' '.$t->day.', '.$t->year.' at '.$t->format('H:i');
+    }
+
+    function getHostAttribute(){
+        $staff = $this->staff;
+
+        if($staff != null){
+            return $staff->name.' ('.$staff->company->name.')';
+        }
+    }
+
+    function fmtTime($t){
+        $t = Carbon::createFromTimeString($t);
+
+        if($t->isToday()){
+            return 'Today ' .$t->format('H:i');
+        }else if($t->isYesterday()){
+            return 'Yesterday at ' .$t->format('H:i');
+        }
+
+        if($t->isCurrentYear())
+        return substr($t->monthName, 0, 3).' '.$t->day.' at '.$t->format('H:i');
+
+        return substr($t->monthName, 0, 3).' '.$t->day.', '.$t->year.' at '.$t->format('H:i');
+    }
+
+    function getCheckInAttribute(){
+        $u = $this->check_in_user;
+        return $this->fmtTime($this->time_in).' by '.$u->name;
+    }
+
+    function getCheckOutAttribute(){
+        if($this->check_out_user == null){
+            return 'Not Captured';
+        }
+
+        $u = $this->check_out_user;
+        return Carbon::createFromTimeString($this->time_out)->format('H:i').' by '.$u->name;
     }
 
 }

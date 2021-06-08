@@ -35,11 +35,12 @@ class Login extends Model
     }
 
     function user(){
-        return $this->belongsTo(User::class, 'identifier')->whereType(self::TYPE_USER);
+        // if($this->type == self::TYPE_USER)
+        return $this->belongsTo(User::class, 'identifier');
     }
 
     function admin(){
-        return $this->belongsTo(Admin::class, 'identifier')->whereType(self::TYPE_ADMIN);
+        return $this->belongsTo(User::class, 'identifier');
     }
 
     function scopeSuccessful($q){

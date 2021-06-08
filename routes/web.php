@@ -32,13 +32,13 @@ Route::prefix('admin')
 
         Route::get('{site_id}', [\App\Http\Controllers\Admin\Sites\SingleSiteController::class, 'get'])->name('admin.sites.single');
         Route::post('{site_id}/update', [\App\Http\Controllers\Admin\Sites\SingleSiteController::class, 'update'])->name('admin.sites.update');
+        // Route::post('{site_id}/delete', [\App\Http\Controllers\Admin\Users\SingleUserController::class, 'delete'])->name('admin.users.delete');
+
         // Route::get('{site_id}/companies', [\App\Http\Controllers\Admin\Users\SingleUserController::class, 'get'])->name('admin.users.single');
         // Route::get('{site_id}/companies/{company_id}/delete', [\App\Http\Controllers\Admin\Users\SingleUserController::class, 'get'])->name('admin.users.single');
         Route::get('{site_id}/companies/add', [\App\Http\Controllers\Admin\Sites\SingleSiteController::class, 'getSiteForAdd'])->name('admin.sites.company.add');
         Route::post('{site_id}/companies/add', [\App\Http\Controllers\Admin\Sites\SingleSiteController::class, 'addCompany'])->name('admin.sites.company.add');
         Route::get('{site_id}/companies/{company_id}', [\App\Http\Controllers\Admin\Sites\SingleCompanyController::class, 'get'])->name('admin.sites.company');
-        // Route::post('{site_id}/update', [\App\Http\Controllers\Admin\Users\SingleUserController::class, 'update'])->name('admin.users.update');
-        // Route::post('{site_id}/delete', [\App\Http\Controllers\Admin\Users\SingleUserController::class, 'delete'])->name('admin.users.delete');
 
         // staff
         Route::get('{site_id}/companies/{company_id}/staff/add', [\App\Http\Controllers\Admin\Staff\StaffController::class, 'getForAdd'])->name('admin.sites.staff.add');
@@ -62,6 +62,12 @@ Route::prefix('admin')
         Route::view('add', 'admin.drivers.add')->name('admin.vehicles.drivers.add');
         Route::post('add', \App\Http\Controllers\Admin\Drivers\AddDriverController::class)->name('admin.vehicles.drivers.add');
         Route::get('{driver_id}', [\App\Http\Controllers\Admin\Drivers\SingleDriverController::class, 'get'])->name('admin.vehicles.drivers.single');
+        Route::post('{driver_id}/update', [\App\Http\Controllers\Admin\Drivers\SingleDriverController::class, 'update'])->name('admin.vehicles.drivers.update');
+    });
+
+    // History
+    Route::prefix('history')->group(function () {
+        Route::get('logins', \App\Http\Controllers\Admin\History\LoginHistoryController::class)->name('admin.history.logins');
     });
 
 
@@ -69,7 +75,16 @@ Route::prefix('admin')
 
 
     // Visitors
+    Route::prefix('visitors')->group(function () {
+        Route::get('', \App\Http\Controllers\Admin\Visitors\GetVisitorsController::class)->name('admin.visitors');
+        Route::get('visits', \App\Http\Controllers\Admin\Visitors\VisitsController::class)->name('admin.visitors.visits');
+        Route::get('{visitor_id}', [\App\Http\Controllers\Admin\Visitors\SingleVisitorController::class, 'get'])->name('admin.visitors.single');
+    });
 
+    // Exports
+    Route::prefix('exports')->group(function () {
+        Route::get('visits', [\App\Http\Controllers\Admin\Visitors\VisitsController::class, 'export'])->name('admin.exports.visits');
+    });
 
     // History
 

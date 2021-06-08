@@ -12,6 +12,7 @@ class AddDriverController extends Controller
     function __invoke(Request $request){
         $validator = validator($request->post(), [
             'name' => 'required',
+            'department' => 'required',
             'phone' => 'required|regex:/0([0-9]){9}/',
         ],[
             'phone.regex' => 'Provide a valid phone number'
@@ -25,6 +26,7 @@ class AddDriverController extends Controller
 
         $driver = new Driver([
             'name' => $request->post('name'),
+            'department' => $request->post('department'),
             'phone' => $request->post('phone'),
         ]);
 

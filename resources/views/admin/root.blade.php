@@ -7,6 +7,7 @@
     <title>@yield('title', 'Magnate Ventures | Visitor Management | Administration')</title>
     <link rel="stylesheet" href="{{ asset('css/main.css') }}">
     <link rel="stylesheet" href="{{ asset('css/admin.css') }}">
+    @yield('links')
 </head>
 <body>
 
@@ -25,6 +26,10 @@ $current_route = \Illuminate\Support\Facades\Route::current()->getName();
 
         <div class="scroll-inner">
 
+            <style>
+                .navbar-nav{margin-bottom: .5rem}
+            </style>
+
             <div class="sidebar-inner py-3">
                 <div>
 
@@ -40,6 +45,13 @@ $current_route = \Illuminate\Support\Facades\Route::current()->getName();
                             <a class="nav-link @if($current_route == 'admin.adverts'){{ __('active') }}@endif" href="">
                                 <i class="fa fa-bullhorn text-yellow mr-1"></i>
                                 <span class="nav-link-text">My Account</span>
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link @if($current_route == 'admin.history.logins'){{ __('active') }}@endif " href="{{ route('admin.history.logins') }}">
+                                <i class="fa fa-user text-info mr-1"></i>
+                                <span class="nav-link-text">Login History</span>
                             </a>
                         </li>
 
@@ -64,13 +76,6 @@ $current_route = \Illuminate\Support\Facades\Route::current()->getName();
                                 <a class="nav-link @if($current_route == 'admin.users.add'){{ __('active') }}@endif " href="{{ route('admin.users.add') }}">
                                     <i class="fa fa-user-plus text-default mr-1"></i>
                                     <span class="nav-link-text">Add User</span>
-                                </a>
-                            </li>
-
-                            <li class="nav-item">
-                                <a class="nav-link @if($current_route == 'admin.users.logins'){{ __('active') }}@endif " href="{{ route('admin.users.logins') }}">
-                                    <i class="fa fa-tv text-info mr-1"></i>
-                                    <span class="nav-link-text">Login History</span>
                                 </a>
                             </li>
                         </ul>
@@ -133,23 +138,16 @@ $current_route = \Illuminate\Support\Facades\Route::current()->getName();
 
                         <ul class="navbar-nav collapse @if(preg_match('/admin\.visitors/', $current_route)){{ __('show') }}@endif" id="nav-visitors">
                             <li class="nav-item">
-                                <a class="nav-link @if($current_route == 'admin.sites'){{ __('active') }}@endif " href="{{ route('admin.sites') }}">
+                                <a class="nav-link @if($current_route == 'admin.visitors'){{ __('active') }}@endif " href="{{ route('admin.visitors') }}">
                                     <i class="fa fa-map-marker text-default mr-1"></i>
                                     <span class="nav-link-text">View All</span>
                                 </a>
                             </li>
 
                             <li class="nav-item">
-                                <a class="nav-link @if($current_route == 'admin.sites'){{ __('active') }}@endif " href="{{ route('admin.sites') }}">
+                                <a class="nav-link @if($current_route == 'admin.visitors.visits'){{ __('active') }}@endif " href="{{ route('admin.visitors.visits') }}">
                                     <i class="fa fa-map-marker text-default mr-1"></i>
-                                    <span class="nav-link-text">Visitations</span>
-                                </a>
-                            </li>
-
-                            <li class="nav-item">
-                                <a class="nav-link @if($current_route == 'admin.sites.add'){{ __('active') }}@endif " href="{{ route('admin.sites.add') }}">
-                                    <i class="fa fa-plus-square text-default mr-1"></i>
-                                    <span class="nav-link-text">Visit Stats</span>
+                                    <span class="nav-link-text">Visits</span>
                                 </a>
                             </li>
                         </ul>
@@ -157,12 +155,12 @@ $current_route = \Illuminate\Support\Facades\Route::current()->getName();
 
                     <!-- Stats -->
                     <div class="nav-group">
-                        <h4 class="sidebar-heading text-muted" data-toggle="collapse" data-target="#nav-visitors">
+                        <h4 class="sidebar-heading text-muted" data-toggle="collapse" data-target="#nav-stats">
                             Stats
                             <i class="fa fa-chevron-down float-right toggle-icon"></i>
                         </h4>
 
-                        <ul class="navbar-nav collapse @if(preg_match('/admin\.visitors/', $current_route)){{ __('show') }}@endif" id="nav-visitors">
+                        <ul class="navbar-nav collapse @if(preg_match('/admin\.visitors/', $current_route)){{ __('show') }}@endif" id="nav-stats">
                             <li class="nav-item">
                                 <a class="nav-link @if($current_route == 'admin.sites'){{ __('active') }}@endif " href="{{ route('admin.sites') }}">
                                     <i class="fa fa-map-marker text-default mr-1"></i>
@@ -187,7 +185,7 @@ $current_route = \Illuminate\Support\Facades\Route::current()->getName();
 </aside>
 
 <nav class="sticky-nav section-shaped sticky-top bg-primary navbar py-2 d-none align-items-center">
-    <div class="col-lg-11 col-xl-10 d-flex align-items-center mx-auto">
+    <div class="col-lg-11 col-xl-11 d-flex align-items-center mx-auto">
         <h3 class="mb-0 d-flex align-items-center font-weight-600 page-heading" style="color: #fff !important">
             @yield('page_icon', '')
             @yield('page_heading', 'Dashboard')
@@ -244,7 +242,7 @@ $current_route = \Illuminate\Support\Facades\Route::current()->getName();
             }
         </style>
         <div class="nav-inner">
-            <div class="col-lg-11 col-xl-10 d-flex align-items-center mx-auto">
+            <div class="col-lg-11 col-xl-11 d-flex align-items-center mx-auto">
                 <h3 class="mb-0 d-flex align-items-center font-weight-600 page-heading" style="color: #fff !important">
                     @yield('page_icon', '')
                     @yield('page_heading', 'Dashboard')
@@ -277,7 +275,7 @@ $current_route = \Illuminate\Support\Facades\Route::current()->getName();
     </nav>
 
     <div class="py-4 px-3 content">
-        <div class="col-lg-11 col-xl-10 mx-auto" style="">
+        <div class="col-lg-11 col-xl-11 mx-auto" style="">
             @yield('content')
         </div>
     </div>
@@ -312,6 +310,8 @@ $current_route = \Illuminate\Support\Facades\Route::current()->getName();
         $('#custom_alert').modal();
     }
 </script>
+
+@yield('scripts')
 
 @if(session()->has('status'))
 <script>
