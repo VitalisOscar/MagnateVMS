@@ -2,8 +2,9 @@
 
 namespace App\Exports;
 
+use App\Models\Company;
 use App\Models\Site;
-use App\Models\Visit;
+use App\Models\StaffCheckIn;
 use Carbon\Carbon;
 use Maatwebsite\Excel\Excel;
 use Illuminate\Contracts\Support\Responsable;
@@ -16,10 +17,10 @@ use PhpOffice\PhpSpreadsheet\Cell\Cell;
 use PhpOffice\PhpSpreadsheet\Cell\DataType;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
-class AllVisitsExport implements FromArray, Responsable, ShouldAutoSize, WithStyles, WithCustomValueBinder{
+class AllStaffCheckInsExport implements FromArray, Responsable, ShouldAutoSize, WithStyles, WithCustomValueBinder{
     use Exportable;
 
-    private $fileName = 'all_visits.xlsx';
+    private $fileName = 'all_checkins.xlsx';
     private $writerType = Excel::XLSX;
     private $bolds = [];
 
@@ -29,35 +30,48 @@ class AllVisitsExport implements FromArray, Responsable, ShouldAutoSize, WithSty
 
         $r = request();
 
-        $q = Visit::query()
-            ->with([
-                'visitor',
-                'site',
-                'staff',
-                'staff.company',
-                'check_in_user',
-                'check_out_user'
-            ]);
-
+        $q = StaffCheckIn::query()
+            ->with('staff', 'staff.company', 'site', 'check_in_user', 'check_out_user');
 
         $add_site = true;
+        $add_company = true;
 
         if($r->filled('filters') && $r->get('filters') == 1){
             // Add filters
             $order = $r->get('order');
 
+
+            $order = $r->get('order');
+
             if($order == 'past') $q->oldest('time_in');
             else $q->latest('time_in');
 
-
             if($r->filled('site')){
-                $q->whereSiteId($r->get('site'));
+                $q->where('site_id', $r->get('site'));
+
                 $site = Site::whereId($r->get('site'))->first();
 
                 if($site != null){
                     $add_site = false;
                     array_push($data, ['Site', $site->name]);
                     array_push($this->bolds, 'A1');
+                }
+            }
+
+            if($r->filled('company')){
+                $q->whereHas('staff', function($q1) use($r){
+                    $q1->whereCompanyId($r->get('company'));
+                });
+
+                $company = Company::whereId($r->get('company'))
+                    ->with('site')
+                    ->first();
+
+                if($company != null){
+                    $add_company = false;
+                    array_push($data, ['Company From', $company->name.' (at '.$company->site->name.')']);
+                    array_push($this->bolds, 'A'.count($data));
+                    array_push($data, ['']);
                 }
             }
 
@@ -93,54 +107,46 @@ class AllVisitsExport implements FromArray, Responsable, ShouldAutoSize, WithSty
 
         $headers = [
             'Site',
-            'Visitor',
-            'Reason',
-            'Host',
+            'Staff Name',
+            'Phone Number',
+            'Company',
             'Date',
             'Time In',
-            'Items In',
             'Checked In By',
             'Time Out',
-            'Items Out',
             'Checked Out By',
-            'Vehicle',
-            'Access Card'
+            'Vehicle'
         ];
 
-        if(!$add_site){
-            unset($headers[0]);
-        }
+        if(!$add_site) unset($headers[0]);
+        if(!$add_company) unset($headers[3]);
 
         // Add headers
         array_push($data, $headers);
         array_push($this->bolds, count($data));
 
         // Fetch the visits
-        $visits = $q->get();
+        $checkins = $q->get();
 
-        foreach($visits as $visit){
-            $in = Carbon::createFromTimeString($visit->time_in);
-            $out = $visit->time_out ? Carbon::createFromTimeString($visit->time_out):null;
+        foreach($checkins as $checkin){
+            $in = Carbon::createFromTimeString($checkin->time_in);
+            $out = $checkin->time_out ? Carbon::createFromTimeString($checkin->time_out):null;
 
             $row = [
-                $visit->site->name,
-                $visit->visitor->name,
-                $visit->reason,
-                $visit->host,
+                $checkin->site->name,
+                $checkin->staff->name,
+                $checkin->staff->phone,
+                $checkin->staff->company->name,
                 $in->format('Y-m-d'),
                 $in->format('H:i'),
-                $visit->items_in,
-                $visit->check_in_user->name,
+                $checkin->check_in_user->name,
                 $out ? $out->format('H:i'):'',
-                $visit->items_out,
-                $visit->check_out_user ? $visit->check_out_user->name:null,
-                $visit->car_registration,
-                $visit->card_number,
+                $checkin->check_out_user ? $checkin->check_out_user->name:null,
+                $checkin->car_registration,
             ];
 
-            if(!$add_site){
-                unset($row[0]);
-            };
+            if(!$add_site) unset($row[0]);
+            if(!$add_company) unset($row[3]);
 
             array_push($data, $row);
         }

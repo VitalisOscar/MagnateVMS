@@ -18,18 +18,31 @@
 
 <div class="bg-white border rounded mb-4">
     <div class="">
-        
+
         <div class="px-4 py-4 border-bottom">
             <h5 class="mb-0">{{ $visitor->name.' • '.$visitor->phone.' • '.$visitor->from.' • '.$visitor->id_number }}</h5>
         </div>
 
         <div class="px-4 py-3 d-flex align-items-center">
-            <h4 class="font-weight-600 mb-0">Visit History</h4>
-            <a href="" class="ml-auto btn btn-primary btn-sm shadow-none">Export to Excel</a>
+            <h4 class="font-weight-600 mb-0">Visit History ({{ $result->total.' Visit'.($result->total != 1 ? 's':'') }})</h4>
+
+            <?php $r = request(); ?>
+
+            <div class="dropdown ml-auto">
+                <button class="ml-auto mr-0 btn btn-primary btn-sm shadow-none dropdown-toggle" data-toggle="dropdown">Export to Excel</button>
+                <ul class="dropdown-menu" id="export">
+                    <li class="dropdown-item" title="Export all records">
+                        <a class="dropdown-link" href="{{ route('admin.exports.visits.single', array_merge($r->all(), ['filters' => 0, 'visitor_id' => $visitor->id])) }}">Export All</a>
+                    </li>
+
+                    <li class="dropdown-item" title="Add selected filters e.g date and sorting before exporting">
+                        <a class="dropdown-link" href="{{ route('admin.exports.visits.single', array_merge($r->all(), ['filters' => 1, 'visitor_id' => $visitor->id])) }}">Add Selected Options</a>
+                    </li>
+                </ul>
+            </div>
         </div>
 
         <form class="px-4 pb-3 d-flex align-items-center">
-            <?php $r = request(); ?>
             <select name="site" class="custom-select mr-3" style="width: auto !important">
                 <option value="">All Sites</option>
                 @foreach(\App\Models\Site::all() as $site)
@@ -46,14 +59,12 @@
                     <option value="50" @if($r->get('limit') == 50){{ __('selected') }}@endif>Upto 50 Records</option>
                     <option value="100" @if($r->get('limit') == 100){{ __('selected') }}@endif>Upto 100 Records</option>
                 </select>
-    
+
                 <select name="order" class="custom-select mr-3" style="width: auto !important">
-                    <option value="">Sort by Default</option>
-                    <option value="recent" @if($r->get('order') == 'recent'){{ __('selected') }}@endif>Added Recently</option>
-                    <option value="az" @if($r->get('order') == 'az'){{ __('selected') }}@endif>Name (A-Z)</option>
-                    <option value="za" @if($r->get('order') == 'za'){{ __('selected') }}@endif>Name (Z-A)</option>
+                    <option value="">Latest Visits First</option>
+                    <option value="past" @if($r->get('order') == 'past'){{ __('selected') }}@endif>Past Visits First</option>
                 </select>
-    
+
                 <button class="btn btn-default shadow-none">Go</button>
             </div>
         </form>

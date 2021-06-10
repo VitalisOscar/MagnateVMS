@@ -18,13 +18,6 @@ class VisitsController extends Controller
         $limit = intval($request->get('limit'));
         if(!in_array($limit, [15,30,50,100])) $limit = 15;
 
-        $order = $request->get('order');
-
-        $q = Visitor::query()->with('any_last_visit', 'any_last_visit.site');
-        if($order == 'recent') $q->latest();
-        elseif($order == 'az') $q->orderBy('name', 'ASC');
-        elseif($order == 'za') $q->orderBy('name', 'DESC');
-
         $q = Visit::query()
             ->with([
                 'visitor',
@@ -34,6 +27,12 @@ class VisitsController extends Controller
                 'check_in_user',
                 'check_out_user'
             ]);
+
+        $order = $request->get('order');
+
+        if($order == 'past') $q->oldest('time_in');
+        else $q->latest('time_in');
+
 
         $dates = null;
 
@@ -73,9 +72,5 @@ class VisitsController extends Controller
 
     function export(){
         return new AllVisitsExport();
-    }
-
-    function getQuery(){
-
     }
 }

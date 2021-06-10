@@ -72,6 +72,9 @@ Route::prefix('admin')
 
 
     // Staff
+    Route::prefix('staff')->group(function () {
+        Route::get('checkins', \App\Http\Controllers\Admin\Staff\StaffCheckInController::class)->name('admin.staff.checkins');
+    });
 
 
     // Visitors
@@ -84,6 +87,8 @@ Route::prefix('admin')
     // Exports
     Route::prefix('exports')->group(function () {
         Route::get('visits', [\App\Http\Controllers\Admin\Visitors\VisitsController::class, 'export'])->name('admin.exports.visits');
+        Route::get('visits/by/{visitor_id}', [\App\Http\Controllers\Admin\Visitors\SingleVisitorController::class, 'export'])->name('admin.exports.visits.single');
+        Route::get('checkins', [\App\Http\Controllers\Admin\Staff\StaffCheckInController::class, 'export'])->name('admin.exports.checkins');
     });
 
     // History

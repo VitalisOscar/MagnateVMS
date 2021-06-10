@@ -55,4 +55,37 @@ class StaffCheckIn extends Model
         $q->whereDate('time_in', Carbon::today()->format('Y-m-d'));
     }
 
+
+    function getFmtDateAttribute(){
+        $t = Carbon::createFromTimeString($this->time_in);
+
+        if($t->isToday()){
+            return 'Today';
+        }else if($t->isYesterday()){
+            return 'Yesterday';
+        }
+
+        if($t->isCurrentYear())
+        return substr($t->monthName, 0, 3).' '.$t->day;
+
+        return substr($t->monthName, 0, 3).' '.$t->day.', '.$t->year;
+    }
+
+    function getDateAttribute(){
+        return Carbon::createFromTimeString($this->time_in)->format('Y-m-d');
+    }
+
+    function getCheckInAttribute(){
+        $u = $this->check_in_user;
+        return Carbon::createFromTimeString($this->time_in)->format('H:i').' by '.$u->name;
+    }
+
+    function getCheckOutAttribute(){
+        if($this->check_out_user == null){
+            return 'Not Captured';
+        }
+
+        $u = $this->check_out_user;
+        return Carbon::createFromTimeString($this->time_out)->format('H:i').' by '.$u->name;
+    }
 }

@@ -1,50 +1,41 @@
 <?php
 
-namespace App\Http\Controllers\Admin\Visitors;
+namespace App\Http\Controllers\Admin\Staff;
 
-use App\Exports\SingleVisitorExport;
+use App\Exports\AllStaffCheckInsExport;
 use App\Helpers\ResultSet;
 use App\Http\Controllers\Controller;
+use App\Models\StaffCheckIn;
 use App\Models\User;
 use App\Models\Visitor;
-use Exception;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
 
-class SingleVisitorController extends Controller
+class StaffCheckInController extends Controller
 {
-    function get(Request $request, $visitor_id){
-        $visitor = Visitor::whereId($visitor_id)
-            ->first();
-
-        if($visitor == null){
-            return redirect()->route('admin.visitors');
-        }
-
-
+    function __invoke(Request $request){
         $limit = intval($request->get('limit'));
         if(!in_array($limit, [15,30,50,100])) $limit = 15;
 
-        $q = Visitor::query()->with('any_last_visit', 'any_last_visit.site');
+        $q = StaffCheckIn::query()
+            ->with('staff', 'staff.company', 'site');
 
         $order = $request->get('order');
 
         if($order == 'past') $q->oldest('time_in');
         else $q->latest('time_in');
 
-        $q = $visitor->visits()
-            ->with([
-                'site',
-                'staff',
-                'staff.company',
-                'check_in_user',
-                'check_out_user'
-            ]);
 
         $dates = null;
 
         if($request->filled('site')){
-            $q->whereSiteId($request->get('site'));
+            $q->where('site_id', $request->get('site'));
+        }
+
+        if($request->filled('company')){
+            $q->whereHas('staff', function($q1) use($request){
+                $q1->whereCompanyId($request->get('company'));
+            });
         }
 
         if($request->filled('date')){
@@ -69,16 +60,13 @@ class SingleVisitorController extends Controller
             $dates = $from.' to '.$to;
         }
 
-        $visits = new ResultSet($q, $limit);
-
-        return response()->view('admin.visitors.single', [
-            'visitor' => $visitor,
-            'result' => $visits,
+        return response()->view('admin.staff.checkins',[
+            'result' => new ResultSet($q, $limit),
             'dates' => $dates
         ]);
     }
 
-    function export($visitor_id){
-        return new SingleVisitorExport($visitor_id);
+    function export(){
+        return new AllStaffCheckInsExport();
     }
 }

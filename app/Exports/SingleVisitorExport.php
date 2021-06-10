@@ -4,9 +4,11 @@ namespace App\Exports;
 
 use App\Models\Site;
 use App\Models\Visit;
+use App\Models\Visitor;
 use Carbon\Carbon;
 use Maatwebsite\Excel\Excel;
 use Illuminate\Contracts\Support\Responsable;
+use Illuminate\Support\Facades\Route;
 use Maatwebsite\Excel\Concerns\Exportable;
 use Maatwebsite\Excel\Concerns\FromArray;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
@@ -16,12 +18,18 @@ use PhpOffice\PhpSpreadsheet\Cell\Cell;
 use PhpOffice\PhpSpreadsheet\Cell\DataType;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
-class AllVisitsExport implements FromArray, Responsable, ShouldAutoSize, WithStyles, WithCustomValueBinder{
+class SingleVisitorExport implements FromArray, Responsable, ShouldAutoSize, WithStyles, WithCustomValueBinder{
     use Exportable;
 
-    private $fileName = 'all_visits.xlsx';
+    private $fileName = 'visits.xlsx';
     private $writerType = Excel::XLSX;
     private $bolds = [];
+
+    private $visitor_id;
+
+    function __construct($visitor_id){
+        $this->visitor_id = $visitor_id;
+    }
 
     public function array():array
     {
@@ -29,9 +37,11 @@ class AllVisitsExport implements FromArray, Responsable, ShouldAutoSize, WithSty
 
         $r = request();
 
-        $q = Visit::query()
+        $visitor = Visitor::whereId($this->visitor_id)->first();
+
+        $q = $visitor
+            ->visits()
             ->with([
-                'visitor',
                 'site',
                 'staff',
                 'staff.company',
@@ -91,9 +101,21 @@ class AllVisitsExport implements FromArray, Responsable, ShouldAutoSize, WithSty
             // End filters
         }
 
+        array_push($data,
+            ['Visitor', $visitor->name],
+            ['Phone Number', $visitor->phone],
+            ['ID Number', $visitor->id_number ? $visitor->id_number:'Not Provided'],
+            ['Company From', $visitor->from],
+            ['']
+        );
+
+        array_push($this->bolds, 'A'.(count($data) - 4));
+        array_push($this->bolds, 'A'.(count($data) - 3));
+        array_push($this->bolds, 'A'.(count($data) - 2));
+        array_push($this->bolds, 'A'.(count($data) - 1));
+
         $headers = [
             'Site',
-            'Visitor',
             'Reason',
             'Host',
             'Date',
@@ -124,7 +146,6 @@ class AllVisitsExport implements FromArray, Responsable, ShouldAutoSize, WithSty
 
             $row = [
                 $visit->site->name,
-                $visit->visitor->name,
                 $visit->reason,
                 $visit->host,
                 $in->format('Y-m-d'),
