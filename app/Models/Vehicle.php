@@ -13,6 +13,13 @@ class Vehicle extends Model
 
     public $fillable = [
         'registration_no',
-        'description'
+        'description',
+        'vehicleable_id',
+        'vehicleable_type',
+        'slug',
     ];
+
+    function vehicleable(){
+        return $this->morphTo();
+    }
 }

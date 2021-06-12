@@ -18,10 +18,18 @@ class StaffCheckIn extends Model
         'time_in',
         'time_out',
         'site_id',
-        'car_registration',
+        'vehicle_id',
     ];
 
     public $timestamps = false;
+
+    public $with = ['vehicle'];
+
+    public $appends = ['car_registration'];
+
+    function vehicle(){
+        return $this->belongsTo(Vehicle::class);
+    }
 
     function check_in_user(){
         return $this->belongsTo(User::class, 'checked_in_by');
@@ -81,11 +89,18 @@ class StaffCheckIn extends Model
     }
 
     function getCheckOutAttribute(){
-        if($this->check_out_user == null){
+        if(Carbon::createFromTimeString($this->time_in)->isToday() && $this->check_out_user == null){
+            return 'Still In';
+        }else{
             return 'Not Captured';
         }
 
         $u = $this->check_out_user;
         return Carbon::createFromTimeString($this->time_out)->format('H:i').' by '.$u->name;
+    }
+
+    function getCarRegistrationAttribute(){
+        $v = $this->vehicle;
+        return $v->registration_no ? $v->registration_no:null;
     }
 }

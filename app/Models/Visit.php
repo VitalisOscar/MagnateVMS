@@ -20,13 +20,17 @@ class Visit extends Model
         'time_out',
 	    'items_in',
 	    'site_id',
-        'car_registration',
+        'vehicle_id',
         'from', // company from
         'card_number',
         'signature'
     ];
 
     public $timestamps = false;
+
+    public $with = ['vehicle'];
+
+    public $appends = ['car_registration'];
 
     function wasToday(){
         $in = Carbon::createFromTimeString($this->time_in);
@@ -51,6 +55,10 @@ class Visit extends Model
 
     function visitor(){
         return $this->belongsTo(Visitor::class);
+    }
+
+    function vehicle(){
+        return $this->belongsTo(Vehicle::class);
     }
 
     function checked_out(){
@@ -123,6 +131,11 @@ class Visit extends Model
         return substr($t->monthName, 0, 3).' '.$t->day.' at '.$t->format('H:i');
 
         return substr($t->monthName, 0, 3).' '.$t->day.', '.$t->year.' at '.$t->format('H:i');
+    }
+
+    function getCarRegistrationAttribute(){
+        $v = $this->vehicle;
+        return $v->registration_no ? $v->registration_no:null;
     }
 
     function getCheckInAttribute(){

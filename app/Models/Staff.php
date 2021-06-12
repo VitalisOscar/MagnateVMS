@@ -32,6 +32,10 @@ class Staff extends Model
         return $this->hasMany(StaffCheckIn::class);
     }
 
+    function vehicles(){
+        return $this->morphMany(Vehicle::class, 'vehicleable');
+    }
+
     function isCheckedIn(){
         return $this->check_ins()->latest('time_in')->stillIn()->atSite()->today()->first() != null;
     }

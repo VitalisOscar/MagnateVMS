@@ -6,6 +6,7 @@ use App\Models\Site;
 use App\Models\Staff;
 use App\Models\Visit;
 use App\Models\Visitor;
+use App\Services\VehicleService;
 use Exception;
 use Illuminate\Support\Facades\DB;
 
@@ -60,13 +61,24 @@ trait CapturesVisitors{
     }
 
     function saveVisit($visitor, $data){
+        /** @var VehicleService */
+        $vehicleService = resolve(VehicleService::class);
+
+        $vehicle_id = null;
+        if(isset($data['car_registration'])){
+            $vehicle = $vehicleService->getOrAddVehicle($data['car_registration'], 'visitor', $visitor->id);
+
+            if($vehicle == null) return false;
+            $vehicle_id = $vehicle->id;
+        }
+
         $visit = new Visit([
             'checked_in_by' => auth('sanctum')->id(),
             'visitor_id' => $visitor->id,
             'reason' => $data['reason'],
             'staff_id' => $data['staff_id'],
 	        'site_id' => auth('sanctum')->user()->site_id,
-            'car_registration' => isset($data['car_registration']) ? $data['car_registration']:null,
+            'vehicle_id' => $vehicle_id,
             'from' => $visitor->from,
             'card_number' => isset($data['card_number']) ? $data['card_number']:null,
             'items_in' => isset($data['items_in']) ? $data['items_in']:null,

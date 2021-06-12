@@ -76,7 +76,7 @@
                 <td>{{ $visitor->phone }}</td>
                 <td>{{ $visitor->from }}</td>
                 <td>
-                    {!! $visitor->any_last_visit->time.'<br>'.$visitor->any_last_visit->site->name !!}
+                    {!! $visitor->any_last_visit ? ($visitor->any_last_visit->time.'<br>'.$visitor->any_last_visit->site->name):'No Visits' !!}
                 </td>
                 <td>
                     <a href="{{ route('admin.visitors.single', $visitor->id) }}">View&nbsp;<i class="fa fa-share"></i></a>
@@ -95,7 +95,7 @@
             @endphp
 
             <tr>
-                <td colspan="6">
+                <td colspan="7">
                     <div class="d-flex align-items-center">
                         <a href="{{ route($route->getName(), $prev) }}" class="@if(!$result->hasPreviousPage()){{ __('disabled') }}@endif mr-auto btn btn-link p-0"><i class="fa fa-angle-double-left"></i>&nbsp;Prev</a>
                         <span>{{ 'Page '.$result->page.' of '.$result->max_pages }}</span>

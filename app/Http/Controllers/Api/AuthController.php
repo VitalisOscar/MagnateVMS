@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Login;
+use App\Models\Site;
 use App\Models\User;
 use Exception;
 use Illuminate\Http\Request;
@@ -23,11 +24,13 @@ class AuthController extends Controller
             return $this->json->error('Please provide your staff username and password and the site you are logging in from');
         }
 
+        $site = Site::whereId($request->get('site_id'))->first();
+
         // Login tracking
         $login = new Login([
             'type' => Login::TYPE_USER,
             'credential' => $request->get('username'),
-            'site_id' => $request->get('site_id'),
+            'site_id' => $site->id,
             'user_agent' => $request->userAgent(),
             'ip_address' => $request->ip(),
         ]);
@@ -65,7 +68,7 @@ class AuthController extends Controller
         $user->token = $token->plainTextToken;
 
         // Add site name
-        $user->site_name = $user->site->name;
+        $user->site_name = $site->name;
 
         return $this->json->data($user);
     }

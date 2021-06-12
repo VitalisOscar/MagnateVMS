@@ -103,17 +103,17 @@
 
             @else
 
-            @foreach ($result->items as $visit)
+            @foreach ($result->items as $checkin)
             <tr>
-                <td>{{ $visit->site->name }}</td>
-                {{-- <td><a href="{{ route('admin.visitors.single', $visit->visitor->id) }}">{{ $visit->visitor->name }}</a></td> --}}
-                <td>{{ $visit->staff->name }}</td>
-                <td>{{ $visit->staff->phone }}</td>
-                <td>{{ $visit->staff->company->name }}</td>
-                <td>{{ $visit->fmtDate }}</td>
-                <td>{{ $visit->check_in }}</td>
-                <td>{{ $visit->check_out }}</td>
-                <td>{{ $visit->car_registration ? $visit->car_registration:'None' }}</td>
+                <td>{{ $checkin->site->name }}</td>
+                {{-- <td><a href="{{ route('admin.visitors.single', $checkin->visitor->id) }}">{{ $checkin->visitor->name }}</a></td> --}}
+                <td><a href="{{ route('admin.sites.staff', ['site_id' => $checkin->staff->company->site_id, 'company_id' => $checkin->staff->company->id, 'staff_id' => $checkin->staff->id]) }}">{{ $checkin->staff->name }}</a></td>
+                <td>{{ $checkin->staff->phone }}</td>
+                <td>{{ $checkin->staff->company->name }}</td>
+                <td>{{ $checkin->fmtDate }}</td>
+                <td>{{ $checkin->check_in }}</td>
+                <td>{{ $checkin->check_out }}</td>
+                <td>{{ $checkin->car_registration ? $checkin->car_registration:'None' }}</td>
             </tr>
             @endforeach
 

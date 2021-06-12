@@ -32,6 +32,11 @@ class Visitor extends Model
         return $this->hasMany(Visit::class)->today()->atSite()->gone();
     }
 
+
+    function vehicles(){
+        return $this->morphMany(Vehicle::class, 'vehicleable');
+    }
+
     function last_visit(){
         // For check out purpose
         // Visitor must not have checked out, and user checking them out must be on same site
@@ -53,13 +58,9 @@ class Visitor extends Model
         // Users who are already checked in at a site cannot
         $visit = $this->visits()
             ->latest('time_in')
-            ->whereHas('staff', function($q1){
-                $q1->whereHas('company', function($q2){
-                    $q2->where('site_id', auth('sanctum')->user()->site_id);
-                });
-            }) // seeing staff on same site as app user
-            ->where('time_out', null) // still (or suppossed to be) in
-            ->whereDate('time_in', Carbon::today()->format('Y-m-d')) // TODO Base on time in be current date
+            ->atSite()
+            ->stillIn()
+            ->today()
             ->first();
 
         // true means they are not checked in at the site
