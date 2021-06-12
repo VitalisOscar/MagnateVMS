@@ -101,6 +101,6 @@ class StaffCheckIn extends Model
 
     function getCarRegistrationAttribute(){
         $v = $this->vehicle;
-        return $v->registration_no ? $v->registration_no:null;
+        return $v ? $v->registration_no:null;
     }
 }
