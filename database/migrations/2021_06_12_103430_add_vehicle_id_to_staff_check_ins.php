@@ -27,8 +27,7 @@ class AddVehicleIdToStaffCheckIns extends Migration
     public function down()
     {
         Schema::table('staff_check_ins', function (Blueprint $table) {
-            $table->dropConstrainedForeignId('staff_check_ins_vehicle_id_foreign');
-            $table->dropColumn('vehicle_id');
+            $table->dropConstrainedForeignId('vehicle_id');
         });
     }
 }

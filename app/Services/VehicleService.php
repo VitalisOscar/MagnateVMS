@@ -31,4 +31,22 @@ class VehicleService{
 
         return false;
     }
+
+    function addCompanyVehicle($registration_no, $description){
+        $slug = strtoupper(str_replace(' ', '', $registration_no));
+
+        $vehicle = new Vehicle([
+            'registration_no' => preg_replace('/ +/', ' ', $registration_no),
+            'description' => $description,
+            'vehicleable_id' => null,
+            'vehicleable_type' => null,
+            'slug' => $slug
+        ]);
+
+        if($vehicle->save()){
+            return $vehicle;
+        }
+
+        return false;
+    }
 }

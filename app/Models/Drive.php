@@ -13,8 +13,10 @@ class Drive extends Model
 
     public $fillable = [
         'vehicle_id',
-        'driver_out_id',
-        'driver_in_id',
+        'driveable_out_id',
+        'driveable_out_type',
+        'driveable_in_id',
+        'driveable_in_type',
         'time_out',
         'time_in',
         'mileage_out',
@@ -27,7 +29,19 @@ class Drive extends Model
         return $this->belongsTo(Vehicle::class);
     }
 
-    function driver_in_(){
+    function driveable_in(){
+        return $this->morphTo();
+    }
 
+    function driveable_out(){
+        return $this->morphTo();
+    }
+
+    function scopeStillOut($q){
+        $q->where('time_in', null);
+    }
+
+    function isCheckedIn(){
+        return $this->time_in != null;
     }
 }

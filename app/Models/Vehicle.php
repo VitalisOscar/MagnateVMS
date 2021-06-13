@@ -22,4 +22,22 @@ class Vehicle extends Model
     function vehicleable(){
         return $this->morphTo();
     }
+
+    function drives(){
+        return $this->hasMany(Drive::class);
+    }
+
+    function last_drive(){
+        return $this->hasOne(Drive::class)->latest('time_out');
+    }
+
+    function isCompanyVehicle(){
+        return $this->vehicleable_type == null && $this->vehicleable_id == null;
+    }
+
+    function isOut(){
+        return $this->has('last_drive', function($q){
+            $q->stillOut();
+        });
+    }
 }

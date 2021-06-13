@@ -27,8 +27,8 @@ class AddVehicleIdToVisits extends Migration
     public function down()
     {
         Schema::table('visits', function (Blueprint $table) {
-            $table->dropConstrainedForeignId('visits_check_ins_vehicle_id_foreign');
-            $table->dropColumn('vehicle_id');
+            $table->dropConstrainedForeignId('vehicle_id');
+            // $table->dropColumn('vehicle_id');
         });
     }
 }

@@ -6,13 +6,14 @@ use App\Http\Controllers\Controller;
 use App\Models\Site;
 use App\Models\User;
 use App\Models\Vehicle;
+use App\Services\VehicleService;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
 class AddVehicleController extends Controller
 {
-    function __invoke(Request $request){
+    function __invoke(Request $request, VehicleService $vehicleService){
         $validator = validator($request->post(), [
             'description' => 'required',
             'registration_no' => 'required|unique:vehicles',
@@ -26,13 +27,10 @@ class AddVehicleController extends Controller
                 ->withErrors($validator->errors());
         }
 
-        $vehicle = new Vehicle([
-            'description' => $request->post('description'),
-            'registration_no' => $request->post('registration_no'),
-        ]);
-
         try{
-            if($vehicle->save()){
+            $vehicle = $vehicleService->addCompanyVehicle($request->post('registration_no'), $request->post('description'));
+
+            if($vehicle){
                 return back()
                     ->with(['status' => 'Vehicle has been added to the system']);
             }

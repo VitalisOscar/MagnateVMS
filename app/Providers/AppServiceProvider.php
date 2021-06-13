@@ -29,6 +29,7 @@ class AppServiceProvider extends ServiceProvider
         Relation::morphMap([
             'visitor' => Visitor::class,
             'staff' => Staff::class,
+            'driver' => Driver::class,
         ]);
     }
 }
