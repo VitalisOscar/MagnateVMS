@@ -31,6 +31,10 @@ class Vehicle extends Model
         return $this->hasOne(Drive::class)->latest('time_out');
     }
 
+    function scopeCompanyOwned($q){
+        $q->where('vehicleable_type', null);
+    }
+
     function isCompanyVehicle(){
         return $this->vehicleable_type == null && $this->vehicleable_id == null;
     }

@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\Staff\StaffController;
 use App\Http\Controllers\Api\VisitEnquiryController;
 use App\Http\Controllers\Api\Vehicle\VehicleCheckInController;
 use App\Http\Controllers\Api\Vehicle\VehicleCheckOutController;
+use App\Http\Controllers\Api\Vehicle\GetVehiclesController;
 use App\Http\Controllers\Api\Visitor\VisitorCheckInController;
 use App\Http\Controllers\Api\Visitor\VisitorCheckOutController;
 use App\Http\Controllers\Api\Visitor\VisitorEnquiryController;
@@ -47,6 +48,8 @@ Route::prefix('user')->group(function(){
 
         Route::get('summary', [SummaryController::class, 'basic'])->name('api.get.summary');
         Route::get('sites', [SummaryController::class, 'getSites'])->name('api.get.sites');
+
+        Route::get('company-vehicles', [GetVehiclesController::class, 'company'])->name('api.get.vehicles.company');
     });
 
     Route::prefix('history')->group(function(){
