@@ -13,6 +13,7 @@ use App\Http\Controllers\Api\Staff\StaffCheckInController;
 use App\Http\Controllers\Api\Staff\StaffCheckOutController;
 use App\Http\Controllers\Api\Staff\StaffRecordsController;
 use App\Http\Controllers\Api\SummaryController;
+use App\Http\Controllers\Api\Vehicle\GetDriversController;
 use App\Http\Controllers\Api\Visitor\AccessCardController;
 use App\Http\Controllers\Api\Visitor\VisitorRecordsController;
 use Illuminate\Http\Request;
@@ -50,7 +51,7 @@ Route::prefix('user')->group(function(){
         Route::get('sites', [SummaryController::class, 'getSites'])->name('api.get.sites');
 
         Route::get('company-vehicles', [GetVehiclesController::class, 'company'])->name('api.get.vehicles.company');
-        Route::get('drivers', [GetVehiclesController::class, 'company'])->name('api.get.drivers');
+        Route::get('drivers', GetDriversController::class)->name('api.get.drivers');
     });
 
     Route::prefix('history')->group(function(){
