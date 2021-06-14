@@ -50,6 +50,7 @@ Route::prefix('user')->group(function(){
         Route::get('sites', [SummaryController::class, 'getSites'])->name('api.get.sites');
 
         Route::get('company-vehicles', [GetVehiclesController::class, 'company'])->name('api.get.vehicles.company');
+        Route::get('drivers', [GetVehiclesController::class, 'company'])->name('api.get.drivers');
     });
 
     Route::prefix('history')->group(function(){
