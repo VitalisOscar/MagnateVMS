@@ -93,10 +93,10 @@
                     $out = 'Not Captured';
                     if($drive->driveable_out_type == 'driver'){
                         $out = $drive->driveable_out->name.' - '.$drive->driveable_out->department;
-                        $out_link = route('admin.vehicles.drivers.single', $drive->driveable_out->id);
+                        // $out_link = route('admin.vehicles.drivers.single', $drive->driveable_out->id);
                     }else if($drive->driveable_out_type == 'staff'){
                         $out = $drive->driveable_out->name.' (Staff)';
-                        $out_link = route('admin.staff', $drive->driveable_out->id);
+                        // $out_link = route('admin.staff', $drive->driveable_out->id);
                     }
                 @endphp
 
