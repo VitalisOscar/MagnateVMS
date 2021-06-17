@@ -101,11 +101,11 @@
                 @endphp
 
                 <td>{{ $out }}</td>
-                <td>{{ number_format($drive->fuel_out) }}</td>
-                <td>{{ number_format($drive->fuel_in) }}</td>
+                <td>{{ $drive->fuel_out ? number_format($drive->fuel_out):'-' }}</td>
+                <td>{{ $drive->fuel_in ? number_format($drive->fuel_in):'-' }}</td>
 
-                <td>{{ number_format($drive->mileage_out) }}</td>
-                <td>{{ number_format($drive->mileage_in) }}</td>
+                <td>{{ $drive->mileage_out ? number_format($drive->mileage_out):'-' }}</td>
+                <td>{{ $drive->mileage_in ? number_format($drive->mileage_in):'-' }}</td>
 
                 <td>{{ $drive->check_in }}</td>
 
