@@ -108,7 +108,7 @@ $current_route = \Illuminate\Support\Facades\Route::current()->getName();
                     <!-- Company Vehicles -->
                     <div class="nav-group">
                         <h4 class="sidebar-heading text-muted" data-toggle="collapse" data-target="#nav-vehicles">
-                            Company Vehicles
+                            Vehicles
                             <i class="fa fa-chevron-down float-right toggle-icon"></i>
                         </h4>
 
@@ -116,7 +116,28 @@ $current_route = \Illuminate\Support\Facades\Route::current()->getName();
                             <li class="nav-item">
                                 <a class="nav-link @if($current_route == 'admin.vehicles'){{ __('active') }}@endif " href="{{ route('admin.vehicles') }}">
                                     <i class="fa fa-car text-default mr-1"></i>
-                                    <span class="nav-link-text">Vehicles</span>
+                                    <span class="nav-link-text">Company Vehicles</span>
+                                </a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a class="nav-link @if($current_route == 'admin.vehicles.history'){{ __('active') }}@endif " href="{{ route('admin.vehicles.history') }}">
+                                    <i class="fa fa-car text-default mr-1"></i>
+                                    <span class="nav-link-text">In/Out History</span>
+                                </a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a class="nav-link @if($current_route == 'admin.vehicles.other'){{ __('active') }}@endif " href="{{ route('admin.vehicles.other') }}">
+                                    <i class="fa fa-car text-default mr-1"></i>
+                                    <span class="nav-link-text">Other Vehicles</span>
+                                </a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a class="nav-link @if($current_route == 'admin.vehicles.drivers'){{ __('active') }}@endif " href="{{ route('admin.vehicles.drivers') }}">
+                                    <i class="fa fa-user text-default mr-1"></i>
+                                    <span class="nav-link-text">Drivers</span>
                                 </a>
                             </li>
 

@@ -50,7 +50,9 @@ Route::prefix('admin')
 
     // Vehicles
     Route::prefix('vehicles')->group(function () {
-        Route::get('', \App\Http\Controllers\Admin\Vehicles\GetVehiclesController::class)->name('admin.vehicles');
+        Route::get('company', [\App\Http\Controllers\Admin\Vehicles\GetVehiclesController::class, 'company'])->name('admin.vehicles');
+        Route::get('company/activity', [\App\Http\Controllers\Admin\Vehicles\VehicleActivityController::class, 'company'])->name('admin.vehicles.history');
+        Route::get('other', [\App\Http\Controllers\Admin\Vehicles\GetVehiclesController::class, 'other'])->name('admin.vehicles.other');
         Route::view('add', 'admin.vehicles.add')->name('admin.vehicles.add');
         Route::post('add', \App\Http\Controllers\Admin\Vehicles\AddVehicleController::class)->name('admin.vehicles.add');
         Route::get('{vehicle_id}', [\App\Http\Controllers\Admin\Vehicles\SingleVehicleController::class, 'get'])->name('admin.vehicles.single');
@@ -87,8 +89,12 @@ Route::prefix('admin')
     // Exports
     Route::prefix('exports')->group(function () {
         Route::get('visits', [\App\Http\Controllers\Admin\Visitors\VisitsController::class, 'export'])->name('admin.exports.visits');
+        Route::get('visitors', [\App\Http\Controllers\Admin\Visitors\GetVisitorsController::class, 'export'])->name('admin.exports.visitors');
         Route::get('visits/by/{visitor_id}', [\App\Http\Controllers\Admin\Visitors\SingleVisitorController::class, 'export'])->name('admin.exports.visits.single');
         Route::get('checkins', [\App\Http\Controllers\Admin\Staff\StaffCheckInController::class, 'export'])->name('admin.exports.checkins');
+        Route::get('company_vehicles', [\App\Http\Controllers\Admin\Vehicles\GetVehiclesController::class, 'exportCompany'])->name('admin.exports.vehicles');
+        Route::get('company_vehicles/activity', [\App\Http\Controllers\Admin\Vehicles\VehicleActivityController::class, 'exportCompany'])->name('admin.exports.company_vehicles_activity');
+        Route::get('other_vehicles', [\App\Http\Controllers\Admin\Vehicles\GetVehiclesController::class, 'exportOther'])->name('admin.exports.other_vehicles');
     });
 
     // History

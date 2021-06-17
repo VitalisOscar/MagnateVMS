@@ -16,7 +16,7 @@
     <div class="">
 
         <div class="px-4 py-3 d-flex align-items-center">
-            <h4 class="font-weight-600 mb-0">Most Recent Logins</h4>
+            <h4 class="font-weight-600 mb-0">Activity</h4>
             <a href="" class="ml-auto btn btn-primary btn-sm shadow-none">View All</a>
         </div>
 

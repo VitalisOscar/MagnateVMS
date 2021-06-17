@@ -17,7 +17,7 @@ class CreateVisitsTable extends Migration
             $table->id();
             $table->foreignId('visitor_id')->constrained('visitors');
             $table->foreignId('staff_id')->constrained('staff');
-	    $table->foreignId('site_id')->constrained('sites');
+	        $table->foreignId('site_id')->constrained('sites');
             $table->string('reason');
             $table->dateTime('time_in')->useCurrent();
             $table->dateTime('time_out')->nullable();

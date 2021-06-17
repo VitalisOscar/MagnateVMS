@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -29,6 +30,14 @@ class Drive extends Model
         return $this->belongsTo(Vehicle::class);
     }
 
+    function check_in_user(){
+        return $this->belongsTo(User::class, 'checked_in_by');
+    }
+
+    function check_out_user(){
+        return $this->belongsTo(User::class, 'checked_out_by');
+    }
+
     function driveable_in(){
         return $this->morphTo();
     }
@@ -43,5 +52,27 @@ class Drive extends Model
 
     function isCheckedIn(){
         return $this->time_in != null;
+    }
+
+    function getCheckInAttribute(){
+        if($this->check_in_user == null){
+            return 'Not Captured';
+        }
+
+        $in = Carbon::createFromTimeString($this->time_in);
+
+        $u = $this->check_in_user;
+        return $in->format('Y-m-d H:i').' (by '.$u->name.')';
+    }
+
+    function getCheckOutAttribute(){
+        if($this->check_out_user == null){
+            return 'Not Captured';
+        }
+
+        $out = Carbon::createFromTimeString($this->time_out);
+
+        $u = $this->check_out_user;
+        return $out->format('Y-m-d H:i').' (by '.$u->name.')';
     }
 }

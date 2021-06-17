@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Models\Driver;
 use App\Models\Staff;
 use App\Models\Visitor;
 use Illuminate\Database\Eloquent\Relations\Relation;

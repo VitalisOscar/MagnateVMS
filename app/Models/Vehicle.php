@@ -31,8 +31,34 @@ class Vehicle extends Model
         return $this->hasOne(Drive::class)->latest('time_out');
     }
 
+    function getOwnerTypeAttribute(){
+        if($this->isCompanyVehicle()) return 'Company';
+
+        if($this->vehicleable_type == 'staff') return 'Staff';
+
+        return 'Visitor';
+    }
+
+    function getOwnerNameAttribute(){
+        if($this->isCompanyVehicle()) return 'Company';
+
+        return $this->vehicleable->name;
+    }
+
     function scopeCompanyOwned($q){
         $q->where('vehicleable_type', null);
+    }
+
+    function scopeStaffOwned($q){
+        $q->where('vehicleable_type', 'staff');
+    }
+
+    function scopeVisitorOwned($q){
+        $q->where('vehicleable_type', 'visitor');
+    }
+
+    function scopeOtherOwned($q){
+        $q->where('vehicleable_type', '<>', null);
     }
 
     function isCompanyVehicle(){
