@@ -48,13 +48,6 @@ $current_route = \Illuminate\Support\Facades\Route::current()->getName();
                             </a>
                         </li>
 
-                        <li class="nav-item">
-                            <a class="nav-link @if($current_route == 'admin.history.logins'){{ __('active') }}@endif " href="{{ route('admin.history.logins') }}">
-                                <i class="fa fa-user text-info mr-1"></i>
-                                <span class="nav-link-text">Login History</span>
-                            </a>
-                        </li>
-
                     </ul>
 
                     <!-- Users -->
@@ -64,7 +57,7 @@ $current_route = \Illuminate\Support\Facades\Route::current()->getName();
                             <i class="fa fa-chevron-down float-right toggle-icon"></i>
                         </h4>
 
-                        <ul class="navbar-nav collapse @if(preg_match('/admin\.users/', $current_route)){{ __('show') }}@endif" id="nav-users">
+                        <ul class="navbar-nav collapse @if(preg_match('/admin\.users/', $current_route) || $current_route == 'admin.history.logins'){{ __('show') }}@endif" id="nav-users">
                             <li class="nav-item">
                                 <a class="nav-link @if($current_route == 'admin.users'){{ __('active') }}@endif " href="{{ route('admin.users') }}">
                                     <i class="fa fa-user-circle text-default mr-1"></i>
@@ -76,6 +69,13 @@ $current_route = \Illuminate\Support\Facades\Route::current()->getName();
                                 <a class="nav-link @if($current_route == 'admin.users.add'){{ __('active') }}@endif " href="{{ route('admin.users.add') }}">
                                     <i class="fa fa-user-plus text-default mr-1"></i>
                                     <span class="nav-link-text">Add User</span>
+                                </a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a class="nav-link @if($current_route == 'admin.history.logins'){{ __('active') }}@endif " href="{{ route('admin.history.logins') }}">
+                                    <i class="fa fa-user text-info mr-1"></i>
+                                    <span class="nav-link-text">Login History</span>
                                 </a>
                             </li>
                         </ul>
@@ -177,22 +177,15 @@ $current_route = \Illuminate\Support\Facades\Route::current()->getName();
                     <!-- Stats -->
                     <div class="nav-group">
                         <h4 class="sidebar-heading text-muted" data-toggle="collapse" data-target="#nav-stats">
-                            Stats
+                            More
                             <i class="fa fa-chevron-down float-right toggle-icon"></i>
                         </h4>
 
-                        <ul class="navbar-nav collapse @if(preg_match('/admin\.visitors/', $current_route)){{ __('show') }}@endif" id="nav-stats">
+                        <ul class="navbar-nav collapse show" id="nav-stats">
                             <li class="nav-item">
-                                <a class="nav-link @if($current_route == 'admin.sites'){{ __('active') }}@endif " href="{{ route('admin.sites') }}">
+                                <a class="nav-link @if($current_route == 'admin.staff.checkins'){{ __('active') }}@endif " href="{{ route('admin.staff.checkins') }}">
                                     <i class="fa fa-map-marker text-default mr-1"></i>
-                                    <span class="nav-link-text">Staff</span>
-                                </a>
-                            </li>
-
-                            <li class="nav-item">
-                                <a class="nav-link @if($current_route == 'admin.sites.add'){{ __('active') }}@endif " href="{{ route('admin.sites.add') }}">
-                                    <i class="fa fa-plus-square text-default mr-1"></i>
-                                    <span class="nav-link-text">Statistics</span>
+                                    <span class="nav-link-text">Staff Checkins</span>
                                 </a>
                             </li>
                         </ul>
@@ -263,40 +256,44 @@ $current_route = \Illuminate\Support\Facades\Route::current()->getName();
             }
         </style>
         <div class="nav-inner">
-            <div class="col-lg-11 col-xl-11 d-flex align-items-center mx-auto">
+            <div class="my-3 mx-4 d-flex align-items-center">
                 <h3 class="mb-0 d-flex align-items-center font-weight-600 page-heading" style="color: #fff !important">
-                    @yield('page_icon', '')
+                    @hasSection('page_icon')
+                        <span class="mr-3 d-inline-flex">
+                            @yield('page_icon', '')
+                        </span>
+                    @endif
                     @yield('page_heading', 'Dashboard')
                 </h3>
-
-                <div class="dropdown float-right ml-auto">
-                    <ul class="dropdown-menu">
-                        <li class="dropdown-item py-0">
-                            <a href="" class="py-3 d-flex align-items-center text-border">
-                                <i class="fa fa-lock mr-3 text-success"></i>Change Password
-                            </a>
-                        </li>
-
-                        <li class="dropdown-divider my-0"></li>
-
-                        <li class="dropdown-item py-0">
-                            <a href="" class="py-3 d-flex align-items-center text-border">
-                                <i class="fa fa-power-off mr-3 text-danger"></i>Log Out
-                            </a>
-                        </li>
-                    </ul>
-
-                    <div class="float-right ml-auto d-flex align-items-center dropdown-toggle btn btn-outline-white py-2" data-toggle="dropdown">
-                        Administrator
-                    </div>
-                </div>
             </div>
         </div>
 
     </nav>
 
+    <div class="dropdown float-right ml-auto position-absolute top-0 right-0 m-3 user-menu" style="z-index: 110">
+        <ul class="dropdown-menu">
+            <li class="dropdown-item py-0">
+                <a href="" class="py-3 d-flex align-items-center text-border">
+                    <i class="fa fa-lock mr-3 text-success"></i>Change Password
+                </a>
+            </li>
+
+            <li class="dropdown-divider my-0"></li>
+
+            <li class="dropdown-item py-0">
+                <a href="" class="py-3 d-flex align-items-center text-border">
+                    <i class="fa fa-power-off mr-3 text-danger"></i>Log Out
+                </a>
+            </li>
+        </ul>
+
+        <div class="float-right ml-auto d-flex align-items-center dropdown-toggle btn btn-outline btn-link text-white px-2 py-2" data-toggle="dropdown">
+            <i class="fa fa-user-circle mr-2"></i>{{ auth('admin')->user()->name }}
+        </div>
+    </div>
+
     <div class="py-4 px-3 content">
-        <div class="col-lg-11 col-xl-11 mx-auto" style="">
+        <div class="col-lg-12 col-xl-12 mx-auto" style="">
             @yield('content')
         </div>
     </div>

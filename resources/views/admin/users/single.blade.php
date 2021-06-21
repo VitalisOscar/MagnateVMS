@@ -12,46 +12,9 @@
     <a class="breadcrumb-item active">{{ $user->name }}</a>
 </div>
 
-<div class="bg-white border rounded mb-4">
-    <div class="">
+<div class="bg-white border rounded mb-4 p-4">
 
-        <div class="px-4 py-3 d-flex align-items-center">
-            <h4 class="font-weight-600 mb-0">Most Recent Logins</h4>
-            <a href="" class="ml-auto btn btn-primary btn-sm shadow-none">View All</a>
-        </div>
-
-        <table class="table">
-            <tr class="card-header">
-                <th>Site</th>
-                <th>Time</th>
-                <th>Outcome</th>
-            </tr>
-
-            @if (count($recent_logins) == 0)
-            <tr>
-                <td colspan="3">
-                    <p class="my-0">
-                        {{ $user->name }} has not logged in recently at any site
-                    </p>
-                </td>
-            </tr>
-            @endif
-
-            @foreach ($recent_logins as $login)
-            <tr>
-                <td>{{ $login->site->name }}</td>
-                <td>{{ $login->time }}</td>
-                <td>{{ $login->status }}</td>
-            </tr>
-            @endforeach
-        </table>
-
-    </div>
-</div>
-
-<h4 class="font-weight-600">Account Info</h4>
-
-<div class="bg-white border rounded mb-4 p-4" id="options">
+    <h4 class="font-weight-600 mb-3">Account Info</h4>
 
     <form action="{{ route('admin.users.update', $user->username) }}" method="post">
         @csrf
@@ -134,34 +97,6 @@
 
     </form>
 
-</div>
-
-<div class="bg-white border rounded mb-4">
-    <div class="">
-
-        <div class="px-4 py-3 d-flex align-items-center">
-            <h4 class="font-weight-600 mb-0">Recent Activity</h4>
-            <a href="" class="ml-auto btn btn-primary btn-sm shadow-none">View All</a>
-        </div>
-
-        <table class="table">
-            <tr class="card-header">
-                <th>#</th>
-                <th>Site</th>
-                <th>Time</th>
-                <th>Outcome</th>
-            </tr>
-
-            <tr>
-                <td colspan="4">
-                    <p class="my-0">
-                        {{ $user->name }} has not logged in recently at any site
-                    </p>
-                </td>
-            </tr>
-        </table>
-
-    </div>
 </div>
 
 @endsection

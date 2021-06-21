@@ -2,6 +2,10 @@
 
 @section('title', 'Add and Manage Company vehicles')
 
+@section('page_icon')
+<i class="fa fa-car"></i>
+@endsection
+
 @section('page_heading', 'Company Vehicles')
 
 @section('content')

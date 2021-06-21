@@ -110,6 +110,10 @@ class Visit extends Model
         return substr($t->monthName, 0, 3).' '.$t->day.', '.$t->year.' at '.$t->format('H:i');
     }
 
+    function getDateAttribute(){
+        return Carbon::createFromTimeString($this->time_in)->format('Y-m-d');
+    }
+
     function getHostAttribute(){
         $staff = $this->staff;
 

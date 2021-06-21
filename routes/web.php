@@ -3,7 +3,7 @@
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('admin')
-// ->middleware('auth:admin')
+->middleware('auth:admin')
 ->group(function () {
 
     Route::view('login', 'admin.auth.login')->withoutMiddleware('auth:admin')->name('admin.login');
@@ -88,6 +88,7 @@ Route::prefix('admin')
 
     // Exports
     Route::prefix('exports')->group(function () {
+        Route::get('logins', [\App\Http\Controllers\Admin\History\LoginHistoryController::class, 'export'])->name('admin.exports.logins');
         Route::get('visits', [\App\Http\Controllers\Admin\Visitors\VisitsController::class, 'export'])->name('admin.exports.visits');
         Route::get('visitors', [\App\Http\Controllers\Admin\Visitors\GetVisitorsController::class, 'export'])->name('admin.exports.visitors');
         Route::get('visits/by/{visitor_id}', [\App\Http\Controllers\Admin\Visitors\SingleVisitorController::class, 'export'])->name('admin.exports.visits.single');
@@ -95,14 +96,12 @@ Route::prefix('admin')
         Route::get('company_vehicles', [\App\Http\Controllers\Admin\Vehicles\GetVehiclesController::class, 'exportCompany'])->name('admin.exports.vehicles');
         Route::get('company_vehicles/activity', [\App\Http\Controllers\Admin\Vehicles\VehicleActivityController::class, 'exportCompany'])->name('admin.exports.company_vehicles_activity');
         Route::get('other_vehicles', [\App\Http\Controllers\Admin\Vehicles\GetVehiclesController::class, 'exportOther'])->name('admin.exports.other_vehicles');
+        Route::get('other_vehicles/{vehicle_id}/activity', [\App\Http\Controllers\Admin\Vehicles\SingleVehicleController::class, 'exportOtherActivity'])->name('admin.exports.other_vehicles_activity');
     });
 
-    // History
-
-
-    // Stats
-
-
-    // Admin
+    // Imports
+    Route::prefix('imports')->group(function () {
+        Route::post('staff/{site_id}/{company_id}', [\App\Http\Controllers\Admin\Staff\StaffController::class, 'import'])->name('admin.imports.staff');
+    });
 
 });

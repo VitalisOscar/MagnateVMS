@@ -21,9 +21,9 @@ class Login extends Model
     public $timestamps = false;
 
     public $fillable = [
-        'type',
         'credential',
-        'identifier',
+        'user_id',
+        'user_type',
         'user_agent',
         'site_id',
         'ip_address',
@@ -35,12 +35,7 @@ class Login extends Model
     }
 
     function user(){
-        // if($this->type == self::TYPE_USER)
-        return $this->belongsTo(User::class, 'identifier');
-    }
-
-    function admin(){
-        return $this->belongsTo(User::class, 'identifier');
+        return $this->morphTo();
     }
 
     function scopeSuccessful($q){
@@ -48,16 +43,16 @@ class Login extends Model
     }
 
     function scopeByUser($q){
-        $q->whereType(self::TYPE_USER);
+        $q->whereUserType(self::TYPE_USER);
     }
 
     function scopeByAdmin($q){
-        $q->whereType(self::TYPE_ADMIN);
+        $q->whereUserType(self::TYPE_ADMIN);
     }
 
-    function getTimeAttribute($val){
+    function getLoginTimeAttribute(){
         /** @var Carbon */
-        $t = Carbon::createFromTimeString($val);
+        $t = Carbon::createFromTimeString($this->time);
         $now = Carbon::now();
 
         if($t->isToday()){

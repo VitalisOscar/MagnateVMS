@@ -39,7 +39,7 @@
         </div>
 
         <form class="px-4 pb-3 d-flex align-items-center">
-            <input type="search" name="keyword" class="form-control bg-white mr-3" placeholder="Seach here..." value="{{ $r->filled('keyword') ? $r->get('keyword'):'' }}">
+            <input type="search" name="keyword" class="form-control bg-white mr-3" placeholder="Vehicle, Driver..." value="{{ $r->filled('keyword') ? $r->get('keyword'):'' }}">
 
             <input type="readonly" placeholder="Any Date" id="flatpickr" class="form-control flatpickr mr-3" name="date" value="{{ $dates }}">
 
@@ -86,7 +86,7 @@
 
             @foreach ($result->items as $drive)
             <tr>
-                <td>{{ $drive->vehicle->registration_no.' ('.$drive->vehicle->description.')' }}</td>
+                <td><a href="{{ route('admin.vehicles.single', $drive->vehicle->id) }}">{{ $drive->vehicle->registration_no.' ('.$drive->vehicle->description.')' }}</a></td>
                 <td>{{ $drive->check_out }}</td>
 
                 @php

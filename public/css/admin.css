@@ -161,11 +161,10 @@ nav.header{
 }
 
 nav.header .nav-inner{
-    height: 55px;
+    /* height: 55px; */
     display: flex;
     align-items: center;
-    background: linear-gradient(#0002, #0001, #0000);
-    padding: 2.5rem 1rem 0;
+    background: linear-gradient(#0003, #0002);
 }
 
 
@@ -229,4 +228,17 @@ nav.header .nav-inner{
 .breadcrumb-item+.breadcrumb-item::before {
     color: #ddd;
     content: "/";
+}
+
+.dropdown-menu{
+    /* position: relative; */
+    z-index: 10000;
+}
+
+.dropdown-item{
+    padding: 0 !important;
+}
+
+.dropdown-item>a{
+    padding: .75rem 1rem !important;
 }

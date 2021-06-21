@@ -93,6 +93,20 @@
         </div>
     </div>
 
+    <hr class="my-4">
+
+    <h4 class="font-weight-600">Import From File</h4>
+    <p class="mt-0">
+        Import multiple staff members from an excel or csv file. Ensure that the file has columns labelled 'Name' and 'Phone'. The headings should be on the first row
+    </p>
+
+    <form action="{{ route('admin.imports.staff', ['site_id' => $company->site->id, 'company_id' => $company->id]) }}" method="post" enctype="multipart/form-data">
+        @csrf
+        <input type="file" name="import" class="form-control-file mb-3" required>
+{{ json_encode($errors->all()) }}
+        <button class="btn btn-white shadow-sm"><i class="fa fa-upload"></i> Import</button>
+    </form>
+
 </div>
 
 @endsection

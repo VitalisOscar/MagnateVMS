@@ -34,6 +34,10 @@ class VehicleActivityController extends Controller
                 ->orWhereHas('driveable_in', function($q2) use($request){
                     $k = '%'.$request->get('keyword').'%';
                     $q2->where('name', 'like', $k);
+                })
+                ->orWhereHas('driveable_out', function($q2) use($request){
+                    $k = '%'.$request->get('keyword').'%';
+                    $q2->where('name', 'like', $k);
                 });
             });
         }

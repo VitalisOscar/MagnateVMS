@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin\Sites;
 
+use App\Helpers\ResultSet;
 use App\Http\Controllers\Controller;
 use App\Models\Company;
 use App\Models\Site;
@@ -15,7 +16,6 @@ class SingleCompanyController extends Controller
         $company = Company::whereId($company_id)
             ->whereSiteId($site_id)
             ->withCount('staff')
-            ->with('staff')
             ->first();
 
         if($company == null){
@@ -23,7 +23,8 @@ class SingleCompanyController extends Controller
         }
 
         return response()->view('admin.companies.single', [
-            'company' => $company
+            'company' => $company,
+            'result' => new ResultSet($company->staff(), 15)
         ]);
     }
 

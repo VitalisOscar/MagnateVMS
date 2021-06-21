@@ -38,7 +38,7 @@ class User extends Authenticatable
     }
 
     function logins(){
-        return $this->hasMany(Login::class, 'identifier');
+        return $this->morphMany(Login::class, 'user');
     }
 
     function last_login(){

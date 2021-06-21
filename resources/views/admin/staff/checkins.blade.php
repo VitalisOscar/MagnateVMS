@@ -59,6 +59,7 @@
             </div>
 
             <div class="d-flex align-items-center">
+                <input type="search" name="keyword" class="form-control bg-white mr-3" placeholder="Name, Phone Number..." value="{{ $r->filled('keyword') ? $r->get('keyword'):'' }}">
 
                 <input type="readonly" placeholder="Any Date" id="flatpickr" class="form-control flatpickr mr-3 w-auto" name="date" value="{{ $dates }}">
 

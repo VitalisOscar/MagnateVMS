@@ -47,7 +47,7 @@
             @php
                 $i = 1;
             @endphp
-            @foreach ($company->staff as $staff)
+            @foreach ($result->items as $staff)
             <tr>
                 <td style="text-align: center">{{ $i }}</td>
                 <td>
@@ -64,6 +64,22 @@
                 $i++;
             @endphp
             @endforeach
+
+            @php
+                $route = \Illuminate\Support\Facades\Route::current();
+                $prev = array_merge($route->parameters, $r->except('page'), ['page' => $result->prev_page]);
+                $next = array_merge($route->parameters, $r->except('page'), ['page' => $result->next_page]);
+            @endphp
+
+            <tr>
+                <td colspan="5">
+                    <div class="d-flex align-items-center">
+                        <a href="{{ route($route->getName(), $prev) }}" class="@if(!$result->hasPreviousPage()){{ __('disabled') }}@endif mr-auto btn btn-link p-0"><i class="fa fa-angle-double-left"></i>&nbsp;Prev</a>
+                        <span>{{ 'Page '.$result->page.' of '.$result->max_pages }}</span>
+                        <a href="{{ route($route->getName(), $next) }}" class="@if(!$result->hasNextPage()){{ __('disabled') }}@endif ml-auto btn btn-link p-0">Next&nbsp;<i class="fa fa-angle-double-right"></i></a>
+                    </div>
+                </td>
+            </tr>
 
             @endif
         </table>

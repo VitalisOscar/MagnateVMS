@@ -28,7 +28,7 @@ class AuthController extends Controller
 
         // Login tracking
         $login = new Login([
-            'type' => Login::TYPE_USER,
+            'user_type' => 'user',
             'credential' => $request->get('username'),
             'site_id' => $site->id,
             'user_agent' => $request->userAgent(),
@@ -38,7 +38,7 @@ class AuthController extends Controller
         /** @var User */
         $user = User::where('username', $request->get('username'))->first();
 
-        $login->identifier = $user->id;
+        $login->user_id = $user->id;
 
         if($user == null){
             $login->status = Login::STATUS_INVALID_CREDENTIAL;

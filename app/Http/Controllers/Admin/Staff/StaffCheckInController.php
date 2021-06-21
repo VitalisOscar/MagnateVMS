@@ -25,6 +25,13 @@ class StaffCheckInController extends Controller
         if($order == 'past') $q->oldest('time_in');
         else $q->latest('time_in');
 
+        if($request->filled('keyword')){
+            $k = '%'.$request->get('keyword').'%';
+            $q->whereHas('staff', function($q2) use($k){
+                $q2->where('name', 'like', $k);
+            });
+        }
+
 
         $dates = null;
 

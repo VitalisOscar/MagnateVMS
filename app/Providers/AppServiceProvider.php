@@ -2,8 +2,10 @@
 
 namespace App\Providers;
 
+use App\Models\Admin;
 use App\Models\Driver;
 use App\Models\Staff;
+use App\Models\User;
 use App\Models\Visitor;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\ServiceProvider;
@@ -31,6 +33,8 @@ class AppServiceProvider extends ServiceProvider
             'visitor' => Visitor::class,
             'staff' => Staff::class,
             'driver' => Driver::class,
+            'user' => User::class,
+            'admin' => Admin::class,
         ]);
     }
 }
