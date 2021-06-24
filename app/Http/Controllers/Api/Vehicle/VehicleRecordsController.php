@@ -21,14 +21,14 @@ class VehicleRecordsController extends Controller
         $from_visits = Visit::query()
             ->select(['time_in', 'time_out', 'vehicle_id'])
             ->atSite()
-            ->whereHas('vehicle')
+            ->where('vehicle_id', '<>', null)
             ->whereDate('time_in', $date)
             ->with('vehicle', 'vehicle.vehicleable');
 
         $from_staff = StaffCheckIn::query()
             ->select(['time_in', 'time_out', 'vehicle_id'])
             ->atSite()
-            ->whereHas('vehicle')
+            ->where('vehicle_id', '<>', null)
             ->whereDate('time_in', $date)
             ->with('vehicle', 'vehicle.vehicleable');
 
