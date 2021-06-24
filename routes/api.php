@@ -14,6 +14,7 @@ use App\Http\Controllers\Api\Staff\StaffCheckOutController;
 use App\Http\Controllers\Api\Staff\StaffRecordsController;
 use App\Http\Controllers\Api\SummaryController;
 use App\Http\Controllers\Api\Vehicle\GetDriversController;
+use App\Http\Controllers\Api\Vehicle\VehicleRecordsController;
 use App\Http\Controllers\Api\Visitor\AccessCardController;
 use App\Http\Controllers\Api\Visitor\VisitorRecordsController;
 use Illuminate\Http\Request;
@@ -57,6 +58,7 @@ Route::prefix('user')->group(function(){
     Route::prefix('history')->group(function(){
         Route::get('visitors', VisitorRecordsController::class)->name('api.records.visitor');
         Route::get('staff', StaffRecordsController::class)->name('api.records.staff');
+        Route::get('vehicles', VehicleRecordsController::class)->name('api.records.vehicles');
     });
 
     Route::prefix('cards')->group(function(){

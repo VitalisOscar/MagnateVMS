@@ -103,7 +103,7 @@
     <form action="{{ route('admin.imports.staff', ['site_id' => $company->site->id, 'company_id' => $company->id]) }}" method="post" enctype="multipart/form-data">
         @csrf
         <input type="file" name="import" class="form-control-file mb-3" required>
-{{ json_encode($errors->all()) }}
+
         <button class="btn btn-white shadow-sm"><i class="fa fa-upload"></i> Import</button>
     </form>
 

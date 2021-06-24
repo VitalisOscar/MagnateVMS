@@ -110,6 +110,21 @@ class Visit extends Model
         return substr($t->monthName, 0, 3).' '.$t->day.', '.$t->year.' at '.$t->format('H:i');
     }
 
+    function getFmtDateAttribute(){
+        $t = Carbon::createFromTimeString($this->time_in);
+
+        if($t->isToday()){
+            return 'Today';
+        }else if($t->isYesterday()){
+            return 'Yesterday';
+        }
+
+        if($t->isCurrentYear())
+        return substr($t->monthName, 0, 3).' '.$t->day;
+
+        return substr($t->monthName, 0, 3).' '.$t->day.', '.$t->year;
+    }
+
     function getDateAttribute(){
         return Carbon::createFromTimeString($this->time_in)->format('Y-m-d');
     }

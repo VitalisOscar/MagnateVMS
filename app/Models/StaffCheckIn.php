@@ -73,7 +73,7 @@ class StaffCheckIn extends Model
             return 'Yesterday';
         }
 
-        if($t->isCurrentYear())
+        if($t->isCurrentYear ())
         return substr($t->monthName, 0, 3).' '.$t->day;
 
         return substr($t->monthName, 0, 3).' '.$t->day.', '.$t->year;
