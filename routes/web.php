@@ -6,8 +6,16 @@ Route::prefix('admin')
 ->middleware('auth:admin')
 ->group(function () {
 
+    Route::get('logout', function(){
+        auth('admin')->logout();
+        return redirect()->route('admin.login');
+    })->name('admin.logout');
+
     Route::view('login', 'admin.auth.login')->withoutMiddleware('auth:admin')->name('admin.login');
     Route::post('login', \App\Http\Controllers\Admin\Auth\LoginController::class)->withoutMiddleware('auth:admin')->name('admin.login');
+
+    Route::view('password', 'admin.auth.change-password')->name('admin.change_password');
+    Route::post('password', [\App\Http\Controllers\Admin\Auth\PasswordController::class, 'change'])->name('admin.change_password');
 
     Route::view('dashboard', 'admin.dashboard')->name('admin.dashboard');
 

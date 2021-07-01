@@ -21,13 +21,22 @@ $current_route = \Illuminate\Support\Facades\Route::current()->getName();
     <div class="scroll-wrapper">
 
         <div class="sidebar-header">
-            <a class="navbar-brand" href=""><strong class="text-white">{{ config('app.name') }}</strong></a>
+            <a class="navbar-brand" href="{{ route('admin.dashboard') }}"><strong class="text-white">{{ config('app.name') }}</strong></a>
         </div>
 
         <div class="scroll-inner">
 
             <style>
                 .navbar-nav{margin-bottom: .5rem}
+
+                .sidebar-heading i{
+                    transition: .3s all !important;
+                    transform: rotate(-90deg);
+                }
+
+                .sidebar-heading.open i{
+                    transform: rotate(0deg);
+                }
             </style>
 
             <div class="sidebar-inner py-3">
@@ -41,18 +50,11 @@ $current_route = \Illuminate\Support\Facades\Route::current()->getName();
                             </a>
                         </li>
 
-                        <li class="nav-item">
-                            <a class="nav-link @if($current_route == 'admin.adverts'){{ __('active') }}@endif" href="">
-                                <i class="fa fa-bullhorn text-yellow mr-1"></i>
-                                <span class="nav-link-text">My Account</span>
-                            </a>
-                        </li>
-
                     </ul>
 
                     <!-- Users -->
                     <div class="nav-group">
-                        <h4 class="sidebar-heading text-muted" data-toggle="collapse" data-target="#nav-users">
+                        <h4 class="sidebar-heading text-muted @if(preg_match('/admin\.users/', $current_route) || $current_route == 'admin.history.logins'){{ __('open') }}@endif" onclick="$(this).toggleClass('open')" data-toggle="collapse" data-target="#nav-users">
                             Users
                             <i class="fa fa-chevron-down float-right toggle-icon"></i>
                         </h4>
@@ -83,7 +85,7 @@ $current_route = \Illuminate\Support\Facades\Route::current()->getName();
 
                     <!-- Sites -->
                     <div class="nav-group">
-                        <h4 class="sidebar-heading text-muted" data-toggle="collapse" data-target="#nav-sites">
+                        <h4 class="sidebar-heading text-muted @if(preg_match('/admin\.sites/', $current_route)){{ __('open') }}@endif" onclick="$(this).toggleClass('open')" data-toggle="collapse" data-target="#nav-sites">
                             Sites
                             <i class="fa fa-chevron-down float-right toggle-icon"></i>
                         </h4>
@@ -105,9 +107,9 @@ $current_route = \Illuminate\Support\Facades\Route::current()->getName();
                         </ul>
                     </div>
 
-                    <!-- Company Vehicles -->
+                    <!-- Vehicles -->
                     <div class="nav-group">
-                        <h4 class="sidebar-heading text-muted" data-toggle="collapse" data-target="#nav-vehicles">
+                        <h4 class="sidebar-heading text-muted @if(preg_match('/admin\.vehicles/', $current_route)){{ __('open') }}@endif" onclick="$(this).toggleClass('open')" data-toggle="collapse" data-target="#nav-vehicles">
                             Vehicles
                             <i class="fa fa-chevron-down float-right toggle-icon"></i>
                         </h4>
@@ -140,19 +142,12 @@ $current_route = \Illuminate\Support\Facades\Route::current()->getName();
                                     <span class="nav-link-text">Drivers</span>
                                 </a>
                             </li>
-
-                            <li class="nav-item">
-                                <a class="nav-link @if($current_route == 'admin.vehicles.drivers'){{ __('active') }}@endif " href="{{ route('admin.vehicles.drivers') }}">
-                                    <i class="fa fa-user text-default mr-1"></i>
-                                    <span class="nav-link-text">Drivers</span>
-                                </a>
-                            </li>
                         </ul>
                     </div>
 
                     <!-- Visitors -->
                     <div class="nav-group">
-                        <h4 class="sidebar-heading text-muted" data-toggle="collapse" data-target="#nav-visitors">
+                        <h4 class="sidebar-heading text-muted @if(preg_match('/admin\.visitors/', $current_route)){{ __('open') }}@endif" onclick="$(this).toggleClass('open')" data-toggle="collapse" data-target="#nav-visitors">
                             Visitors
                             <i class="fa fa-chevron-down float-right toggle-icon"></i>
                         </h4>
@@ -176,7 +171,7 @@ $current_route = \Illuminate\Support\Facades\Route::current()->getName();
 
                     <!-- Stats -->
                     <div class="nav-group">
-                        <h4 class="sidebar-heading text-muted" data-toggle="collapse" data-target="#nav-stats">
+                        <h4 class="sidebar-heading text-muted open" onclick="$(this).toggleClass('open')" data-toggle="collapse" data-target="#nav-stats">
                             More
                             <i class="fa fa-chevron-down float-right toggle-icon"></i>
                         </h4>
@@ -186,6 +181,13 @@ $current_route = \Illuminate\Support\Facades\Route::current()->getName();
                                 <a class="nav-link @if($current_route == 'admin.staff.checkins'){{ __('active') }}@endif " href="{{ route('admin.staff.checkins') }}">
                                     <i class="fa fa-map-marker text-default mr-1"></i>
                                     <span class="nav-link-text">Staff Checkins</span>
+                                </a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a class="nav-link @if($current_route == 'admin.change_password'){{ __('active') }}@endif " href="{{ route('admin.change_password') }}">
+                                    <i class="fa fa-lock text-default mr-1"></i>
+                                    <span class="nav-link-text">Change Password</span>
                                 </a>
                             </li>
                         </ul>
@@ -208,7 +210,7 @@ $current_route = \Illuminate\Support\Facades\Route::current()->getName();
         <div class="dropdown float-right ml-auto">
             <ul class="dropdown-menu">
                 <li class="dropdown-item py-0">
-                    <a href="" class="py-3 d-flex align-items-center text-border">
+                    <a href="{{ route('admin.change_password') }}" class="py-3 d-flex align-items-center text-border">
                         <i class="fa fa-lock mr-3 text-success"></i>Change Password
                     </a>
                 </li>
@@ -273,7 +275,7 @@ $current_route = \Illuminate\Support\Facades\Route::current()->getName();
     <div class="dropdown float-right ml-auto position-absolute top-0 right-0 m-3 user-menu" style="z-index: 110">
         <ul class="dropdown-menu">
             <li class="dropdown-item py-0">
-                <a href="" class="py-3 d-flex align-items-center text-border">
+                <a href="{{ route('admin.change_password') }}" class="py-3 d-flex align-items-center text-border">
                     <i class="fa fa-lock mr-3 text-success"></i>Change Password
                 </a>
             </li>
@@ -281,7 +283,7 @@ $current_route = \Illuminate\Support\Facades\Route::current()->getName();
             <li class="dropdown-divider my-0"></li>
 
             <li class="dropdown-item py-0">
-                <a href="" class="py-3 d-flex align-items-center text-border">
+                <a href="{{ route('admin.logout') }}" class="py-3 d-flex align-items-center text-border">
                     <i class="fa fa-power-off mr-3 text-danger"></i>Log Out
                 </a>
             </li>
