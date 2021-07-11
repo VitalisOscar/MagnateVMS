@@ -25,6 +25,8 @@ class User extends Authenticatable
 
     protected $hidden = ['password'];
 
+    public $appends = ['date_added'];
+
     function site(){
         return $this->belongsTo(Site::class, 'site_id');
     }
@@ -47,5 +49,9 @@ class User extends Authenticatable
 
     function getSiteIdAttribute(){
         return $this->last_login ? $this->last_login->site_id:null;
+    }
+
+    function getDateAddedAttribute(){
+        return substr($this->created_at->monthName, 0, 3).' '.$this->created_at->day.' '.$this->created_at->year;
     }
 }
