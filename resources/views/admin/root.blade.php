@@ -225,7 +225,7 @@ $current_route = \Illuminate\Support\Facades\Route::current()->getName();
             </ul>
 
             <div class="float-right ml-auto d-flex align-items-center dropdown-toggle btn btn-outline-white py-2" data-toggle="dropdown">
-                Administrator
+                {{ auth('admin')->user()->name }}
             </div>
         </div>
     </div>
@@ -234,7 +234,7 @@ $current_route = \Illuminate\Support\Facades\Route::current()->getName();
 <main class="main-content position-relative">
     <nav class="header section-shaped position-absolute top-0 left-0 right-0">
 
-        <div class="shape shape-style-1 bg-gradient-primary">
+        <div class="shape shape-style-1 bg-primary">
             <span class="shape-50"></span>
             <span class="shape-100"></span>
             <span class="shape-150"></span>
