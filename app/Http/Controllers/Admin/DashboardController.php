@@ -23,30 +23,43 @@ class DashboardController extends Controller
 
     function __invoke(Request $request){
         $date = $request->filled('date') ? $request->get('date') : Carbon::today()->format('Y-m-d');
+        $site = $request->filled('site') ? $request->get('site') : false;
 
         $summaries_fetch = DB::select(
             'select ('.
             Visit::whereHas('vehicle')
                 ->whereRaw("date(time_in) = '".$date."'")
+                ->when($site, function($q, $site){
+                    return $q->whereRaw("site_id = $site");
+                })
                 ->selectRaw('count(*)')
                 ->toSql().
                 ') as visit_vehicles, ('.
 
             StaffCheckIn::whereHas('vehicle')
                 ->whereRaw("date(time_in) = '".$date."'")
+                ->when($site, function($q, $site){
+                    return $q->whereRaw("site_id = $site");
+                })
                 ->selectRaw('count(*)')
                 ->toSql().
                 ') as staff_vehicles, ('.
 
-            Visitor::whereHas('visits', function($q) use($date){
-                    $q->whereRaw("date(time_in) = '".$date."'");
+            Visitor::whereHas('visits', function($q) use($date, $site){
+                    $q->whereRaw("date(time_in) = '".$date."'")
+                    ->when($site, function($q, $site){
+                        return $q->whereRaw("site_id = $site");
+                    });
                 })
                 ->selectRaw('count(*)')
                 ->toSql().
                 ') as visitors, ('.
 
-            Staff::whereHas('check_ins', function($q) use($date){
-                    $q->whereRaw("date(time_in) = '".$date."'");
+            Staff::whereHas('check_ins', function($q) use($date, $site){
+                    $q->whereRaw("date(time_in) = '".$date."'")
+                        ->when($site, function($q, $site){
+                            return $q->whereRaw("site_id = $site");
+                        });
                 })
                 ->selectRaw('count(*)')
                 ->toSql().
@@ -57,6 +70,9 @@ class DashboardController extends Controller
 
         $visit_activity = DB::select(
             Visit::whereRaw("date(time_in) = '".$date."'")
+            ->when($site, function($q, $site){
+                return $q->whereRaw("site_id = $site");
+            })
             ->groupBy(Visit::query()->raw('HOUR(time_in)'))
             ->selectRaw('count(*) as count, HOUR(time_in) as hour')
             ->toSql()
@@ -64,6 +80,9 @@ class DashboardController extends Controller
 
         $staff_activity = DB::select(
             StaffCheckIn::whereRaw("date(time_in) = '".$date."'")
+            ->when($site, function($q, $site){
+                return $q->whereRaw("site_id = $site");
+            })
             ->groupBy(Visit::query()->raw('HOUR(time_in)'))
             ->selectRaw('count(*) as count, HOUR(time_in) as hour')
             ->toSql()

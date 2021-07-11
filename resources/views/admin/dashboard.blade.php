@@ -2,7 +2,13 @@
 
 @section('title', 'Dashboard')
 
+@section('page_heading', 'Welcome')
+
 @section('content')
+
+<div class="breadcrumb bg-transparent p-0">
+    <a class="breadcrumb-item active">Dashboard</a>
+</div>
 
 <div class="card mb-4">
     <div class="card-body">
