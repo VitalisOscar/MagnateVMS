@@ -17,7 +17,7 @@ Route::prefix('admin')
     Route::view('password', 'admin.auth.change-password')->name('admin.change_password');
     Route::post('password', [\App\Http\Controllers\Admin\Auth\PasswordController::class, 'change'])->name('admin.change_password');
 
-    Route::get('dashboard', \App\Http\Controllers\Admin\DashboardController::class)->name('admin.dashboard');
+    Route::get('', \App\Http\Controllers\Admin\DashboardController::class)->name('admin.dashboard');
 
     // Users
     Route::prefix('users')->group(function () {
