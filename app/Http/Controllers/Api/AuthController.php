@@ -58,7 +58,7 @@ class AuthController extends Controller
         $login->status = Login::STATUS_SUCCESS;
         try{ $login->save(); }catch(Exception $e){
             // Saving login has to be done to capture the site id where user is tracking data from
-            return $this->json->error($e->getMessage().'Something went wrong. Please try again');
+            return $this->json->error('Something went wrong. Please try again');
         };
 
         // create token
