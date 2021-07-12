@@ -28,7 +28,7 @@ Route::prefix('user')->group(function(){
     Route::post('login', [AuthController::class, 'login'])->name('api.login');
 });
 
-//Route::middleware('auth:sanctum')->group(function(){
+Route::middleware('auth:sanctum')->group(function(){
     Route::prefix('check')->group(function(){
         Route::post('in/visitor', VisitorCheckInController::class)->name('api.visitor.check.in');
         Route::post('out/visitor', VisitorCheckOutController::class)->name('api.visitor.check.out');
@@ -66,4 +66,4 @@ Route::prefix('user')->group(function(){
         Route::get('get-without', [AccessCardController::class, 'getVisitorsWithoutCard'])->name('api.cards.get_without');
     });
 
-//});
+});

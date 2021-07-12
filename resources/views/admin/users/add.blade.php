@@ -20,7 +20,7 @@
     </div>
 
     <div class="row">
-        <form action="{{ route('admin.users.add') }}" method="post" class="col-md-9 col-lg-8">
+        <form action="{{ route('admin.users.add') }}" autocomplete="off" method="post" class="col-md-9 col-lg-8">
             @csrf
             <div class="form-group">
                 <div class="form-row">
@@ -83,7 +83,7 @@
                                     <i class="fa fa-lock"></i>
                                 </span>
                             </div>
-                            <input value="{{ old('password') }}" type="password" class="form-control" placeholder="" name="password">
+                            <input value="{{ old('password') }}" type="text" class="form-control" placeholder="" name="password">
                         </div>
                         @if($errors->has('password'))
                         <small class="text-danger">{{ $errors->get('password')[0] }}</small>
