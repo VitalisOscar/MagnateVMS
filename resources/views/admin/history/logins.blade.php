@@ -86,7 +86,7 @@
             @foreach ($result->items as $login)
             <tr>
                 <td class="text-center">{{ $result->from + $i }}</td>
-                <td>{{ \Illuminate\Support\Str::title($login->type) }}</td>
+                <td>{{ \Illuminate\Support\Str::title($login->user_type) }}</td>
                 <td>{{ $login->user->name }}</td>
                 <td>{{ $login->login_time }}</td>
                 <td>{{ $login->site_id ? $login->site->name:'-' }}</td>
