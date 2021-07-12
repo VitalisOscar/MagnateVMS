@@ -38,6 +38,7 @@ class StaffCheckInController extends Controller
         // Create a check in
         $checkin = new StaffCheckIn([
             'checked_in_by' => auth('sanctum')->id(),
+            'site_id' => auth('sanctum')->user()->site_id,
             'staff_id' => $request->post('staff_id'),
             'time_in' => Carbon::now()->toDateTimeString(),
             'site_id' => auth('sanctum')->user()->site_id,
