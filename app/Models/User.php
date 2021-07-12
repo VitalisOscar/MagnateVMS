@@ -44,7 +44,7 @@ class User extends Authenticatable
     }
 
     function last_login(){
-        return $this->hasOne(Login::class, 'identifier')->latest('time')->successful();
+        return $this->morphOne(Login::class, 'user')->latest('time')->successful();
     }
 
     function getSiteIdAttribute(){
