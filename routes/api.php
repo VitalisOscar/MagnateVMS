@@ -49,7 +49,7 @@ Route::middleware('auth:sanctum')->group(function(){
         Route::get('visitors/in', [VisitorEnquiryController::class, 'getCheckedIn'])->name('api.get.checkins.visitors');
 
         Route::get('summary', [SummaryController::class, 'basic'])->name('api.get.summary');
-        Route::get('sites', [SummaryController::class, 'getSites'])->name('api.get.sites');
+        Route::get('sites', [SummaryController::class, 'getSites'])->withoutMiddleware('auth:sanctum')->name('api.get.sites');
 
         Route::get('company-vehicles', [GetVehiclesController::class, 'company'])->name('api.get.vehicles.company');
         Route::get('drivers', GetDriversController::class)->name('api.get.drivers');
