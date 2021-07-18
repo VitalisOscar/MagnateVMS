@@ -61,6 +61,14 @@ class VisitorCheckInController extends Controller
 
             }else{
                 // Handle new visitor
+                $visitor = new Visitor([
+                    'name' => $request->post('name'),
+                    'from' => $request->post('from'),
+                    'phone' => $request->post('phone'),
+                    'id_number' => $request->post('id_number'),
+                    'id_photo' => $request->post('id_photo'),
+                ]);
+
                 // Save visitor record first
                 if(!$visitor->save()){
                     DB::rollback();
