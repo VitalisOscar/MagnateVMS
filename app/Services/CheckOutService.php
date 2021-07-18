@@ -3,8 +3,6 @@
 namespace App\Services;
 
 use App\Models\Visitor;
-use App\Repository\VisitorRepository;
-use App\Services\Traits\CapturesItems;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
@@ -12,9 +10,7 @@ class CheckOutService{
 
     function checkOutVisitor($data){
         // Get the visitor
-        /** @var VisitorRepository */
-        $repo = resolve(VisitorRepository::class);
-        $visitor = $repo->getUsingIdNumber($data['id_number']);
+        $visitor = Visitor::where('id_number', $data['id_number'])->first();
 
         // visitor exists?
         if($visitor == null){
