@@ -4,24 +4,24 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Staff;
-use App\Repository\VisitorRepository;
+use App\Models\Visitor;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class VisitEnquiryController extends Controller
 {
 
-    function getVisitor(Request $request, VisitorRepository $repo){
-        $visitor = $repo->getUsingIdNumber($request->get('id_number'));
+    function getVisitor(Request $request){
+        $visitor = Visitor::where('id_number', $request->get('id_number'))->first();
 
-	// get staff members
+	    // get staff members
 	    $staff = Staff::whereHas('company', function($q){
-		$q->where('site_id', auth('sanctum')->user()->site_id);
+		    $q->where('site_id', auth('sanctum')->user()->site_id);
 	    })
 	    ->with('company')
 	    ->get()
 	    ->each(function($s){
-		$s->company_name = $s->company->name;
+		    $s->company_name = $s->company->name;
 	    });
 
         if($visitor != null){
@@ -31,8 +31,8 @@ class VisitEnquiryController extends Controller
         return $this->json->data(['staff' => $staff], 'Visitor record does not exist');
     }
 
-    function getVisitForCheckOut(Request $request, VisitorRepository $repo){
-        $visitor = $repo->getUsingIdNumber($request->get('id_number'));
+    function getVisitForCheckOut(Request $request){
+        $visitor = Visitor::where('id_number', $request->get('id_number'))->first();
 
         if($visitor == null){
             return $this->json->data(null, 'Visit record does not exist');
