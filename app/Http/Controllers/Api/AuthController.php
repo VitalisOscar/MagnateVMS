@@ -73,7 +73,29 @@ class AuthController extends Controller
         return $this->json->data($user);
     }
 
-    function changePassword(){
+    function changePassword(Request $request){
+        if(validator()->make($request->post(), [
+            'current_password' => 'required',
+            'new_password' => 'required',
+        ])->fails()){
+            return $this->json->error('Please provide your current and new password');
+        }
 
+        $user = auth('sanctum')->user();
+
+        // check password
+        if(!Hash::check($request->post('current_password'), $user->getAuthPassword())){
+            return $this->json->error('Incorrect password. Please try again, or contact admin if you forgot');
+        }
+
+        $user->password = Hash::make($request->post('new_password'));
+
+        try{
+            if($user->save()){
+                return $this->json->success('Your password has been updated');
+            }
+        }catch(Exception $e){};
+
+        return $this->json->error('Something went wrong. Please try again');
     }
 }

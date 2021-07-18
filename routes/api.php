@@ -20,10 +20,6 @@ use App\Http\Controllers\Api\Visitor\VisitorRecordsController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
-});
-
 Route::prefix('user')->group(function(){
     Route::post('login', [AuthController::class, 'login'])->name('api.login');
 });
@@ -65,5 +61,7 @@ Route::middleware('auth:sanctum')->group(function(){
         Route::post('issue', [AccessCardController::class, 'issueCard'])->name('api.cards.issue');
         Route::get('get-without', [AccessCardController::class, 'getVisitorsWithoutCard'])->name('api.cards.get_without');
     });
+
+    Route::post('user/password', [AuthController::class, 'changePassword'])->name('api.password');
 
 });
