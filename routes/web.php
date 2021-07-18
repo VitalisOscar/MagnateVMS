@@ -53,6 +53,7 @@ Route::prefix('admin')
         Route::post('{site_id}/companies/{company_id}/staff/add', [\App\Http\Controllers\Admin\Staff\StaffController::class, 'add'])->name('admin.sites.staff.add');
         Route::get('{site_id}/companies/{company_id}/staff/{staff_id}', [\App\Http\Controllers\Admin\Staff\SingleStaffController::class, 'get'])->name('admin.sites.staff');
         Route::post('{site_id}/companies/{company_id}/staff/{staff_id}/update', [\App\Http\Controllers\Admin\Staff\SingleStaffController::class, 'update'])->name('admin.sites.staff.update');
+        Route::post('{site_id}/companies/{company_id}/staff/{staff_id}/delete', [\App\Http\Controllers\Admin\Staff\SingleStaffController::class, 'delete'])->name('admin.sites.staff.delete');
 
     });
 

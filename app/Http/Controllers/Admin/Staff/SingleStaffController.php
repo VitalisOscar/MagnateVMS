@@ -69,4 +69,26 @@ class SingleStaffController extends Controller
             ->withInput()
             ->withErrors(['status' => 'Something went wrong. Please try again']);
     }
+
+    function delete(Request $request, $site_id, $company_id, $staff_id){
+        $staff = Staff::whereId($staff_id)
+            ->whereCompanyId($company_id)
+            ->first();
+
+        if($staff == null)
+        return back()
+            ->withErrors(['status' => 'Staff member not found. Might have been deleted or url is incorrect']);
+
+        try{
+            if(!$staff->delete()){
+                return back()
+                    ->withErrors(['status' => 'Unable to delete staff member. Please retry']);
+            }
+
+            return back();
+        }catch(Exception $e){}
+
+        return back()
+            ->withErrors(['status' => 'Unable to delete staff member. PLease retry']);
+    }
 }

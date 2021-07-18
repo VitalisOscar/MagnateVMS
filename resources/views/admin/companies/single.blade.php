@@ -56,7 +56,11 @@
                 <td>{{ $staff->phone }}</td>
                 <td>
                     <a class="mr-3" href="{{ route('admin.sites.staff', ['staff_id' => $staff->id, 'company_id' => $company->id, 'site_id' => $company->site->id]) }}">View&nbsp;<i class="fa fa-share"></i></a>
-                    <a href="">Delete&nbsp;<i class="fa fa-trash"></i></a>
+
+                    <form method="post" action="{{ route('admin.sites.staff.delete', ['staff_id' => $staff->id, 'company_id' => $company->id, 'site_id' => $company->site->id]) }}" class="d-inline-block">
+                        @csrf
+                        <button class="btn btn-link p-0" style="text-transform: none">Delete&nbsp;<i class="fa fa-trash"></i></button>
+                    </form>
                 </td>
             </tr>
 

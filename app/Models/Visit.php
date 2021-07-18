@@ -135,6 +135,8 @@ class Visit extends Model
         if($staff != null){
             return $staff->name.' ('.$staff->company->name.')';
         }
+
+        return 'Staff Deleted';
     }
 
     function fmtTime($t){
