@@ -55,7 +55,7 @@ class VisitorCheckInController extends Controller
                 // exisiting
                 // can be checked in?
                 if(!$visitor->canCheckIn()){
-                    return 'This visitor is already checked in the site, and has not checked out today through the app';
+                    return $this->json->error('This visitor is already checked in the site, and has not checked out today through the app');
                 }
 
             }else{
@@ -63,7 +63,7 @@ class VisitorCheckInController extends Controller
                 // Save visitor record first
                 if(!$visitor->save()){
                     DB::rollback();
-                    return 'Unable to capture all data. Please report if this persists';
+                    return $this->json->error('Unable to capture all data. Please report if this persists');
                 }
             }
 
@@ -72,7 +72,7 @@ class VisitorCheckInController extends Controller
 
             if(!$visit){
                 DB::rollback();
-                return 'Unable to capture all data. Please report if this persists';
+                return $this->json->error('Unable to capture all data. Please report if this persists');
             }
 
             DB::commit();
