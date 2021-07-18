@@ -14,21 +14,11 @@ class VisitEnquiryController extends Controller
     function getVisitor(Request $request){
         $visitor = Visitor::where('id_number', $request->get('id_number'))->first();
 
-	    // get staff members
-	    $staff = Staff::whereHas('company', function($q){
-		    $q->where('site_id', auth('sanctum')->user()->site_id);
-	    })
-	    ->with('company')
-	    ->get()
-	    ->each(function($s){
-		    $s->company_name = $s->company->name;
-	    });
-
         if($visitor != null){
-            return $this->json->data(['visitor' => $visitor, 'staff' => $staff]);
+            return $this->json->data(['visitor' => $visitor]);
         }
 
-        return $this->json->data(['staff' => $staff], 'Visitor record does not exist');
+        return $this->json->data(null, 'Visitor record does not exist');
     }
 
     function getVisitForCheckOut(Request $request){
