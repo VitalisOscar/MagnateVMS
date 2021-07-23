@@ -14,8 +14,8 @@ class MakeLoginsMorphable extends Migration
     public function up()
     {
         Schema::table('logins', function (Blueprint $table) {
-            $table->dropForeign('identifier');
-            $table->dropForeign('type');
+            // $table->dropForeign('identifier');
+            // $table->dropForeign('type');
             $table->integer('user_id')->nullable()->index();
             $table->string('user_type')->nullable()->index();
         });
