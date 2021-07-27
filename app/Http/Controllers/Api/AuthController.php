@@ -38,6 +38,10 @@ class AuthController extends Controller
         /** @var User */
         $user = User::where('username', $request->get('username'))->first();
 
+        if($user == null){
+            return $this->json->error('There is no user who matches the provided username');
+        }
+
         $login->user_id = $user->id;
 
         if($user == null){
