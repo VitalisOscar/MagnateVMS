@@ -91,7 +91,7 @@ class StaffController extends Controller
         try{
             Excel::import(new StaffImport($company_id), $request->file('import'));
 
-            return redirect()->route('admin.sites.staff', [
+            return redirect()->route('admin.sites.company', [
                 'company_id' => $company_id,
                 'site_id' => $site_id,
             ])->with([

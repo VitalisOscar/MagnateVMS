@@ -100,7 +100,7 @@ $current_route = \Illuminate\Support\Facades\Route::current()->getName();
 
                             <li class="nav-item">
                                 <a class="nav-link @if($current_route == 'admin.sites.add'){{ __('active') }}@endif " href="{{ route('admin.sites.add') }}">
-                                    <i class="fa fa-plus-square text-default mr-1"></i>
+                                    <i class="fa fa-plus text-default mr-1"></i>
                                     <span class="nav-link-text">Add Site</span>
                                 </a>
                             </li>
@@ -155,14 +155,14 @@ $current_route = \Illuminate\Support\Facades\Route::current()->getName();
                         <ul class="navbar-nav collapse @if(preg_match('/admin\.visitors/', $current_route)){{ __('show') }}@endif" id="nav-visitors">
                             <li class="nav-item">
                                 <a class="nav-link @if($current_route == 'admin.visitors'){{ __('active') }}@endif " href="{{ route('admin.visitors') }}">
-                                    <i class="fa fa-map-marker text-default mr-1"></i>
+                                    <i class="fa fa-user-secret text-default mr-1"></i>
                                     <span class="nav-link-text">View All</span>
                                 </a>
                             </li>
 
                             <li class="nav-item">
                                 <a class="nav-link @if($current_route == 'admin.visitors.visits'){{ __('active') }}@endif " href="{{ route('admin.visitors.visits') }}">
-                                    <i class="fa fa-map-marker text-default mr-1"></i>
+                                    <i class="fa fa-handshake-o text-default mr-1"></i>
                                     <span class="nav-link-text">Visits</span>
                                 </a>
                             </li>
@@ -179,7 +179,7 @@ $current_route = \Illuminate\Support\Facades\Route::current()->getName();
                         <ul class="navbar-nav collapse show" id="nav-stats">
                             <li class="nav-item">
                                 <a class="nav-link @if($current_route == 'admin.staff.checkins'){{ __('active') }}@endif " href="{{ route('admin.staff.checkins') }}">
-                                    <i class="fa fa-map-marker text-default mr-1"></i>
+                                    <i class="fa fa-users text-default mr-1"></i>
                                     <span class="nav-link-text">Staff Checkins</span>
                                 </a>
                             </li>
