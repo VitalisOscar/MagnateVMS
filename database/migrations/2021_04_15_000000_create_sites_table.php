@@ -16,6 +16,7 @@ class CreateSitesTable extends Migration
         Schema::create('sites', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->json('options')->nullable();
             $table->timestamp('added_at')->useCurrent();
         });
     }

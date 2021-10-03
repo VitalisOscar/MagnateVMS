@@ -4,40 +4,40 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Staff extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory;
 
     protected $table = "staff";
 
     public $timestamps = false;
 
-    public $fillable = [
+    protected $fillable = [
         'company_id',
         'name',
         'phone',
-        'email'
+        'extension',
+        'department',
     ];
 
-    function company(){
-        return $this->belongsTo(Company::class);
-    }
+    protected $casts = [
+        'added_at' => 'datetime'
+    ];
 
-    function visits(){
-        return $this->hasMany(Visit::class);
-    }
+    function company(){ return $this->belongsTo(Company::class); }
 
-    function check_ins(){
-        return $this->hasMany(StaffCheckIn::class);
-    }
+    function visits(){ return $this->hasMany(Visit::class); }
 
-    function vehicles(){
-        return $this->morphMany(Vehicle::class, 'vehicleable');
-    }
+    function activities(){ return $this->morphMany(Activity::class, 'by'); }
 
-    function isCheckedIn(){
-        return $this->check_ins()->latest('time_in')->stillIn()->atSite()->today()->first() != null;
+    function check_ins(){ return $this->activities()->checkIn(); }
+
+    function check_outs(){ return $this->activities()->checkOut(); }
+
+    function vehicles(){ return $this->morphMany(Vehicle::class, 'owner'); }
+
+    function getFirstNameAttribute(){
+        return preg_split('/ +/', $this->name)[0];
     }
 }

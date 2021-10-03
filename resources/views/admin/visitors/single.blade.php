@@ -24,7 +24,7 @@
         </div>
 
         <div class="px-4 py-3 d-flex align-items-center">
-            <h4 class="font-weight-600 mb-0">Visit History ({{ $result->total.' Visit'.($result->total != 1 ? 's':'') }})</h4>
+            <h4 class="font-weight-600 mb-0">Activity ({{ $result->total.' Total' }})</h4>
 
             <?php $r = request(); ?>
 
@@ -72,13 +72,13 @@
         <table class="table">
             <tr class="card-header">
                 <th>Site</th>
-                <th>Reason</th>
                 <th>Host</th>
-                <th>Check In</th>
-                <th>Items In</th>
-                <th>Check Out</th>
-                <th>Items Out</th>
-                <th>Car</th>
+                <th>Reason</th>
+                <th>Time</th>
+                <th>Type</th>
+                <th>Items In/Out</th>
+                <th>Vehicle</th>
+                <th>Guard</th>
             </tr>
 
             @if($result->isEmpty())
@@ -92,31 +92,31 @@
 
             @else
 
-            @foreach ($result->items as $visit)
+            @foreach ($result->items as $activity)
             <tr>
-                <td>{{ $visit->site->name }}</td>
-                <td>{{ $visit->reason }}</td>
-                <td>{{ $visit->host }}</td>
-                <td>{{ $visit->check_in }}</td>
-                <td>{{ $visit->items_in ? $visit->items_in:'None' }}</td>
-                <td>{{ $visit->check_out }}</td>
-                <td>{{ $visit->items_out ? $visit->items_out:'None' }}</td>
-                <td>{{ $visit->car_registration ? $visit->car_registration:'None' }}</td>
+                <td>{{ $activity->site->name }}</td>
+                <td style="max-width: 150px">{{ $activity->visit->fmt_host }}</td>
+                <td>{{ $activity->visit->reason }}</td>
+                <td style="max-width: 150px">{{ $activity->fmt_datetime }}</td>
+                <td>{{ $activity->type }}</td>
+                <td style="max-width: 150px">{{ $activity->visit->items ?? 'None' }}</td>
+                @if($activity->vehicle != null)
+                <td>
+                    <a href="{{ route('admin.vehicles.single', $activity->vehicle->id) }}">{{ $activity->vehicle->registration_no }}</a>
+                </td>
+                @else
+                <td>None</td>
+                @endif
+                <td>{{ $activity->user->name }}</td>
             </tr>
             @endforeach
-
-            @php
-                $route = \Illuminate\Support\Facades\Route::current();
-                $prev = array_merge($route->parameters, $r->except('page'), ['page' => $result->prev_page]);
-                $next = array_merge($route->parameters, $r->except('page'), ['page' => $result->next_page]);
-            @endphp
 
             <tr>
                 <td colspan="8">
                     <div class="d-flex align-items-center">
-                        <a href="{{ route($route->getName(), $prev) }}" class="@if(!$result->hasPreviousPage()){{ __('disabled') }}@endif mr-auto btn btn-link p-0"><i class="fa fa-angle-double-left"></i>&nbsp;Prev</a>
+                        <a href="{{ $result->prevPageUrl() }}" class="@if(!$result->hasPreviousPage()){{ __('disabled') }}@endif mr-auto btn btn-link p-0"><i class="fa fa-angle-double-left"></i>&nbsp;Prev</a>
                         <span>{{ 'Page '.$result->page.' of '.$result->max_pages }}</span>
-                        <a href="{{ route($route->getName(), $next) }}" class="@if(!$result->hasNextPage()){{ __('disabled') }}@endif ml-auto btn btn-link p-0">Next&nbsp;<i class="fa fa-angle-double-right"></i></a>
+                        <a href="{{ $result->nextPageUrl() }}" class="@if(!$result->hasNextPage()){{ __('disabled') }}@endif ml-auto btn btn-link p-0">Next&nbsp;<i class="fa fa-angle-double-right"></i></a>
                     </div>
                 </td>
             </tr>

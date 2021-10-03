@@ -18,11 +18,7 @@ class Company extends Model
 
     public $timestamps = false;
 
-    function staff(){
-        return $this->hasMany(Staff::class);
-    }
+    function staff(){ return $this->hasMany(Staff::class); }
 
-    function site(){
-        return $this->belongsTo(Site::class);
-    }
+    function site(){ return $this->belongsTo(Site::class); }
 }

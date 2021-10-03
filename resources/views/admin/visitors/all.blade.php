@@ -21,7 +21,7 @@
 
         <div class="px-4 py-3 d-flex align-items-center">
             <h4 class="font-weight-600 mb-0">Visitors {{ '('.$result->total.' total)' }}</h4>
-            <a href="{{ route('admin.visitors.visits') }}" class="ml-auto btn btn-primary btn-sm shadow-none">Individual Visits</a>
+            <a href="{{ route('admin.activity.visitors') }}" class="ml-auto btn btn-primary btn-sm shadow-none">Individual Visits</a>
             <div class="dropdown">
                 <button class="ml-auto mr-0 btn btn-success btn-sm shadow-none dropdown-toggle" data-toggle="dropdown">Export to Excel</button>
                 <ul class="dropdown-menu" id="export">
@@ -63,7 +63,7 @@
                 <th>ID Number</th>
                 <th>Phone</th>
                 <th>Company</th>
-                <th>Last Visit</th>
+                <th>Last Activity</th>
                 <th></th>
             </tr>
 
@@ -86,11 +86,11 @@
                 <td>
                     <a href="{{ route('admin.visitors.single', $visitor->id) }}">{{ $visitor->name }}</a>
                 </td>
-                <td>{{ $visitor->id_number ? $visitor->id_number:'None' }}</td>
-                <td>{{ $visitor->phone }}</td>
+                <td>{{ $visitor->id_number ?? 'None' }}</td>
+                <td>{{ $visitor->phone ?? 'None' }}</td>
                 <td>{{ $visitor->from }}</td>
                 <td>
-                    {!! $visitor->any_last_visit ? ($visitor->any_last_visit->time.'<br>'.$visitor->any_last_visit->site->name):'No Visits' !!}
+                    {!! $visitor->last_activity ? ($visitor->last_activity->fmt_datetime.'<br>'.$visitor->last_activity->site->name) : 'No Activity' !!}
                 </td>
                 <td>
                     <a href="{{ route('admin.visitors.single', $visitor->id) }}">View&nbsp;<i class="fa fa-share"></i></a>
@@ -102,18 +102,12 @@
             @endphp
             @endforeach
 
-            @php
-                $route = \Illuminate\Support\Facades\Route::current();
-                $prev = array_merge($route->parameters, $r->except('page'), ['page' => $result->prev_page]);
-                $next = array_merge($route->parameters, $r->except('page'), ['page' => $result->next_page]);
-            @endphp
-
             <tr>
                 <td colspan="7">
                     <div class="d-flex align-items-center">
-                        <a href="{{ route($route->getName(), $prev) }}" class="@if(!$result->hasPreviousPage()){{ __('disabled') }}@endif mr-auto btn btn-link p-0"><i class="fa fa-angle-double-left"></i>&nbsp;Prev</a>
+                        <a href="{{ $result->prevPageUrl() }}" class="@if(!$result->hasPreviousPage()){{ __('disabled') }}@endif mr-auto btn btn-link p-0"><i class="fa fa-angle-double-left"></i>&nbsp;Prev</a>
                         <span>{{ 'Page '.$result->page.' of '.$result->max_pages }}</span>
-                        <a href="{{ route($route->getName(), $next) }}" class="@if(!$result->hasNextPage()){{ __('disabled') }}@endif ml-auto btn btn-link p-0">Next&nbsp;<i class="fa fa-angle-double-right"></i></a>
+                        <a href="{{ $result->nextPageUrl() }}" class="@if(!$result->hasNextPage()){{ __('disabled') }}@endif ml-auto btn btn-link p-0">Next&nbsp;<i class="fa fa-angle-double-right"></i></a>
                     </div>
                 </td>
             </tr>

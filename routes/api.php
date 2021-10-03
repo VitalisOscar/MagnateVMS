@@ -20,8 +20,14 @@ use App\Http\Controllers\Api\Visitor\VisitorRecordsController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
+include __DIR__ . '/api2.php';
+
 Route::prefix('user')->group(function(){
     Route::post('login', [AuthController::class, 'login'])->name('api.login');
+});
+
+Route::middleware('auth:sanctum')->group(function(){
+
 });
 
 Route::middleware('auth:sanctum')->group(function(){

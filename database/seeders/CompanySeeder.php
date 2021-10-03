@@ -22,12 +22,12 @@ class CompanySeeder extends Seeder
 
         Company::create([
             'name' => 'MVL',
-            'site_id' => Site::where('name', 'Magnate Centre, Westlands')->first()->id,
+            'site_id' => Site::where('name', 'Magnate Centre')->first()->id,
         ]);
 
         Company::create([
-            'name' => 'Other Company',
-            'site_id' => Site::where('name', 'Magnate Centre, Westlands')->first()->id,
+            'name' => 'Finberry',
+            'site_id' => Site::where('name', 'Magnate Centre')->first()->id,
         ]);
     }
 }

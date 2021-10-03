@@ -17,13 +17,13 @@
 
         <div class="px-4 py-4 border-bottom">
             @php
-                if($vehicle->vehicleable_type == "staff"){
-                    $link = route('admin.staff.checkins', ['keyword' => $vehicle->vehicleable->name]);
+                if($vehicle->isStaffVehicle()){
+                    $link = '#';
                 }else{
-                    $link = route('admin.visitors.single', $vehicle->vehicleable->id);
+                    $link = route('admin.visitors.single', $vehicle->owner->id);
                 }
             @endphp
-            <h5 class="mb-0">{{ $vehicle->description.' - ' }} <a href="{{ $link }}">{{ $vehicle->vehicleable->name }}</a> </h5>
+            <h5 class="mb-0">{{ $vehicle->description.' - ' }} <a href="{{ $link }}">{{ $vehicle->owner->name }}</a> </h5>
         </div>
 
         <div class="px-4 py-3 d-flex align-items-center">
@@ -65,17 +65,16 @@
 
         <table class="table">
             <tr class="card-header">
-                <th>Site</th>
                 <th>Date</th>
-                <th>Time In</th>
-                <th>Checked In By</th>
-                <th>Time Out</th>
-                <th>Checked Out By</th>
+                <th>Time</th>
+                <th>Site</th>
+                <th>Guard</th>
+                <th>Activity</th>
             </tr>
 
             @if($result->isEmpty())
             <tr>
-                <td colspan="6">
+                <td colspan="5">
                     <p class="my-0">
                         No activity has been captured that matches the selected options
                     </p>
@@ -86,27 +85,20 @@
 
             @foreach ($result->items as $activity)
             <tr>
+                <td>{{ $activity->fmt_date }}</td>
+                <td>{{ $activity->fmt_time }}</td>
                 <td>{{ $activity->site->name }}</td>
-                <td>{{ $activity->date }}</td>
-                <td>{{ $activity->time_in ? \Carbon\Carbon::createFromTimeString($activity->time_in)->format('H:i'):'-' }}</td>
-                <td>{{ $activity->check_in_user ? $activity->check_in_user->name : '-' }}</td>
-                <td>{{ $activity->time_out ? \Carbon\Carbon::createFromTimeString($activity->time_out)->format('H:i'):'-' }}</td>
-                <td>{{ $activity->check_out_user ? $activity->check_out_user->name : '-' }}</td>
+                <td>{{ $activity->user->name }}</td>
+                <td>{{ $activity->type }}</td>
             </tr>
             @endforeach
 
-            @php
-                $route = \Illuminate\Support\Facades\Route::current();
-                $prev = array_merge($route->parameters, $r->except('page'), ['page' => $result->prev_page]);
-                $next = array_merge($route->parameters, $r->except('page'), ['page' => $result->next_page]);
-            @endphp
-
             <tr>
-                <td colspan="8">
+                <td colspan="5">
                     <div class="d-flex align-items-center">
-                        <a href="{{ route($route->getName(), $prev) }}" class="@if(!$result->hasPreviousPage()){{ __('disabled') }}@endif mr-auto btn btn-link p-0"><i class="fa fa-angle-double-left"></i>&nbsp;Prev</a>
+                        <a href="{{ $result->prevPageUrl() }}" class="@if(!$result->hasPreviousPage()){{ __('disabled') }}@endif mr-auto btn btn-link p-0"><i class="fa fa-angle-double-left"></i>&nbsp;Prev</a>
                         <span>{{ 'Page '.$result->page.' of '.$result->max_pages }}</span>
-                        <a href="{{ route($route->getName(), $next) }}" class="@if(!$result->hasNextPage()){{ __('disabled') }}@endif ml-auto btn btn-link p-0">Next&nbsp;<i class="fa fa-angle-double-right"></i></a>
+                        <a href="{{ $result->nextPageUrl() }}" class="@if(!$result->hasNextPage()){{ __('disabled') }}@endif ml-auto btn btn-link p-0">Next&nbsp;<i class="fa fa-angle-double-right"></i></a>
                     </div>
                 </td>
             </tr>

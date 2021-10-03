@@ -30,13 +30,15 @@
             <tr class="card-header">
                 <th style="text-align: center">#</th>
                 <th>Staff Name</th>
+                <th>Department</th>
                 <th>Phone No</th>
+                <th>Extension</th>
                 <th></th>
             </tr>
 
             @if($company->staff_count == 0)
             <tr>
-                <td colspan="4">
+                <td colspan="6">
                     <p class="my-0">
                         There are no staff added at this site. Once they are added by a privilleged user, they'll appear here
                     </p>
@@ -45,15 +47,17 @@
             @else
 
             @php
-                $i = 1;
+                $i = 0;
             @endphp
             @foreach ($result->items as $staff)
             <tr>
-                <td style="text-align: center">{{ $i }}</td>
+                <td style="text-align: center">{{ $result->from + $i }}</td>
                 <td>
                     <a href="{{ route('admin.sites.staff', ['staff_id' => $staff->id, 'company_id' => $company->id, 'site_id' => $company->site->id]) }}">{{ $staff->name }}</a>
                 </td>
+                <td>{{ $staff->department }}</td>
                 <td>{{ $staff->phone }}</td>
+                <td>{{ $staff->extension }}</td>
                 <td>
                     <a class="mr-3" href="{{ route('admin.sites.staff', ['staff_id' => $staff->id, 'company_id' => $company->id, 'site_id' => $company->site->id]) }}">View&nbsp;<i class="fa fa-share"></i></a>
 
@@ -69,18 +73,12 @@
             @endphp
             @endforeach
 
-            @php
-                $route = \Illuminate\Support\Facades\Route::current();
-                $prev = array_merge($route->parameters, $r->except('page'), ['page' => $result->prev_page]);
-                $next = array_merge($route->parameters, $r->except('page'), ['page' => $result->next_page]);
-            @endphp
-
             <tr>
-                <td colspan="5">
+                <td colspan="7">
                     <div class="d-flex align-items-center">
-                        <a href="{{ route($route->getName(), $prev) }}" class="@if(!$result->hasPreviousPage()){{ __('disabled') }}@endif mr-auto btn btn-link p-0"><i class="fa fa-angle-double-left"></i>&nbsp;Prev</a>
+                        <a href="{{ $result->prevPageUrl() }}" class="@if(!$result->hasPreviousPage()){{ __('disabled') }}@endif mr-auto btn btn-link p-0"><i class="fa fa-angle-double-left"></i>&nbsp;Prev</a>
                         <span>{{ 'Page '.$result->page.' of '.$result->max_pages }}</span>
-                        <a href="{{ route($route->getName(), $next) }}" class="@if(!$result->hasNextPage()){{ __('disabled') }}@endif ml-auto btn btn-link p-0">Next&nbsp;<i class="fa fa-angle-double-right"></i></a>
+                        <a href="{{ $result->nextPageUrl() }}" class="@if(!$result->hasNextPage()){{ __('disabled') }}@endif ml-auto btn btn-link p-0">Next&nbsp;<i class="fa fa-angle-double-right"></i></a>
                     </div>
                 </td>
             </tr>

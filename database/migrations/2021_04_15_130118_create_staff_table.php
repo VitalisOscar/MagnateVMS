@@ -17,8 +17,9 @@ class CreateStaffTable extends Migration
             $table->id();
             $table->foreignId('company_id')->constrained('companies');
             $table->string('name');
-            $table->string('phone');
-            $table->string('email');
+            $table->string('phone')->nullable();
+            $table->string('extension')->nullable();
+            $table->string('department');
             $table->timestamp('added_at')->useCurrent();
         });
     }

@@ -58,19 +58,19 @@
 
         <table class="table">
             <tr class="card-header">
-                <th>Checked Out</th>
-                <th>Driver Out</th>
-                <th>Fuel Out</th>
-                <th>Fuel In</th>
-                <th>Mileage Out</th>
-                <th>Mileage In</th>
-                <th>Checked In</th>
-                <th>Driver In</th>
+                <th>Date</th>
+                <th>Time</th>
+                <th>Site</th>
+                <th>Driver</th>
+                <th>Task</th>
+                <th>Type</th>
+                <th>Mileage</th>
+                <th>Guard</th>
             </tr>
 
             @if($result->isEmpty())
             <tr>
-                <td colspan="8">
+                <td colspan="6">
                     <p class="my-0">
                         No activity has been captured that matches the selected options
                     </p>
@@ -79,55 +79,25 @@
 
             @else
 
-            @foreach ($result->items as $drive)
+            @foreach ($result->items as $activity)
             <tr>
-                <td>{{ $drive->check_out }}</td>
-
-                @php
-                    $out = 'Not Captured';
-                    if($drive->driveable_out_type == 'driver'){
-                        $out = $drive->driveable_out->name.' - '.$drive->driveable_out->department;
-                        // $out_link = route('admin.vehicles.drivers.single', $drive->driveable_out->id);
-                    }else if($drive->driveable_out_type == 'staff'){
-                        $out = $drive->driveable_out->name.' (Staff)';
-                        // $out_link = route('admin.staff', $drive->driveable_out->id);
-                    }
-                @endphp
-
-                <td>{{ $out }}</td>
-                <td>{{ $drive->fuel_out ? number_format($drive->fuel_out):'-' }}</td>
-                <td>{{ $drive->fuel_in ? number_format($drive->fuel_in):'-' }}</td>
-
-                <td>{{ $drive->mileage_out ? number_format($drive->mileage_out):'-' }}</td>
-                <td>{{ $drive->mileage_in ? number_format($drive->mileage_in):'-' }}</td>
-
-                <td>{{ $drive->check_in }}</td>
-
-                @php
-                    $in = 'Not Captured';
-                    if($drive->driveable_in_type == 'driver'){
-                        $in = $drive->driveable_in->name.' - '.$drive->driveable_in->department;
-                    }else if($drive->driveable_in_type == 'staff'){
-                        $in = $drive->driveable_in->name.' (Staff)';
-                    }
-                @endphp
-
-                <td>{{ $in }}</td>
+                <td>{{ $activity->fmt_date }}</td>
+                <td>{{ $activity->fmt_time }}</td>
+                <td>{{ $activity->site->name }}</td>
+                <td>{{ $activity->driver_task->driver->name }}</td>
+                <td>{{ $activity->driver_task->task }}</td>
+                <td>{{ $activity->type }}</td>
+                <td>{{ $activity->driver_task->fmt_mileage }}</td>
+                <td>{{ $activity->user->name }}</td>
             </tr>
             @endforeach
 
-            @php
-                $route = \Illuminate\Support\Facades\Route::current();
-                $prev = array_merge($route->parameters, $r->except('page'), ['page' => $result->prev_page]);
-                $next = array_merge($route->parameters, $r->except('page'), ['page' => $result->next_page]);
-            @endphp
-
             <tr>
-                <td colspan="8">
+                <td colspan="6">
                     <div class="d-flex align-items-center">
-                        <a href="{{ route($route->getName(), $prev) }}" class="@if(!$result->hasPreviousPage()){{ __('disabled') }}@endif mr-auto btn btn-link p-0"><i class="fa fa-angle-double-left"></i>&nbsp;Prev</a>
+                        <a href="{{ $result->prevPageUrl() }}" class="@if(!$result->hasPreviousPage()){{ __('disabled') }}@endif mr-auto btn btn-link p-0"><i class="fa fa-angle-double-left"></i>&nbsp;Prev</a>
                         <span>{{ 'Page '.$result->page.' of '.$result->max_pages }}</span>
-                        <a href="{{ route($route->getName(), $next) }}" class="@if(!$result->hasNextPage()){{ __('disabled') }}@endif ml-auto btn btn-link p-0">Next&nbsp;<i class="fa fa-angle-double-right"></i></a>
+                        <a href="{{ $result->nextPageUrl() }}" class="@if(!$result->hasNextPage()){{ __('disabled') }}@endif ml-auto btn btn-link p-0">Next&nbsp;<i class="fa fa-angle-double-right"></i></a>
                     </div>
                 </td>
             </tr>

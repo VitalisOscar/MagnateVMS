@@ -17,6 +17,7 @@ class CreateVehiclesTable extends Migration
             $table->id();
             $table->string('registration_no')->unique();
             $table->text('description')->nullable();
+            $table->morphs('owner');
         });
     }
 

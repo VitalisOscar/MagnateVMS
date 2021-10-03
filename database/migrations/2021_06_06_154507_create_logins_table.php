@@ -15,9 +15,8 @@ class CreateLoginsTable extends Migration
     {
         Schema::create('logins', function (Blueprint $table) {
             $table->id();
-            $table->string('type');
             $table->string('credential')->nullable();
-            $table->foreignId('identifier')->nullable();
+            $table->morphs('user');
             $table->foreignId('site_id')->nullable();
             $table->string('user_agent')->nullable();
             $table->string('ip_address')->nullable();

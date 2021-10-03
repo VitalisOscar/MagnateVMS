@@ -2,18 +2,17 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
-
-    use HasApiTokens;
+    use HasFactory, HasApiTokens;
 
     protected $fillable = [
         'name',
         'username',
-        'site_id',
         'password',
     ];
 
@@ -25,23 +24,17 @@ class User extends Authenticatable
 
     protected $hidden = ['password'];
 
-    public $appends = ['date_added'];
+    protected $appends = ['date_added'];
 
-    function site(){
-        return $this->belongsTo(Site::class, 'site_id');
-    }
+    function site(){ return $this->belongsTo(Site::class, 'site_id'); }
 
-    function check_ins(){
-        return $this->hasMany(Visit::class, 'checked_in_by');
-    }
+    function activities(){ return $this->hasMany(Activity::class); }
 
-    function check_outs(){
-        return $this->hasMany(Visit::class, 'checked_out_by');
-    }
+    function check_ins(){ return $this->activities()->checkIn(); }
 
-    function logins(){
-        return $this->morphMany(Login::class, 'user');
-    }
+    function check_outs(){ return $this->activities()->checkOut(); }
+
+    function logins(){ return $this->morphMany(Login::class, 'user'); }
 
     function last_login(){
         return $this->morphOne(Login::class, 'user')->latest('time')->successful();

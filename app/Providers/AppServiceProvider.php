@@ -6,6 +6,7 @@ use App\Models\Admin;
 use App\Models\Driver;
 use App\Models\Staff;
 use App\Models\User;
+use App\Models\Vehicle;
 use App\Models\Visitor;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\ServiceProvider;
@@ -30,11 +31,12 @@ class AppServiceProvider extends ServiceProvider
     public function boot()
     {
         Relation::morphMap([
-            'visitor' => Visitor::class,
-            'staff' => Staff::class,
-            'driver' => Driver::class,
-            'user' => User::class,
-            'admin' => Admin::class,
+            'Visitor' => Visitor::class,
+            'Vehicle' => Vehicle::class,
+            'Staff' => Staff::class,
+            'Driver' => Driver::class,
+            'User' => User::class,
+            'Admin' => Admin::class,
         ]);
     }
 }

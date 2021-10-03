@@ -123,7 +123,7 @@ $current_route = \Illuminate\Support\Facades\Route::current()->getName();
                             </li>
 
                             <li class="nav-item">
-                                <a class="nav-link @if($current_route == 'admin.vehicles.history'){{ __('active') }}@endif " href="{{ route('admin.vehicles.history') }}">
+                                <a class="nav-link @if($current_route == 'admin.activity.vehicles'){{ __('active') }}@endif " href="{{ route('admin.activity.vehicles') }}">
                                     <i class="fa fa-car text-default mr-1"></i>
                                     <span class="nav-link-text">In/Out History</span>
                                 </a>
@@ -161,7 +161,7 @@ $current_route = \Illuminate\Support\Facades\Route::current()->getName();
                             </li>
 
                             <li class="nav-item">
-                                <a class="nav-link @if($current_route == 'admin.visitors.visits'){{ __('active') }}@endif " href="{{ route('admin.visitors.visits') }}">
+                                <a class="nav-link @if($current_route == 'admin.activity.visitors'){{ __('active') }}@endif " href="{{ route('admin.activity.visitors') }}">
                                     <i class="fa fa-handshake-o text-default mr-1"></i>
                                     <span class="nav-link-text">Visits</span>
                                 </a>
@@ -178,7 +178,7 @@ $current_route = \Illuminate\Support\Facades\Route::current()->getName();
 
                         <ul class="navbar-nav collapse show" id="nav-stats">
                             <li class="nav-item">
-                                <a class="nav-link @if($current_route == 'admin.staff.checkins'){{ __('active') }}@endif " href="{{ route('admin.staff.checkins') }}">
+                                <a class="nav-link @if($current_route == 'admin.activity.staff'){{ __('active') }}@endif " href="{{ route('admin.activity.staff') }}">
                                     <i class="fa fa-users text-default mr-1"></i>
                                     <span class="nav-link-text">Staff Checkins</span>
                                 </a>

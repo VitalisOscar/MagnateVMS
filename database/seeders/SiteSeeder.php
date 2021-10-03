@@ -14,7 +14,7 @@ class SiteSeeder extends Seeder
      */
     public function run()
     {
-        Site::create(['name' => 'Magnate Centre, Westlands']);
+        Site::create(['name' => 'Magnate Centre']);
         Site::create(['name' => 'Mombasa Road']);
     }
 }

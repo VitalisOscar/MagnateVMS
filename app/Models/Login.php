@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -10,13 +9,13 @@ class Login extends Model
 {
     use HasFactory;
 
-    const TYPE_USER = 'user';
-    const TYPE_ADMIN = 'admin';
+    const TYPE_USER = 'User';
+    const TYPE_ADMIN = 'Admin';
 
-    const STATUS_SUCCESS = 'success';
-    const STATUS_FAILED = 'failed';
-    const STATUS_INVALID_CREDENTIAL = 'invalid_credential';
-    const STATUS_INVALID_PASSWORD = 'invalid_password';
+    const STATUS_SUCCESS = 'Success';
+    const STATUS_FAILED = 'Failed';
+    const STATUS_INVALID_CREDENTIAL = 'Invalid Credential';
+    const STATUS_INVALID_PASSWORD = 'Invalid Password';
 
     public $timestamps = false;
 
@@ -28,6 +27,10 @@ class Login extends Model
         'site_id',
         'ip_address',
         'status',
+    ];
+
+    protected $casts = [
+        'time' => 'datetime'
     ];
 
     function site(){
@@ -48,22 +51,5 @@ class Login extends Model
 
     function scopeByAdmin($q){
         $q->whereUserType(self::TYPE_ADMIN);
-    }
-
-    function getLoginTimeAttribute(){
-        /** @var Carbon */
-        $t = Carbon::createFromTimeString($this->time);
-        $now = Carbon::now();
-
-        if($t->isToday()){
-            return 'Today ' .$t->format('H:i');
-        }else if($t->isYesterday()){
-            return 'Yesterday at ' .$t->format('H:i');
-        }
-
-        if($t->isCurrentYear())
-        return substr($t->monthName, 0, 3).' '.$t->day.' at '.$t->format('H:i');
-
-        return substr($t->monthName, 0, 3).' '.$t->day.', '.$t->year.' at '.$t->format('H:i');
     }
 }

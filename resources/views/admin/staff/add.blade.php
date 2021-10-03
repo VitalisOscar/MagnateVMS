@@ -53,7 +53,32 @@
                 <div class="form-group">
                     <div class="form-row">
                         <div class="col-md-4">
-                            <label for=""><strong>Phone Number:</strong></label>
+                            <label for=""><strong>Department:</strong></label>
+                        </div>
+
+                        <div class="col-md-8">
+                            <div class="input-group input-group-alternative border shadow-none">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">
+                                        <i class="fa fa-user-circle"></i>
+                                    </span>
+                                </div>
+                                <input type="text" class="form-control" value="{{ old('department') }}" placeholder="e.g Sales" name="department">
+                            </div>
+                            @if($errors->has('department'))
+                            <small class="text-danger">{{ $errors->get('department')[0] }}</small>
+                            @else
+                            <small>Enter the department the staff works under</small>
+                            @endif
+
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="form-row">
+                        <div class="col-md-4">
+                            <label for=""><strong>Phone Number (Optional):</strong></label>
                         </div>
 
                         <div class="col-md-8">
@@ -71,6 +96,30 @@
                             <small>Will be used to notify the staff if they have a visitor. Do not include country code</small>
                             @endif
 
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="form-row">
+                        <div class="col-md-4">
+                            <label for=""><strong>Extension (Optional):</strong></label>
+                        </div>
+
+                        <div class="col-md-8">
+                            <div class="input-group input-group-alternative border shadow-none">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">
+                                        <i class="fa fa-telephone"></i>
+                                    </span>
+                                </div>
+                                <input type="text" class="form-control" value="{{ old('extension') }}" placeholder="" name="extension">
+                            </div>
+                            @if($errors->has('extension'))
+                            <small class="text-danger">{{ $errors->get('extension')[0] }}</small>
+                            @else
+                            <small>The staff's extension number</small>
+                            @endif
                         </div>
                     </div>
                 </div>

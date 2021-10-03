@@ -9,65 +9,75 @@ class Vehicle extends Model
 {
     use HasFactory;
 
+    const OWNER_STAFF = 'Staff';
+    const OWNER_VISITOR = 'Visitor';
+    const OWNER_COMPANY = 'Company';
+
     public $timestamps = false;
 
-    public $fillable = [
+    protected $fillable = [
         'registration_no',
         'description',
-        'vehicleable_id',
-        'vehicleable_type',
-        'slug',
+        'owner_id',
+        'owner_type',
     ];
 
-    function vehicleable(){
-        return $this->morphTo();
-    }
+    function owner(){ return $this->morphTo('owner'); }
+
+    function activities(){ return $this->morphMany(Activity::class, 'by'); }
+
+    function check_ins(){ return $this->activities()->checkIn(); }
+
+    function check_outs(){ return $this->activities()->checkOut(); }
 
     function drives(){
-        return $this->hasMany(Drive::class);
+        // return $this->hasMany(Drive::class);
     }
 
     function last_drive(){
-        return $this->hasOne(Drive::class)->latest('time_out');
-    }
-
-    function getOwnerTypeAttribute(){
-        if($this->isCompanyVehicle()) return 'Company';
-
-        if($this->vehicleable_type == 'staff') return 'Staff';
-
-        return 'Visitor';
-    }
-
-    function getOwnerNameAttribute(){
-        if($this->isCompanyVehicle()) return 'Company';
-
-        return $this->vehicleable->name;
+        // return $this->hasOne(Drive::class)->latest('time_out');
     }
 
     function scopeCompanyOwned($q){
-        $q->where('vehicleable_type', null);
+        $q->where('owner_type', self::OWNER_COMPANY);
     }
 
     function scopeStaffOwned($q){
-        $q->where('vehicleable_type', 'staff');
+        $q->where('owner_type', self::OWNER_STAFF);
     }
 
     function scopeVisitorOwned($q){
-        $q->where('vehicleable_type', 'visitor');
+        $q->where('owner_type', self::OWNER_VISITOR);
     }
 
     function scopeOtherOwned($q){
-        $q->where('vehicleable_type', '<>', null);
+        $q->where('owner_type', '<>', self::OWNER_COMPANY);
     }
+
+    function scopeRegNo($q, $registration_no){
+        $registration_no = strtoupper(preg_replace("/ +/", " ", $registration_no));
+
+        $q->where('registration_no', $registration_no);
+    }
+
+
+    // Accessors
+    function getOwnerNameAttribute(){
+        if($this->isCompanyVehicle()) return 'Company';
+
+        return $this->owner->name;
+    }
+
 
     function isCompanyVehicle(){
-        return $this->vehicleable_type == null && $this->vehicleable_id == null;
+        return $this->owner_type == self::OWNER_COMPANY;
     }
 
-    function isOut(){
-        return $this->has('last_drive', function($q){
-            $q->stillOut();
-        });
+    function isStaffVehicle(){
+        return $this->owner_type == self::OWNER_STAFF;
+    }
+
+    function isVisitorVehicle(){
+        return $this->owner_type == self::OWNER_VISITOR;
     }
 }
