@@ -7,6 +7,7 @@ use App\Helpers\ResultSet;
 use App\Http\Controllers\Controller;
 use App\Models\Activity;
 use App\Models\Company;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class StaffActivityController extends Controller
@@ -65,6 +66,11 @@ class StaffActivityController extends Controller
                 ->whereDate('time', '<=', $to);
 
             $dates = $from.' to '.$to;
+        }else if($request->is('api*')){
+            $d = Carbon::today()->format('Y-m-d');
+
+            $q->whereDate('time', '>=', $d)
+                ->whereDate('time', '<=', $d);
         }
 
         $activities = new ResultSet($q, $limit);

@@ -64,6 +64,11 @@ class VehicleActivityController extends Controller
                 ->whereDate('time', '<=', $to);
 
             $dates = $from.' to '.$to;
+        }else if($request->is('api*')){
+            $d = Carbon::today()->format('Y-m-d');
+
+            $q->whereDate('time', '>=', $d)
+                ->whereDate('time', '<=', $d);
         }
 
         $result = new ResultSet($q, $limit);

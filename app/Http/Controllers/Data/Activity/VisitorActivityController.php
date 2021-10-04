@@ -6,6 +6,7 @@ use App\Exports\AllVisitsExport;
 use App\Helpers\ResultSet;
 use App\Http\Controllers\Controller;
 use App\Models\Activity;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class VisitorActivityController extends Controller
@@ -49,6 +50,11 @@ class VisitorActivityController extends Controller
                 ->whereDate('time', '<=', $to);
 
             $dates = $from.' to '.$to;
+        }else if($request->is('api*')){
+            $d = Carbon::today()->format('Y-m-d');
+
+            $q->whereDate('time', '>=', $d)
+                ->whereDate('time', '<=', $d);
         }
 
         $visits = new ResultSet($q, $limit);
