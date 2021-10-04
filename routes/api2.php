@@ -22,7 +22,7 @@ Route::prefix('activity')
     // Check out
     Route::post('checkout/visitor', VisitorCheckOutController::class)->name('checkout.visitor');
     Route::post('checkout/staff', StaffCheckOutController::class)->name('checkout.staff');
-    Route::post('checkout/vehicle', VehicleCheckOutController::class)->name('checkout.vehicle');
+    Route::post('checkout/vehicle', [VehicleCheckOutController::class, 'company'])->name('checkout.vehicle');
 
     // Get data
     Route::get('get/activity/visitors')->name('visitors');
