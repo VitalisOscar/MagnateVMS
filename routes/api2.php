@@ -22,7 +22,7 @@ Route::prefix('activity')
     // Check out
     Route::post('checkout/visitor', VisitorCheckOutController::class)->name('checkout.visitor');
     Route::post('checkout/staff', StaffCheckOutController::class)->name('checkout.staff');
-    Route::post('checkout/vehicle', [VehicleCheckOutController::class, 'company'])->name('checkout.vehicle');
+    Route::post('checkout/vehicle', VehicleCheckOutController::class)->name('checkout.vehicle');
 
     // Get data
     Route::get('get/activity/visitors')->name('visitors');
@@ -33,5 +33,5 @@ Route::prefix('get/activity')
 ->group(function (){
     Route::get('visitors', VisitorActivityController::class)->name('visitors');
     Route::get('staff', StaffActivityController::class)->name('staff');
-    Route::get('vehicles', VehicleActivityController::class)->name('vehicles');
+    Route::get('vehicles', [VehicleActivityController::class, 'company'])->name('vehicles');
 });
