@@ -27,7 +27,7 @@ class Activity extends Model
         'time' => 'datetime'
     ];
 
-    protected $appends = ['fmt_time', 'fmt_date']
+    protected $appends = ['fmt_time', 'fmt_date'];
 
     // Relations
     function user(){ return $this->belongsTo(User::class); }
