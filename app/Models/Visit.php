@@ -24,6 +24,8 @@ class Visit extends Model
 
     public $timestamps = false;
 
+    protected $appends = ['fmt_host'];
+
     function staff(){ return $this->belongsTo(Staff::class); }
 
     function company(){ return $this->belongsTo(Company::class); }
