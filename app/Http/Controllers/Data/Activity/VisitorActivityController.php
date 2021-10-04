@@ -53,10 +53,12 @@ class VisitorActivityController extends Controller
 
         $visits = new ResultSet($q, $limit);
 
-        return response()->view('admin.activity.visitors', [
-            'result' => $visits,
-            'dates' => $dates
-        ]);
+        return $request->is('api*') ?
+            $this->json->mixed($visits, $visits->items) :
+            response()->view('admin.activity.visitors', [
+                'result' => $visits,
+                'dates' => $dates
+            ]);
     }
 
     function export(){

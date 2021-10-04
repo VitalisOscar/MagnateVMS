@@ -69,11 +69,13 @@ class StaffActivityController extends Controller
 
         $activities = new ResultSet($q, $limit);
 
-        return response()->view('admin.activity.staff', [
-            'result' => $activities,
-            'dates' => $dates,
-            'companies' => Company::whereHas('site')->with('site')->get()
-        ]);
+        return $request->is('api*') ?
+            $this->json->mixed($activities, $activities->items) :
+            response()->view('admin.activity.staff', [
+                'result' => $activities,
+                'dates' => $dates,
+                'companies' => Company::whereHas('site')->with('site')->get()
+            ]);
     }
 
     function export(){

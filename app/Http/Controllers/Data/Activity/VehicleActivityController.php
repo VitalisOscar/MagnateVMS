@@ -66,10 +66,14 @@ class VehicleActivityController extends Controller
             $dates = $from.' to '.$to;
         }
 
-        return response()->view('admin.activity.company_vehicles',[
-            'result' => new ResultSet($q, $limit),
-            'dates' => $dates
-        ]);
+        $result = new ResultSet($q, $limit);
+
+        return $request->is('api*') ?
+            $this->json->mixed($result, $result->items) :
+            response()->view('admin.activity.company_vehicles',[
+                'result' => $result,
+                'dates' => $dates
+            ]);
     }
 
     function exportCompany(){
