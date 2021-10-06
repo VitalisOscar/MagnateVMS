@@ -13,6 +13,7 @@ use App\Http\Controllers\Data\Drivers\GetDriversController;
 use App\Http\Controllers\Data\Sites\GetSitesController;
 use App\Http\Controllers\Data\Staff\GetStaffController;
 use App\Http\Controllers\Data\Vehicles\GetVehiclesController;
+use App\Http\Controllers\Data\Visitors\SingleVisitorController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('activity')
@@ -47,4 +48,6 @@ Route::prefix('get')
 
     Route::get('checked-in/staff', [StaffActivityController::class, 'getCheckedIn'])->name('staff.checked_in');
     Route::get('checked-in/visitors', [VisitorActivityController::class, 'getCheckedIn'])->name('visitors.checked_in');
+
+    Route::get('visitor/by-id', [SingleVisitorController::class, 'getByIdNumber'])->name('visitor.get_by_id');
 });

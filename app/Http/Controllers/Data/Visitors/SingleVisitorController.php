@@ -67,6 +67,10 @@ class SingleVisitorController extends Controller
         ]);
     }
 
+    function getByIdNumber(Request $request){
+        return $this->json->data(Visitor::where('id_number', $request->get('id_number'))->first());
+    }
+
     function export($visitor_id){
         return new SingleVisitorExport($visitor_id);
     }
