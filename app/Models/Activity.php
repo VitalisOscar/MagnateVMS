@@ -27,6 +27,8 @@ class Activity extends Model
         'time' => 'datetime'
     ];
 
+    protected $with = ['user'];
+
     protected $appends = ['fmt_time', 'fmt_date'];
 
     // Relations
