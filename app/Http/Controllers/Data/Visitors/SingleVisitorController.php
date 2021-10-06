@@ -68,7 +68,12 @@ class SingleVisitorController extends Controller
     }
 
     function getByIdNumber(Request $request){
-        return $this->json->data(Visitor::where('id_number', $request->get('id_number'))->first());
+        $visitor = Visitor::where('id_number', $request->get('id_number'))->first();
+
+        return $this->json->data([
+            'visitor' => $visitor,
+            'vehicles' => $visitor->vehicles()->get()
+        ]);
     }
 
     function export($visitor_id){
