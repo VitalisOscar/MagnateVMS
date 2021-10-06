@@ -91,7 +91,7 @@ class StaffActivityController extends Controller
                     ->atSite(auth('sanctum')->user()->site_id)
                     ->checkIn();
             })
-            ->with('last_activity', 'last_activity.vehicle');
+            ->with('company', 'last_activity', 'last_activity.vehicle');
 
         $result = new ResultSet($query);
 
