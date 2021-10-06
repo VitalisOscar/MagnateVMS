@@ -7,6 +7,7 @@ use App\Helpers\ResultSet;
 use App\Http\Controllers\Controller;
 use App\Models\Activity;
 use App\Models\Company;
+use App\Models\Staff;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
@@ -82,6 +83,19 @@ class StaffActivityController extends Controller
                 'dates' => $dates,
                 'companies' => Company::whereHas('site')->with('site')->get()
             ]);
+    }
+
+    function getCheckedIn(){
+        $query = Staff::whereHas('last_activity', function($a){
+                $a->onDate(Carbon::today())
+                    ->atSite(auth('sanctum')->user()->site_id)
+                    ->checkIn();
+            })
+            ->with('last_activity', 'last_activity.vehicle');
+
+        $result = new ResultSet($query);
+
+        return $this->json->mixed(null, $result->items);
     }
 
     function export(){

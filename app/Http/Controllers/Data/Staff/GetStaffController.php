@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers\Data\Staff;
 
+use App\Helpers\ResultSet;
 use App\Http\Controllers\Controller;
 use App\Models\Company;
+use App\Models\Site;
 use App\Models\Staff;
 use Exception;
 use Illuminate\Http\Request;
@@ -56,5 +58,17 @@ class GetStaffController extends Controller
         return back()
             ->withInput()
             ->withErrors(['status' => 'Something went wrong. Please try again']);
+    }
+
+    function atSite(Request $request, $site_id){
+        $site = Site::where('id', $site_id)->first();
+
+        if($site == null){
+            $result = ResultSet::empty();
+        }else{
+            $result = new ResultSet($site->staff());
+        }
+
+        return $this->json->mixed(null, $result->items);
     }
 }

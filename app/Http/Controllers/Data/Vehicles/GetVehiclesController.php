@@ -15,6 +15,8 @@ class GetVehiclesController extends Controller
         $limit = intval($request->get('limit'));
         if(!in_array($limit, [15,30,50,100])) $limit = 15;
 
+        if($request->is('api*')) $limit = null;
+
         $order = $request->get('order');
 
         $q = Vehicle::companyOwned();
@@ -31,9 +33,13 @@ class GetVehiclesController extends Controller
         if($order == 'az') $q->orderBy('registration_no', 'ASC');
         elseif($order == 'za') $q->orderBy('registration_no', 'DESC');
 
-        return response()->view('admin.vehicles.company',[
-            'result' => new ResultSet($q, $limit)
-        ]);
+        $result = new ResultSet($q, $limit);
+        
+        return $request->is('api*') ?
+            $this->json->mixed(null, $result->items)
+            : response()->view('admin.vehicles.company',[
+                'result' => $result,
+            ]);
     }
 
     function other(Request $request){

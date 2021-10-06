@@ -31,6 +31,12 @@ class Staff extends Model
 
     function activities(){ return $this->morphMany(Activity::class, 'by'); }
 
+    function last_activity(){
+        return $this->hasOne(Activity::class, 'by_id')
+            ->byStaff()
+            ->latest('time');
+    }
+
     function check_ins(){ return $this->activities()->checkIn(); }
 
     function check_outs(){ return $this->activities()->checkOut(); }

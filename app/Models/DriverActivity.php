@@ -18,6 +18,8 @@ class DriverActivity extends Model
         'task'
     ];
 
+    protected $appends = ['fmt_mileage'];
+
     function driver(){ return $this->belongsTo(Driver::class); }
 
     function activity(){ return $this->belongsTo(Activity::class); }

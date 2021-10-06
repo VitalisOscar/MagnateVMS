@@ -24,4 +24,10 @@ class GetDriversController extends Controller
             'result' => new ResultSet($q, $limit)
         ]);
     }
+
+    function all(Request $request){
+        $result = new ResultSet(Driver::query());
+
+        return $this->json->mixed(null, $result->items);
+    }
 }

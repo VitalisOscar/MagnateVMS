@@ -24,6 +24,7 @@ class Visitor extends Model
     function last_activity(){
         return $this->hasOne(Activity::class, 'by_id')
             ->byVisitor()
+            ->with('visit')
             ->latest('time');
     }
 

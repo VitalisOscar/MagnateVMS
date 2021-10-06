@@ -56,6 +56,8 @@ class Activity extends Model
 
     function scopeByVisitor($q){ $q->where('by_type', self::BY_VISITOR); }
 
+    function scopeAtSite($q,$site_id){ $q->where('site_id', $site_id); }
+
     function scopeOnDate($q, $d){
         $q->whereDate('time', $d->format('Y-m-d'));
     }

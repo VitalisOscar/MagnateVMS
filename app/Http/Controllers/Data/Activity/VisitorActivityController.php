@@ -6,6 +6,7 @@ use App\Exports\AllVisitsExport;
 use App\Helpers\ResultSet;
 use App\Http\Controllers\Controller;
 use App\Models\Activity;
+use App\Models\Visitor;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
@@ -65,6 +66,22 @@ class VisitorActivityController extends Controller
                 'result' => $visits,
                 'dates' => $dates
             ]);
+    }
+
+    function getCheckedIn(){
+        $query = Visitor::whereHas('last_activity', function($a){
+                $a->onDate(Carbon::today())
+                    ->atSite(auth('sanctum')->user()->site_id)
+                    ->checkIn();
+            })
+            ->with([
+                'last_activity', 'last_activity.visit',
+                'last_activity.vehicle', 'last_activity.visit.company', 'last_activity.visit.staff'
+            ]);
+
+        $result = new ResultSet($query);
+
+        return $this->json->mixed(null, $result->items);
     }
 
     function export(){

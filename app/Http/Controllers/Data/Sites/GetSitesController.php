@@ -16,7 +16,7 @@ class GetSitesController extends Controller
         $data = new ResultSet($q);
 
         return $request->is('api*') ?
-            $this->json->data($data) :
+            $this->json->mixed($data, $data->items) :
             response()->view('admin.sites.all',[
                 'result' => $data
             ]);
