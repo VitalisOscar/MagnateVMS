@@ -1,73 +1,85 @@
 <?php
 
-use App\Http\Controllers\Api\AuthController;
-use App\Http\Controllers\Api\Staff\StaffController;
-use App\Http\Controllers\Api\VisitEnquiryController;
-use App\Http\Controllers\Api\Vehicle\VehicleCheckInController;
-use App\Http\Controllers\Api\Vehicle\VehicleCheckOutController;
-use App\Http\Controllers\Api\Vehicle\GetVehiclesController;
-use App\Http\Controllers\Api\Visitor\VisitorCheckInController;
-use App\Http\Controllers\Api\Visitor\VisitorCheckOutController;
-use App\Http\Controllers\Api\Visitor\VisitorEnquiryController;
-use App\Http\Controllers\Api\Staff\StaffCheckInController;
-use App\Http\Controllers\Api\Staff\StaffCheckOutController;
-use App\Http\Controllers\Api\Staff\StaffRecordsController;
-use App\Http\Controllers\Api\SummaryController;
-use App\Http\Controllers\Api\Vehicle\GetDriversController;
-use App\Http\Controllers\Api\Vehicle\VehicleRecordsController;
-use App\Http\Controllers\Api\Visitor\AccessCardController;
-use App\Http\Controllers\Api\Visitor\VisitorRecordsController;
-use Illuminate\Http\Request;
+use App\Http\Controllers\Auth\UserAuthController;
+use App\Http\Controllers\CheckIn\StaffCheckInController;
+use App\Http\Controllers\CheckIn\VehicleCheckInController;
+use App\Http\Controllers\CheckIn\VisitorAccessCardController;
+use App\Http\Controllers\CheckIn\VisitorCheckInController;
+use App\Http\Controllers\CheckOut\StaffCheckOutController;
+use App\Http\Controllers\CheckOut\VehicleCheckOutController;
+use App\Http\Controllers\CheckOut\VisitorCheckOutController;
+use App\Http\Controllers\Data\Activity\RecentActivityController;
+use App\Http\Controllers\Data\Activity\StaffActivityController;
+use App\Http\Controllers\Data\Activity\VehicleActivityController;
+use App\Http\Controllers\Data\Activity\VisitorActivityController;
+use App\Http\Controllers\Data\Drivers\GetDriversController;
+use App\Http\Controllers\Data\Sites\GetSitesController;
+use App\Http\Controllers\Data\Staff\GetStaffController;
+use App\Http\Controllers\Data\Vehicles\GetVehiclesController;
+use App\Http\Controllers\Data\Visitors\SingleVisitorController;
 use Illuminate\Support\Facades\Route;
 
-include __DIR__ . '/api2.php';
 
-Route::prefix('user')->group(function(){
-    Route::post('login', [AuthController::class, 'login'])->name('api.login');
-});
+Route::name('api.')
+->group(function(){
 
-Route::middleware('auth:sanctum')->group(function(){
 
-});
 
-Route::middleware('auth:sanctum')->group(function(){
-    Route::prefix('check')->group(function(){
-        Route::post('in/visitor', VisitorCheckInController::class)->name('api.visitor.check.in');
-        Route::post('out/visitor', VisitorCheckOutController::class)->name('api.visitor.check.out');
 
-        Route::post('in/vehicle', VehicleCheckInController::class)->name('api.vehicle.check.in');
-        Route::post('out/vehicle', VehicleCheckOutController::class)->name('api.vehicle.check.out');
+    Route::post('user/login', [UserAuthController::class, 'login'])->name('user.login');
 
-	Route::post('in/staff', StaffCheckInController::class)->name('api.staff.check.in');
-        Route::post('out/staff', StaffCheckOutController::class)->name('api.staff.check.out');
+    Route::middleware('auth:sanctum')->group(function(){
+
+        Route::prefix('activity')
+        ->name('activity.')
+        ->group(function (){
+            // Checkin
+            Route::post('checkin/visitor', VisitorCheckInController::class)->name('checkin.visitor');
+            Route::post('checkin/staff', StaffCheckInController::class)->name('checkin.visitor');
+            Route::post('checkin/vehicle', VehicleCheckInController::class)->name('checkin.vehicle');
+
+            // Check out
+            Route::post('checkout/visitor', VisitorCheckOutController::class)->name('checkout.visitor');
+            Route::post('checkout/staff', StaffCheckOutController::class)->name('checkout.staff');
+            Route::post('checkout/vehicle', VehicleCheckOutController::class)->name('checkout.vehicle');
+        });
+
+        Route::prefix('get/activity')
+        ->name('history.')
+        ->group(function (){
+            Route::get('visitors', VisitorActivityController::class)->name('visitors');
+            Route::get('staff', StaffActivityController::class)->name('staff');
+            Route::get('vehicles', [VehicleActivityController::class, 'company'])->name('vehicles');
+
+            Route::get('recent', RecentActivityController::class)->name('api.get.summary');
+        });
+
+        Route::prefix('get')
+        ->name('data.')
+        ->group(function (){
+            Route::get('sites', GetSitesController::class)->name('sites');
+            Route::get('staff', [GetStaffController::class, 'atSite'])->name('staff');
+            Route::get('drivers', [GetDriversController::class, 'all'])->name('drivers');
+            Route::get('company-vehicles', [GetVehiclesController::class, 'company'])->name('company_vehicles');
+
+            Route::get('checked-in/staff', [StaffActivityController::class, 'getCheckedIn'])->name('staff.checked_in');
+            Route::get('checked-in/visitors', [VisitorActivityController::class, 'getCheckedIn'])->name('visitors.checked_in');
+
+            Route::get('visitor/by-id', [SingleVisitorController::class, 'getByIdNumber'])->name('visitor.get_by_id');
+        });
+
+        Route::prefix('cards')
+        ->name('cards.')
+        ->group(function(){
+            Route::post('issue', [VisitorAccessCardController::class, 'issueCard'])->name('issue');
+            Route::get('without', [VisitorAccessCardController::class, 'getVisitorsWithoutCard'])->name('get_without');
+        });
+
+        Route::post('user/password', [UserAuthController::class, 'changePassword'])->name('user.password');
+
     });
 
-    Route::prefix('get')->group(function(){
-        Route::get('visitor', [VisitEnquiryController::class, 'getVisitor'])->name('api.get.visitor');
-        Route::get('visit', [VisitEnquiryController::class, 'getVisitForCheckOut'])->name('api.get.visit');
 
-        Route::get('staff', [StaffController::class, 'getAll'])->name('api.get.all.staff');
-        Route::get('staff/in', [StaffController::class, 'getCheckedIn'])->name('api.get.checkins.staff');
-        Route::get('visitors/in', [VisitorEnquiryController::class, 'getCheckedIn'])->name('api.get.checkins.visitors');
 
-        Route::get('summary', [SummaryController::class, 'basic'])->name('api.get.summary');
-        Route::get('sites', [SummaryController::class, 'getSites'])->withoutMiddleware('auth:sanctum')->name('api.get.sites');
-
-        Route::get('company-vehicles', [GetVehiclesController::class, 'company'])->name('api.get.vehicles.company');
-        Route::get('drivers', GetDriversController::class)->name('api.get.drivers');
-    });
-
-    Route::prefix('history')->group(function(){
-        Route::get('visitors', VisitorRecordsController::class)->name('api.records.visitor');
-        Route::get('staff', StaffRecordsController::class)->name('api.records.staff');
-        Route::get('vehicles', VehicleRecordsController::class)->name('api.records.vehicles');
-    });
-
-    Route::prefix('cards')->group(function(){
-        Route::post('issue', [AccessCardController::class, 'issueCard'])->name('api.cards.issue');
-        Route::get('get-without', [AccessCardController::class, 'getVisitorsWithoutCard'])->name('api.cards.get_without');
-    });
-
-    Route::post('user/password', [AuthController::class, 'changePassword'])->name('api.password');
 
 });

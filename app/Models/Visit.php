@@ -32,6 +32,10 @@ class Visit extends Model
 
     function activity(){ return $this->belongsTo(Activity::class); }
 
+
+    function scopeNoCardIssued($q){ $q->where('card_number', null); }
+
+
     function getFmtHostAttribute(){
         if($this->staff){
             return $this->staff->name.' - '.$this->company->name;
