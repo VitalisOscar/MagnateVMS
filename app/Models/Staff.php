@@ -25,6 +25,8 @@ class Staff extends Model
         'added_at' => 'datetime'
     ];
 
+    protected $with = ['vehicles'];
+
     function company(){ return $this->belongsTo(Company::class); }
 
     function visits(){ return $this->hasMany(Visit::class); }
