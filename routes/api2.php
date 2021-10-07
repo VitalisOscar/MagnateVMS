@@ -6,6 +6,7 @@ use App\Http\Controllers\CheckIn\VisitorCheckInController;
 use App\Http\Controllers\CheckOut\StaffCheckOutController;
 use App\Http\Controllers\CheckOut\VehicleCheckOutController;
 use App\Http\Controllers\CheckOut\VisitorCheckOutController;
+use App\Http\Controllers\Data\Activity\RecentActivityController;
 use App\Http\Controllers\Data\Activity\StaffActivityController;
 use App\Http\Controllers\Data\Activity\VehicleActivityController;
 use App\Http\Controllers\Data\Activity\VisitorActivityController;
@@ -36,6 +37,8 @@ Route::prefix('get/activity')
     Route::get('visitors', VisitorActivityController::class)->name('visitors');
     Route::get('staff', StaffActivityController::class)->name('staff');
     Route::get('vehicles', [VehicleActivityController::class, 'company'])->name('vehicles');
+
+    Route::get('recent', RecentActivityController::class)->name('api.get.summary');
 });
 
 Route::prefix('get')
