@@ -4,10 +4,8 @@ namespace App\Http\Controllers\Data\Activity;
 
 use App\Http\Controllers\Controller;
 use App\Models\Activity;
-use App\Models\Site;
 use App\Models\Staff;
 use App\Models\Vehicle;
-use App\Models\Visit;
 use App\Models\Visitor;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -28,7 +26,8 @@ class RecentActivityController extends Controller
         })
         ->count();
 
-        $vehicles = Vehicle::whereHas('owner', function($owner) {
+        $vehicles = Vehicle::otherOwned()
+        ->whereHas('owner', function($owner) {
             $owner->whereHas('last_activity', function($activity) {
                 $activity->onDate(Carbon::today())
                     ->atSite(auth('sanctum')->user()->site_id);

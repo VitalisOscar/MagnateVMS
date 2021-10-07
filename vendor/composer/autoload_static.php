@@ -699,6 +699,7 @@ class ComposerStaticInit3d52cd5b5fed4405c08a7b0c9996fe08
         'App\\Http\\Controllers\\CheckOut\\VehicleCheckOutController' => __DIR__ . '/../..' . '/app/Http/Controllers/CheckOut/VehicleCheckOutController.php',
         'App\\Http\\Controllers\\CheckOut\\VisitorCheckOutController' => __DIR__ . '/../..' . '/app/Http/Controllers/CheckOut/VisitorCheckOutController.php',
         'App\\Http\\Controllers\\Controller' => __DIR__ . '/../..' . '/app/Http/Controllers/Controller.php',
+        'App\\Http\\Controllers\\Data\\Activity\\RecentActivityController' => __DIR__ . '/../..' . '/app/Http/Controllers/Data/Activity/RecentActivityController.php',
         'App\\Http\\Controllers\\Data\\Activity\\StaffActivityController' => __DIR__ . '/../..' . '/app/Http/Controllers/Data/Activity/StaffActivityController.php',
         'App\\Http\\Controllers\\Data\\Activity\\VehicleActivityController' => __DIR__ . '/../..' . '/app/Http/Controllers/Data/Activity/VehicleActivityController.php',
         'App\\Http\\Controllers\\Data\\Activity\\VisitorActivityController' => __DIR__ . '/../..' . '/app/Http/Controllers/Data/Activity/VisitorActivityController.php',

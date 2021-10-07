@@ -11,7 +11,7 @@ class Vehicle extends Model
 
     const OWNER_STAFF = 'Staff';
     const OWNER_VISITOR = 'Visitor';
-    const OWNER_COMPANY = 'Company';
+    const OWNER_COMPANY = null;
 
     public $timestamps = false;
 

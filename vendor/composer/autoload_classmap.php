@@ -67,6 +67,7 @@ return array(
     'App\\Http\\Controllers\\CheckOut\\VehicleCheckOutController' => $baseDir . '/app/Http/Controllers/CheckOut/VehicleCheckOutController.php',
     'App\\Http\\Controllers\\CheckOut\\VisitorCheckOutController' => $baseDir . '/app/Http/Controllers/CheckOut/VisitorCheckOutController.php',
     'App\\Http\\Controllers\\Controller' => $baseDir . '/app/Http/Controllers/Controller.php',
+    'App\\Http\\Controllers\\Data\\Activity\\RecentActivityController' => $baseDir . '/app/Http/Controllers/Data/Activity/RecentActivityController.php',
     'App\\Http\\Controllers\\Data\\Activity\\StaffActivityController' => $baseDir . '/app/Http/Controllers/Data/Activity/StaffActivityController.php',
     'App\\Http\\Controllers\\Data\\Activity\\VehicleActivityController' => $baseDir . '/app/Http/Controllers/Data/Activity/VehicleActivityController.php',
     'App\\Http\\Controllers\\Data\\Activity\\VisitorActivityController' => $baseDir . '/app/Http/Controllers/Data/Activity/VisitorActivityController.php',
