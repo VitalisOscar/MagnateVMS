@@ -25,7 +25,7 @@ class Staff extends Model
         'added_at' => 'datetime'
     ];
 
-    protected $with = ['vehicles'];
+    protected $with = ['vehicles', 'company'];
 
     function company(){ return $this->belongsTo(Company::class); }
 
