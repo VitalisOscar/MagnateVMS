@@ -40,7 +40,7 @@ class RecentActivityController extends Controller
             ->atSite(auth('sanctum')->user()->site_id)
             ->byHuman()
             ->limit(7)
-            ->with('by', 'visit', 'staff.company')
+            ->with('by', 'visit')
             ->get();
 
         return $this->json->data([
