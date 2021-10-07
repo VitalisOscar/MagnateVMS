@@ -38,8 +38,9 @@ class RecentActivityController extends Controller
         $activity = Activity::latest('time')
             ->onDate(Carbon::today())
             ->atSite(auth('sanctum')->user()->site_id)
+            ->byHuman()
             ->limit(7)
-            ->with('by', 'visit')
+            ->with('by', 'visit', 'staff.company')
             ->get();
 
         return $this->json->data([

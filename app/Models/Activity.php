@@ -58,6 +58,13 @@ class Activity extends Model
 
     function scopeByVisitor($q){ $q->where('by_type', self::BY_VISITOR); }
 
+    function scopeByHuman($q){
+        $q->where(function($q1){
+            $q1->where('by_type', self::BY_VISITOR)
+                ->orWhere('by_type', self::BY_STAFF);
+        });
+    }
+
     function scopeAtSite($q,$site_id){ $q->where('site_id', $site_id); }
 
     function scopeOnDate($q, $d){
