@@ -30,7 +30,7 @@ class RecentActivityController extends Controller
         ->whereHas('owner', function($owner) {
             $owner->whereHas('last_activity', function($activity) {
                 $activity
-                    ->where('activities.vehicle_id', 'vehicles.id')
+                    ->whereRaw('activities.vehicle_id = vehicles.id')
                     ->onDate(Carbon::today())
                     ->atSite(auth('sanctum')->user()->site_id);
             });

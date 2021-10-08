@@ -27,7 +27,7 @@ class DashboardController extends Controller
             $this->getSql(
                 Vehicle::whereHas('owner', function ($owner) use($date, $site){
                     $owner->whereHas('activities', function($a) use($date, $site){
-                        $a->where('activities.vehicle_id', 'vehicles.id')
+                        $a->whereRaw('activities.vehicle_id = vehicles.id')
                             ->whereRaw("date(time) = '".$date."'")
                             ->when($site, function($q, $site){
                                 return $q->whereRaw("site_id = $site");
