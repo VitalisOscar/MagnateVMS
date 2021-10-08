@@ -28,6 +28,8 @@ Route::name('api.')
 
     Route::post('user/login', [UserAuthController::class, 'login'])->name('user.login');
 
+	Route::get('get/sites', GetSitesController::class)->name('data.sites');
+
     Route::middleware('auth:sanctum')->group(function(){
         Route::post('user/re-login', [UserAuthController::class, 'reLogin'])->name('user.relogin');
 
@@ -58,7 +60,6 @@ Route::name('api.')
         Route::prefix('get')
         ->name('data.')
         ->group(function (){
-            Route::get('sites', GetSitesController::class)->name('sites');
             Route::get('staff', [GetStaffController::class, 'atSite'])->name('staff');
             Route::get('drivers', [GetDriversController::class, 'all'])->name('drivers');
             Route::get('company-vehicles', [GetVehiclesController::class, 'company'])->name('company_vehicles');
