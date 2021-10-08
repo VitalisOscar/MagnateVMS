@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -47,5 +48,15 @@ class Staff extends Model
 
     function getFirstNameAttribute(){
         return preg_split('/ +/', $this->name)[0];
+    }
+
+
+
+    protected static function booted()
+    {
+        parent::booted();
+        // static::addGlobalScope('ancient', function (Builder $builder) {
+        //     $builder->whereHas('company');
+        // });
     }
 }

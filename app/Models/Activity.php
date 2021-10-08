@@ -52,17 +52,17 @@ class Activity extends Model
 
     function scopeCheckOut($q){ $q->whereType(self::TYPE_CHECK_OUT); }
 
-    function scopeByCompanyVehicle($q){ $q->where('by_type', self::BY_COMPANY_VEHICLE); }
+    function scopeByCompanyVehicle($q){ $q->where('by_type', self::BY_COMPANY_VEHICLE)->whereHas('by'); }
 
-    function scopeByStaff($q){ $q->where('by_type', self::BY_STAFF); }
+    function scopeByStaff($q){ $q->where('by_type', self::BY_STAFF)->whereHas('by'); }
 
-    function scopeByVisitor($q){ $q->where('by_type', self::BY_VISITOR); }
+    function scopeByVisitor($q){ $q->where('by_type', self::BY_VISITOR)->whereHas('by'); }
 
     function scopeByHuman($q){
         $q->where(function($q1){
             $q1->where('by_type', self::BY_VISITOR)
                 ->orWhere('by_type', self::BY_STAFF);
-        });
+        })->whereHas('by');
     }
 
     function scopeAtSite($q,$site_id){ $q->where('site_id', $site_id); }

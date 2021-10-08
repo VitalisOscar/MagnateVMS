@@ -54,8 +54,8 @@
                 </td>
                 <td>{{ $company->staff_count }}</td>
                 <td>
-                    <a class="mr-3" href="{{ route('admin.sites.company', ['company_id' => $company->id, 'site_id' => $site->id]) }}">View&nbsp;<i class="fa fa-share"></i></a>
-                    <a href="">Delete&nbsp;<i class="fa fa-trash"></i></a>
+                    <a class="mr-3 btn btn-link py-1 px-0" href="{{ route('admin.sites.company', ['company_id' => $company->id, 'site_id' => $site->id]) }}">View&nbsp;<i class="fa fa-share"></i></a>
+                    {{-- <button class="btn btn-link py-1 px-0" onclick="deleteCo('{{ $company->name }}', '{{ $company->id }}')">Delete&nbsp;<i class="fa fa-trash"></i></button> --}}
                 </td>
             </tr>
 
@@ -146,4 +146,40 @@
 
 </div>
 
+<script>
+    function deleteCo(n, id){
+        $('#company_name').text(n);
+        $('#company_id').val(id);
+        $('#delete_company').modal();
+    }
+</script>
+
 @endsection
+
+<div id="delete_company" class="modal fade">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-body py-">
+                <form action="{{ route('admin.sites.company.delete', $site->id) }}" method="post">
+
+                    <div class="modal-heade mb-3">
+                        <h4 class="modal-title font-weight-600 mb-0">Delete Company</h4>
+                    </div>
+
+                    <div class="mb-3">
+                        Are you sure you want to delete the company <span id="company_name"></span> and it's staff members? This cannot be undone
+                    </div>
+
+                    @csrf
+                    <input type="hidden" name="company_id" id="company_id">
+
+                    <div class="text-right">
+                        <button class="btn btn-white py-2" type="button" data-dismiss="modal">Cancel</button>
+                        <button class="btn btn-danger py-2" type="submit">Delete</button>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

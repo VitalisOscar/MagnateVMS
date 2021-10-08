@@ -31,10 +31,10 @@ Route::prefix('admin')
         // Route::post('{site_id}/delete', [\App\Http\Controllers\Admin\Users\SingleUserController::class, 'delete'])->name('admin.users.delete');
 
         // Route::get('{site_id}/companies', [\App\Http\Controllers\Admin\Users\SingleUserController::class, 'get'])->name('admin.users.single');
-        // Route::get('{site_id}/companies/{company_id}/delete', [\App\Http\Controllers\Admin\Users\SingleUserController::class, 'get'])->name('admin.users.single');
         Route::get('{site_id}/companies/add', \App\Http\Controllers\Data\Sites\AddCompanyController::class)->name('sites.company.add');
         Route::post('{site_id}/companies/add', \App\Http\Controllers\Data\Sites\AddCompanyController::class)->name('sites.company.add');
         Route::get('{site_id}/companies/{company_id}', [\App\Http\Controllers\Data\Sites\SingleCompanyController::class, 'get'])->name('sites.company');
+        Route::post('{site_id}/companies/delete', [\App\Http\Controllers\Data\Sites\SingleCompanyController::class, 'delete'])->name('sites.company.delete');
 
         // staff
         Route::get('{site_id}/companies/{company_id}/staff/add', \App\Http\Controllers\Data\Staff\AddStaffController::class)->name('sites.staff.add');

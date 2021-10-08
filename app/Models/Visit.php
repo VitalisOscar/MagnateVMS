@@ -38,9 +38,9 @@ class Visit extends Model
 
     function getFmtHostAttribute(){
         if($this->staff){
-            return $this->staff->name.' - '.$this->company->name;
+            return $this->staff->name.($this->company ? (' - '.$this->company->name) : '');
         }
 
-        return ($this->host != null ? $this->host : 'None').' - '.$this->company->name;
+        return ($this->host != null ? $this->host : 'None').' - '.($this->company ? (' - '.$this->company->name) : '');
     }
 }

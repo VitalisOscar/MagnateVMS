@@ -43,15 +43,15 @@ class Vehicle extends Model
     }
 
     function scopeStaffOwned($q){
-        $q->where('owner_type', self::OWNER_STAFF);
+        $q->where('owner_type', self::OWNER_STAFF)->whereHas('owner');
     }
 
     function scopeVisitorOwned($q){
-        $q->where('owner_type', self::OWNER_VISITOR);
+        $q->where('owner_type', self::OWNER_VISITOR)->whereHas('owner');
     }
 
     function scopeOtherOwned($q){
-        $q->where('owner_type', '<>', self::OWNER_COMPANY);
+        $q->where('owner_type', '<>', self::OWNER_COMPANY)->whereHas('owner');
     }
 
     function scopeRegNo($q, $registration_no){
