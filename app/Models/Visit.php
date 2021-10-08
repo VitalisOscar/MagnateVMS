@@ -41,6 +41,6 @@ class Visit extends Model
             return $this->staff->name.($this->company ? (' - '.$this->company->name) : '');
         }
 
-        return ($this->host != null ? $this->host : 'None').' - '.($this->company ? (' - '.$this->company->name) : '');
+        return ($this->host != null ? $this->host : 'None').($this->company ? (' - '.$this->company->name) : '');
     }
 }
