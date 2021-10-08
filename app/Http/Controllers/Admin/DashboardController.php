@@ -3,20 +3,17 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Activity;
 use App\Models\Site;
 use App\Models\Staff;
-use App\Models\StaffCheckIn;
-use App\Models\StaffLog;
 use App\Models\User;
 use App\Models\Vehicle;
 use App\Models\Visit;
 use App\Models\Visitor;
 use Carbon\Carbon;
+use Illuminate\Database\Query\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Validation\Rule;
 
 class DashboardController extends Controller
 {
@@ -27,65 +24,63 @@ class DashboardController extends Controller
 
         $summaries_fetch = DB::select(
             'select ('.
-            Visit::whereHas('vehicle')
-                ->whereRaw("date(time_in) = '".$date."'")
-                ->when($site, function($q, $site){
-                    return $q->whereRaw("site_id = $site");
-                })
-                ->selectRaw('count(*)')
-                ->toSql().
-                ') as visit_vehicles, ('.
-
-            StaffCheckIn::whereHas('vehicle')
-                ->whereRaw("date(time_in) = '".$date."'")
-                ->when($site, function($q, $site){
-                    return $q->whereRaw("site_id = $site");
-                })
-                ->selectRaw('count(*)')
-                ->toSql().
-                ') as staff_vehicles, ('.
-
-            Visitor::whereHas('visits', function($q) use($date, $site){
-                    $q->whereRaw("date(time_in) = '".$date."'")
-                    ->when($site, function($q, $site){
-                        return $q->whereRaw("site_id = $site");
+            $this->getSql(
+                Vehicle::whereHas('owner', function ($owner) use($date, $site){
+                    $owner->whereHas('activities', function($a) use($date, $site){
+                        $a->whereRaw("date(time) = '".$date."'")
+                            ->when($site, function($q, $site){
+                                return $q->whereRaw("site_id = $site");
+                            });
                     });
                 })
                 ->selectRaw('count(*)')
-                ->toSql().
-                ') as visitors, ('.
+            ).') as vehicles_used, ('.
 
-            Staff::whereHas('check_ins', function($q) use($date, $site){
-                    $q->whereRaw("date(time_in) = '".$date."'")
-                        ->when($site, function($q, $site){
-                            return $q->whereRaw("site_id = $site");
+            $this->getSql(
+                Visitor::whereHas('activities', function($a) use($date, $site) {
+                    $a->whereRaw("date(time) = '".$date."'")
+                        ->when($site, function($s, $site){
+                            return $s->whereRaw("site_id = $site");
                         });
                 })
                 ->selectRaw('count(*)')
-                ->toSql().
-                ') as staff'
+            ).') as visitors, ('.
+
+            $this->getSql(
+                Staff::whereHas('activities', function($q) use($date, $site){
+                    $q->whereRaw("date(time) = '".$date."'")
+                        ->when($site, function($s, $site){
+                            return $s->whereRaw("site_id = $site");
+                        });
+                })
+                ->selectRaw('count(*)')
+            ).') as staff'
         );
 
         $summaries_fetch = $summaries_fetch[0];
 
         $visit_activity = DB::select(
-            Visit::whereRaw("date(time_in) = '".$date."'")
-            ->when($site, function($q, $site){
-                return $q->whereRaw("site_id = $site");
-            })
-            ->groupBy(Visit::query()->raw('HOUR(time_in)'))
-            ->selectRaw('count(*) as count, HOUR(time_in) as hour')
-            ->toSql()
+            $this->getSql(
+                Activity::byVisitor()
+                ->whereRaw("date(time) = '".$date."'")
+                ->when($site, function($q, $site){
+                    return $q->whereRaw("site_id = $site");
+                })
+                ->groupBy(Activity::query()->raw('HOUR(time)'))
+                ->selectRaw('count(*) as count, HOUR(time) as hour')
+            )
         );
 
         $staff_activity = DB::select(
-            StaffCheckIn::whereRaw("date(time_in) = '".$date."'")
-            ->when($site, function($q, $site){
-                return $q->whereRaw("site_id = $site");
-            })
-            ->groupBy(Visit::query()->raw('HOUR(time_in)'))
-            ->selectRaw('count(*) as count, HOUR(time_in) as hour')
-            ->toSql()
+            $this->getSql(
+                Activity::byStaff()
+                ->whereRaw("date(time) = '".$date."'")
+                ->when($site, function($q, $site){
+                    return $q->whereRaw("site_id = $site");
+                })
+                ->groupBy(Activity::query()->raw('HOUR(time)'))
+                ->selectRaw('count(*) as count, HOUR(time) as hour')
+            )
         );
 
         // return $activity_fetch;
@@ -117,7 +112,7 @@ class DashboardController extends Controller
             ],
             [
                 'label' => 'Vehicles Used',
-                'value' => ($summaries_fetch->staff_vehicles + $summaries_fetch->visit_vehicles),
+                'value' => ($summaries_fetch->vehicles_used),
                 'color' => 'coral'
             ],
         ];
@@ -133,6 +128,15 @@ class DashboardController extends Controller
             'summaries' => $summaries,
             'totals' => $totals
         ]);
+    }
+
+    /**
+     * @param Builder $query
+     */
+    function getSql($query){
+        return vsprintf(str_replace('?', '%s', $query->toSql()), collect($query->getBindings())->map(function($binding){
+            return is_numeric($binding) ? $binding : "'{$binding}'";
+        })->toArray());
     }
 
 }
