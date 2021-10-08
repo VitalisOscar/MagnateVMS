@@ -60,8 +60,8 @@ class GetStaffController extends Controller
             ->withErrors(['status' => 'Something went wrong. Please try again']);
     }
 
-    function atSite(Request $request, $site_id){
-        $site = Site::where('id', $site_id)->first();
+    function atSite(Request $request){
+        $site = Site::where('id', auth('sanctum')->user()->site_id)->first();
 
         if($site == null){
             $result = ResultSet::empty();
