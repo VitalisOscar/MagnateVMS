@@ -29,7 +29,9 @@ class RecentActivityController extends Controller
         $vehicles = Vehicle::otherOwned()
         ->whereHas('owner', function($owner) {
             $owner->whereHas('last_activity', function($activity) {
-                $activity->onDate(Carbon::today())
+                $activity
+                    ->where('activities.vehicle_id', 'vehicles.id')
+                    ->onDate(Carbon::today())
                     ->atSite(auth('sanctum')->user()->site_id);
             });
         })
