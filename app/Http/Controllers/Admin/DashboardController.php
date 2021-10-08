@@ -25,14 +25,11 @@ class DashboardController extends Controller
         $summaries_fetch = DB::select(
             'select ('.
             $this->getSql(
-                Vehicle::whereHas('owner', function ($owner) use($date, $site){
-                    $owner->whereHas('activities', function($a) use($date, $site){
-                        $a->whereRaw('activities.vehicle_id = vehicles.id')
-                            ->whereRaw("date(time) = '".$date."'")
-                            ->when($site, function($q, $site){
-                                return $q->whereRaw("site_id = $site");
-                            });
-                    });
+                Vehicle::whereHas('usages', function($a) use($date, $site){
+                    $a->whereRaw("date(time) = '".$date."'")
+                        ->when($site, function($q, $site){
+                            return $q->whereRaw("site_id = $site");
+                        });
                 })
                 ->selectRaw('count(*)')
             ).') as vehicles_used, ('.

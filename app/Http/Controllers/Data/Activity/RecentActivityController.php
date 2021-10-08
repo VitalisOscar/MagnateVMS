@@ -27,13 +27,9 @@ class RecentActivityController extends Controller
         ->count();
 
         $vehicles = Vehicle::otherOwned()
-        ->whereHas('owner', function($owner) {
-            $owner->whereHas('last_activity', function($activity) {
-                $activity
-                    ->whereRaw('activities.vehicle_id = vehicles.id')
-                    ->onDate(Carbon::today())
-                    ->atSite(auth('sanctum')->user()->site_id);
-            });
+        ->whereHas('usages', function($activity) {
+            $activity->onDate(Carbon::today())
+                ->atSite(auth('sanctum')->user()->site_id);
         })
         ->count();
 

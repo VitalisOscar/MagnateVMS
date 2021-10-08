@@ -26,6 +26,8 @@ class Vehicle extends Model
 
     function activities(){ return $this->morphMany(Activity::class, 'by'); }
 
+    function usages(){ return $this->hasMany(Activity::class, 'vehicle_id'); }
+
     function check_ins(){ return $this->activities()->checkIn(); }
 
     function check_outs(){ return $this->activities()->checkOut(); }
