@@ -2,6 +2,7 @@
 
 namespace App\Exports;
 
+use App\Models\Activity;
 use App\Models\Company;
 use App\Models\Site;
 use App\Models\StaffCheckIn;
@@ -30,8 +31,8 @@ class AllStaffCheckInsExport implements FromArray, Responsable, ShouldAutoSize, 
 
         $r = request();
 
-        $q = StaffCheckIn::query()
-            ->with('staff', 'staff.company', 'site', 'check_in_user', 'check_out_user');
+        $q = Activity::byStaff()
+            ->with('by', 'by.company', 'site', 'vehicle', 'user');
 
         $add_site = true;
         $add_company = true;
@@ -43,8 +44,8 @@ class AllStaffCheckInsExport implements FromArray, Responsable, ShouldAutoSize, 
 
             $order = $r->get('order');
 
-            if($order == 'past') $q->oldest('time_in');
-            else $q->latest('time_in');
+            if($order == 'past') $q->oldest('time');
+            else $q->latest('time');
 
             if($r->filled('site')){
                 $q->where('site_id', $r->get('site'));
@@ -98,8 +99,8 @@ class AllStaffCheckInsExport implements FromArray, Responsable, ShouldAutoSize, 
                     array_push($data, ['From', $from], ['To', $to], ['']);
                 }
 
-                $q->whereDate('time_in', '>=', $from)
-                    ->whereDate('time_in', '<=', $to);
+                $q->whereDate('time', '>=', $from)
+                    ->whereDate('time', '<=', $to);
             }
 
             // End filters
@@ -107,46 +108,44 @@ class AllStaffCheckInsExport implements FromArray, Responsable, ShouldAutoSize, 
 
         $headers = [
             'Site',
-            'Staff Name',
-            'Phone Number',
-            'Company',
+            'Type',
             'Date',
-            'Time In',
-            'Checked In By',
-            'Time Out',
-            'Checked Out By',
+            'Time',
+            'Staff Name',
+            'Phone',
+            'Extension',
+            'Company',
+            'Guard',
             'Vehicle'
         ];
 
+        if(!$add_company) unset($headers[7]);
         if(!$add_site) unset($headers[0]);
-        if(!$add_company) unset($headers[3]);
 
         // Add headers
         array_push($data, $headers);
         array_push($this->bolds, count($data));
 
         // Fetch the visits
-        $checkins = $q->get();
+        $activities = $q->get();
 
-        foreach($checkins as $checkin){
-            $in = Carbon::createFromTimeString($checkin->time_in);
-            $out = $checkin->time_out ? Carbon::createFromTimeString($checkin->time_out):null;
+        foreach($activities as $activity){
 
             $row = [
-                $checkin->site->name,
-                $checkin->staff->name,
-                $checkin->staff->phone,
-                $checkin->staff->company->name,
-                $in->format('Y-m-d'),
-                $in->format('H:i'),
-                $checkin->check_in_user->name,
-                $out ? $out->format('H:i'):'',
-                $checkin->check_out_user ? $checkin->check_out_user->name:null,
-                $checkin->car_registration,
+                $activity->site->name,
+                $activity->type,
+                $activity->fmt_date,
+                $activity->fmt_time,
+                $activity->by->name,
+                $activity->by->phone,
+                $activity->by->extension,
+                $activity->by->company->name,
+                $activity->user->name,
+                $activity->vehicle ? $activity->vehicle->registration_no : '-',
             ];
 
+            if(!$add_company) unset($row[7]);
             if(!$add_site) unset($row[0]);
-            if(!$add_company) unset($row[3]);
 
             array_push($data, $row);
         }

@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Data\Activity;
 
-use App\Exports\AllVisitsExport;
+use App\Exports\AllStaffCheckInsExport;
 use App\Helpers\ResultSet;
 use App\Http\Controllers\Controller;
 use App\Models\Activity;
@@ -99,6 +99,6 @@ class StaffActivityController extends Controller
     }
 
     function export(){
-        return new AllVisitsExport();
+        return new AllStaffCheckInsExport();
     }
 }

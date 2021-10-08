@@ -36,6 +36,7 @@ class AppServiceProvider extends ServiceProvider
             'Staff' => Staff::class,
             'Driver' => Driver::class,
             'User' => User::class,
+            'user' => User::class,
             'Admin' => Admin::class,
         ]);
     }

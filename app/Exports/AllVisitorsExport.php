@@ -2,13 +2,9 @@
 
 namespace App\Exports;
 
-use App\Models\Site;
-use App\Models\Visit;
 use App\Models\Visitor;
-use Carbon\Carbon;
 use Maatwebsite\Excel\Excel;
 use Illuminate\Contracts\Support\Responsable;
-use Illuminate\Support\Facades\Route;
 use Maatwebsite\Excel\Concerns\Exportable;
 use Maatwebsite\Excel\Concerns\FromArray;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
@@ -31,7 +27,7 @@ class AllVisitorsExport implements FromArray, Responsable, ShouldAutoSize, WithS
 
         $request = request();
 
-        $q = Visitor::query()->with('any_last_visit', 'any_last_visit.site');
+        $q = Visitor::query()->with('last_activity', 'last_activity.site');
 
         $add_site = true;
 
@@ -83,8 +79,8 @@ class AllVisitorsExport implements FromArray, Responsable, ShouldAutoSize, WithS
                 $visitor->phone,
                 $visitor->from,
                 $visitor->id_number,
-                $visitor->any_last_visit ? $visitor->any_last_visit->time:'No Visits',
-                $visitor->any_last_visit ? $visitor->any_last_visit->site->name:'No Visits'
+                $visitor->last_activity ? $visitor->last_activity->fmt_datetime:'No Visits',
+                $visitor->last_activity ? $visitor->last_activity->site->name:'No Visits'
             ];
 
             if(!$add_site){

@@ -23,15 +23,28 @@ class SingleCompanyController extends Controller
             return redirect()->route('admin.sites.single', $site_id);
         }
 
+        $q = $company->staff();
+
+        if($request->filled('keyword')){
+            $k = "%".$request->get('keyword')."%";
+
+            $q->where(function($s) use($k){
+                $s->where('name', 'like', $k)
+                    ->orWhere('phone', 'like', $k)
+                    ->orWhere('extension', 'like', $k);
+            });
+        }
+
+
         $limit = intval($request->get('limit'));
 
-        if(!in_array($limit, [15,25,50,100,250])){
+        if(!in_array($limit, [15,30,50,100])){
             $limit = 15;
         }
 
         return response()->view('admin.companies.single', [
             'company' => $company,
-            'result' => new ResultSet($company->staff(), $limit)
+            'result' => new ResultSet($q, $limit)
         ]);
     }
 

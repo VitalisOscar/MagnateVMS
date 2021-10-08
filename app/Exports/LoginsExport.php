@@ -121,10 +121,10 @@ class LoginsExport implements FromArray, Responsable, ShouldAutoSize, WithStyles
             $t = Carbon::createFromTimeString($login->time);
 
             $row = [
-                $login->type,
+                $login->user_type,
                 $login->user->name,
-                $t->format('Y-m-d'),
-                $t->format('H:i'),
+                $login->fmt_date,
+                $login->fmt_time,
                 $login->site->name,
                 \Illuminate\Support\Str::title($login->status)
             ];

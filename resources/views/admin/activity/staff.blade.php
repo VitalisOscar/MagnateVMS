@@ -85,6 +85,7 @@
                 <th>Site</th>
                 <th>Staff Name</th>
                 <th>Phone No</th>
+                <th>Extension</th>
                 <th>Company</th>
                 <th>Date</th>
                 <th>Vehicle</th>
@@ -94,7 +95,7 @@
 
             @if($result->isEmpty())
             <tr>
-                <td colspan="8">
+                <td colspan="9">
                     <p class="my-0">
                         No staff activity has been captured that matches the selected options
                     </p>
@@ -108,6 +109,7 @@
                 <td>{{ $activity->site->name }}</td>
                 <td><a href="{{ route('admin.sites.staff', ['site_id' => $activity->site->id, 'company_id' => $activity->staff->company->id, 'staff_id' => $activity->staff->id]) }}">{{ $activity->staff->name }}</a></td>
                 <td>{{ $activity->staff->phone }}</td>
+                <td>{{ $activity->staff->extension }}</td>
                 <td>{{ $activity->staff->company->name }}</td>
                 <td>{{ $activity->fmt_datetime }}</td>
                 @if($activity->vehicle != null)
@@ -123,7 +125,7 @@
             @endforeach
 
             <tr>
-                <td colspan="8">
+                <td colspan="9">
                     <div class="d-flex align-items-center">
                         <a href="{{ $result->prevPageUrl() }}" class="@if(!$result->hasPreviousPage()){{ __('disabled') }}@endif mr-auto btn btn-link p-0"><i class="fa fa-angle-double-left"></i>&nbsp;Prev</a>
                         <span>{{ 'Page '.$result->page.' of '.$result->max_pages }}</span>

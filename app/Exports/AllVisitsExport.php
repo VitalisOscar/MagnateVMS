@@ -2,8 +2,8 @@
 
 namespace App\Exports;
 
+use App\Models\Activity;
 use App\Models\Site;
-use App\Models\Visit;
 use Carbon\Carbon;
 use Maatwebsite\Excel\Excel;
 use Illuminate\Contracts\Support\Responsable;
@@ -29,16 +29,8 @@ class AllVisitsExport implements FromArray, Responsable, ShouldAutoSize, WithSty
 
         $r = request();
 
-        $q = Visit::query()
-            ->with([
-                'visitor',
-                'site',
-                'staff',
-                'staff.company',
-                'check_in_user',
-                'check_out_user'
-            ]);
-
+        $q = Activity::byVisitor()
+            ->with('by', 'site', 'vehicle', 'user', 'visit', 'visit.staff', 'visit.company');
 
         $add_site = true;
 
@@ -46,8 +38,8 @@ class AllVisitsExport implements FromArray, Responsable, ShouldAutoSize, WithSty
             // Add filters
             $order = $r->get('order');
 
-            if($order == 'past') $q->oldest('time_in');
-            else $q->latest('time_in');
+            if($order == 'past') $q->oldest('time');
+            else $q->latest('time');
 
 
             if($r->filled('site')){
@@ -84,8 +76,8 @@ class AllVisitsExport implements FromArray, Responsable, ShouldAutoSize, WithSty
                     array_push($data, ['From', $from], ['To', $to], ['']);
                 }
 
-                $q->whereDate('time_in', '>=', $from)
-                    ->whereDate('time_in', '<=', $to);
+                $q->whereDate('time', '>=', $from)
+                    ->whereDate('time', '<=', $to);
             }
 
             // End filters
@@ -94,15 +86,13 @@ class AllVisitsExport implements FromArray, Responsable, ShouldAutoSize, WithSty
         $headers = [
             'Site',
             'Visitor',
+            'Type',
+            'Date',
+            'Time',
             'Reason',
             'Host',
-            'Date',
-            'Time In',
-            'Items In',
-            'Checked In By',
-            'Time Out',
-            'Items Out',
-            'Checked Out By',
+            'Items',
+            'Guard',
             'Vehicle',
             'Access Card'
         ];
@@ -116,26 +106,22 @@ class AllVisitsExport implements FromArray, Responsable, ShouldAutoSize, WithSty
         array_push($this->bolds, count($data));
 
         // Fetch the visits
-        $visits = $q->get();
+        $activities = $q->get();
 
-        foreach($visits as $visit){
-            $in = Carbon::createFromTimeString($visit->time_in);
-            $out = $visit->time_out ? Carbon::createFromTimeString($visit->time_out):null;
+        foreach($activities as $activity){
 
             $row = [
-                $visit->site->name,
-                $visit->visitor->name,
-                $visit->reason,
-                $visit->host,
-                $in->format('Y-m-d'),
-                $in->format('H:i'),
-                $visit->items_in,
-                $visit->check_in_user->name,
-                $out ? $out->format('H:i'):'',
-                $visit->items_out,
-                $visit->check_out_user ? $visit->check_out_user->name:null,
-                $visit->car_registration,
-                $visit->card_number,
+                $activity->site->name,
+                $activity->by->name,
+                $activity->type,
+                $activity->fmt_date,
+                $activity->fmt_time,
+                $activity->visit->reason,
+                $activity->visit->fmt_host,
+                $activity->visit->items ?? '-',
+                $activity->user->name,
+                $activity->vehicle ? $activity->vehicle->registration_no : '-',
+                $activity->visit->card_number ?? '-',
             ];
 
             if(!$add_site){

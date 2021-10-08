@@ -32,7 +32,7 @@ class AddStaffController extends Controller
         $validator = validator($request->post(), [
             'name' => 'required|string',
             'phone' => 'nullable|regex:/0([0-9]){9}/',
-            'extension' => 'required|string',
+            'extension' => 'nullable|string',
             'department' => 'required|string'
         ],[
             'phone.required' => 'Please provide a phone number for the staff member',

@@ -65,6 +65,7 @@
 
         <table class="table">
             <tr class="card-header">
+                <th>Type</th>
                 <th>Date</th>
                 <th>Time</th>
                 <th>Site</th>
@@ -85,6 +86,7 @@
 
             @foreach ($result->items as $activity)
             <tr>
+                <td>{{ $activity->type }}</td>
                 <td>{{ $activity->fmt_date }}</td>
                 <td>{{ $activity->fmt_time }}</td>
                 <td>{{ $activity->site->name }}</td>
@@ -109,4 +111,14 @@
     </div>
 </div>
 
+@endsection
+
+@section('scripts')
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script>
+        flatpickr("#flatpickr", {
+            mode: 'range',
+            maxDate: 'today'
+        });
+    </script>
 @endsection

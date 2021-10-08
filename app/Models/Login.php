@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -51,5 +52,26 @@ class Login extends Model
 
     function scopeByAdmin($q){
         $q->whereUserType(self::TYPE_ADMIN);
+    }
+
+
+    function getFmtDateAttribute(){
+        return $this->time->day.' '.substr($this->time->monthName, 0, 3).' '.$this->time->year;
+    }
+
+    function getFmtTimeAttribute(){
+        if(is_string($this->time)){
+            $d = Carbon::createFromTimeString($this->time);
+        }else if($this->time == null){
+            $d = Carbon::now();
+        }else{
+            $d = $this->time;
+        }
+
+        return $d->format('H:i');
+    }
+
+    function getFmtDatetimeAttribute(){
+        return $this->fmt_date.' at '.$this->fmt_time;
     }
 }

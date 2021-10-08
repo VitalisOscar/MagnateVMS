@@ -2,6 +2,7 @@
 
 namespace App\Exports;
 
+use App\Models\Activity;
 use App\Models\Company;
 use App\Models\Drive;
 use App\Models\Site;
@@ -35,25 +36,27 @@ class CompanyVehiclesActivityExport implements FromArray, Responsable, ShouldAut
         $limit = intval($request->get('limit'));
         if(!in_array($limit, [15,30,50,100])) $limit = 15;
 
-        $q = Drive::with('vehicle', 'driveable_in', 'driveable_out');
+        $q = Activity::byCompanyVehicle()
+            ->with('by', 'driver_task', 'driver_task.driver', 'user', 'site');
 
         if($request->filled('filters') && $request->get('filters') == 1){
             $order = $request->get('order');
 
-            if($order == 'past') $q->oldest('time_in');
-            else $q->latest('time_in');
+            if($order == 'past') $q->oldest('time');
+            else $q->latest('time');
 
 
             if($request->filled('keyword')){
                 $q->where(function($q1) use($request){
-                    $q1->whereHas('vehicle', function($q2) use($request){
-                        $k = '%'.$request->get('keyword').'%';
-                        $q2->where('registration_no', 'like', $k)
-                            ->orWhere('description', 'like', $k);
+                    $q1->whereHas('driver_task', function($dt) use($request){
+                        $dt->whereHas('driver', function($d) use($request){
+                            $k = '%'.$request->get('keyword').'%';
+                            $d->where('name', 'like', $k);
+                        });
                     })
-                    ->orWhereHas('driveable_in', function($q2) use($request){
+                    ->orWhereHas('companyVehicle', function($v) use($request){
                         $k = '%'.$request->get('keyword').'%';
-                        $q2->where('name', 'like', $k);
+                        $v->where('registration_no', 'like', $k);
                     });
                 });
 
@@ -84,26 +87,22 @@ class CompanyVehiclesActivityExport implements FromArray, Responsable, ShouldAut
                     array_push($data, ['From', $from], ['To', $to], ['']);
                 }
 
-                $q->whereDate('time_in', '>=', $from)
-                    ->whereDate('time_in', '<=', $to);
+                $q->whereDate('time', '>=', $from)
+                    ->whereDate('time', '<=', $to);
             }
         }
 
         $headers = [
-            'Vehicle Reg No',
-            'Vehicle Description',
-            'Date Out',
-            'Time Out',
-            'Checked Out By',
-            'Driver Out',
-            'Fuel Out',
-            'Fuel In',
-            'Mileage Out',
-            'Mileage In',
-            'Date In',
-            'Time In',
-            'Checked In By',
-            'Driver In',
+            'Reg No',
+            'Description',
+            'Site',
+            'Type',
+            'Date',
+            'Time',
+            'Task',
+            'Driver',
+            'Mileage',
+            'Guard',
         ];
 
         // Add headers
@@ -111,27 +110,20 @@ class CompanyVehiclesActivityExport implements FromArray, Responsable, ShouldAut
         array_push($this->bolds, count($data));
 
         // Fetch the records
-        $checks = $q->get();
+        $activities = $q->get();
 
-        foreach($checks as $check){
-            $in = $check->time_in ? Carbon::createFromTimeString($check->time_in):null;
-            $out = $check->time_out ? Carbon::createFromTimeString($check->time_out):null;
-
+        foreach($activities as $activity){
             $row = [
-                $check->vehicle->registration_no,
-                $check->vehicle->description,
-                $out ? $out->format('Y-m-d'):'',
-                $out ? $out->format('H:i'):'',
-                $check->check_out_user ? $check->check_out_user->name:'-',
-                $check->driveable_out ? ($check->driveable_out->name.($check->driveable_out->department ? ' - '.$check->driveable_out->department:' (Staff)')):'Not Captured',
-                $check->fuel_out,
-                $check->fuel_in ? $check->fuel_in : 'Not Captured',
-                $check->mileage_out,
-                $check->mileage_in ? $check->mileage_in : 'Not Captured',
-                $in ? $in->format('Y-m-d'):'',
-                $in ? $in->format('H:i'):'',
-                $check->check_in_user? $check->check_in_user->name:'-',
-                $check->driveable_in ? ($check->driveable_in->name.($check->driveable_in->department ? ' - '.$check->driveable_in->department:' (Staff)')):'Not Captured',
+                $activity->by->registration_no,
+                $activity->by->description,
+                $activity->site->name,
+                $activity->type,
+                $activity->fmt_date,
+                $activity->fmt_time,
+                $activity->driver_task->task,
+                $activity->driver_task->driver->name,
+                $activity->driver_task->fmt_mileage,
+                $activity->user->name,
             ];
 
             array_push($data, $row);

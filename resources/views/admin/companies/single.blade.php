@@ -21,9 +21,31 @@
 
     <div class="">
 
-        <div class="px-4 py-3 d-flex align-items-center">
-            <h4 class="font-weight-600 mb-0">Staff Members</h4>
-            <a href="{{ route('admin.sites.staff.add', ['site_id' => $company->site->id, 'company_id' => $company->id]) }}" class="ml-auto btn btn-primary btn-sm shadow-none">Add New</a>
+        <div>
+
+            <div class="px-4 py-3 d-flex align-items-center">
+                <h4 class="font-weight-600 mb-0">Staff Members ({{ $result->total.' Total' }})</h4>
+
+                <a href="{{ route('admin.sites.staff.add', ['site_id' => $company->site->id, 'company_id' => $company->id]) }}" class="ml-auto btn btn-primary btn-sm shadow-none">Add New</a>
+            </div>
+
+            <?php $r = request(); ?>
+
+            <form class="px-4 pb-3 d-flex align-items-center">
+                <input type="search" name="keyword" class="form-control bg-white mr-3" placeholder="Seach by name, phone, extension..." value="{{ $r->filled('keyword') ? $r->get('keyword'):'' }}">
+
+                <div class="d-flex align-items-center ml-auto">
+                    <select name="limit" class="custom-select mr-3" style="width: auto !important">
+                        <option value="15" @if($r->get('limit') == 15){{ __('selected') }}@endif>Upto 15 Records</option>
+                        <option value="30" @if($r->get('limit') == 30){{ __('selected') }}@endif>Upto 30 Records</option>
+                        <option value="50" @if($r->get('limit') == 50){{ __('selected') }}@endif>Upto 50 Records</option>
+                        <option value="100" @if($r->get('limit') == 100){{ __('selected') }}@endif>Upto 100 Records</option>
+                    </select>
+
+                    <button class="btn btn-default shadow-none">Search</button>
+                </div>
+            </form>
+
         </div>
 
         <table class="table">

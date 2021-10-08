@@ -66,6 +66,7 @@
                 <th class="text-center">#</th>
                 <th>Type</th>
                 <th>Account</th>
+                <th>Date</th>
                 <th>Time</th>
                 <th>Site</th>
                 <th>Outcome</th>
@@ -73,7 +74,7 @@
 
             @if ($result->total == 0)
             <tr>
-                <td colspan="6">
+                <td colspan="7">
                     <p class="my-0">
                         There are no logins at the moment
                     </p>
@@ -88,7 +89,8 @@
                 <td class="text-center">{{ $result->from + $i }}</td>
                 <td>{{ \Illuminate\Support\Str::title($login->user_type) }}</td>
                 <td>{{ $login->user->name }}</td>
-                <td>{{ $login->login_time }}</td>
+                <td>{{ $login->fmt_date }}</td>
+                <td>{{ $login->fmt_time }}</td>
                 <td>{{ $login->site_id ? $login->site->name:'-' }}</td>
                 <td>{{ \Illuminate\Support\Str::title($login->status) }}</td>
             </tr>
@@ -110,4 +112,14 @@
     </div>
 </div>
 
+@endsection
+
+@section('scripts')
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script>
+        flatpickr("#flatpickr", {
+            mode: 'range',
+            maxDate: 'today'
+        });
+    </script>
 @endsection

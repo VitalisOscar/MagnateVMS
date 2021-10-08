@@ -11,7 +11,7 @@ class Activity extends Model
     use HasFactory;
 
     const TYPE_CHECK_IN = 'Check In';
-    const TYPE_CHECK_OUT = 'Leaving';
+    const TYPE_CHECK_OUT = 'Check Out';
 
     const BY_STAFF = 'Staff';
     const BY_VISITOR = 'Visitor';
@@ -46,6 +46,9 @@ class Activity extends Model
 
     // Only to be used when dealing with staff, ensure the byStaff() scope has been applied
     function staff(){ return $this->hasOne(Staff::class, 'id', 'by_id'); }
+
+    // Only to be used when dealing with company vehicles, ensure the byCompanyVehicle() scope has been applied
+    function companyVehicle(){ return $this->hasOne(Vehicle::class, 'id', 'by_id')->companyOwned(); }
 
     // Scopes
     function scopeCheckIn($q){ $q->whereType(self::TYPE_CHECK_IN); }

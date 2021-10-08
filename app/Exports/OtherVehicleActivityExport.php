@@ -2,8 +2,6 @@
 
 namespace App\Exports;
 
-use App\Models\StaffCheckIn;
-use App\Models\Visit;
 use Carbon\Carbon;
 use Maatwebsite\Excel\Excel;
 use Illuminate\Contracts\Support\Responsable;
@@ -35,39 +33,40 @@ class OtherVehicleActivityExport implements FromArray, Responsable, ShouldAutoSi
 
         $request = request();
 
-        if($this->vehicle->vehicleable_type == 'staff'){
-            $q = StaffCheckIn::whereVehicleId($this->vehicle->id);
-
+        if($this->vehicle->isStaffVehicle()){
             array_push($data,
-                ['Vehicle Owner:', 'Staff ('.$this->vehicle->vehicleable->company->name.')'],
-                ['Owner Name:', $this->vehicle->owner_name],
+                ['Vehicle Owner:', 'Staff ('.$this->vehicle->owner->company->name.')'],
+                ['Owner Name:', $this->vehicle->owner->name],
+                ['Contact:', $this->vehicle->owner->phone ?? $this->vehicle->owner->extension ?? ' '],
                 ['Reg Number', $this->vehicle->registration_no],
                 ['']
             );
         }else{
-            $q = Visit::whereVehicleId($this->vehicle->id);
-
             array_push($data,
                 ['Vehicle Owner:', 'Visitor'],
-                ['Owner Name:', $this->vehicle->owner_name],
+                ['Owner Name:', $this->vehicle->owner->name],
+                ['Contact:', $this->vehicle->owner->phone ?? ' '],
                 ['Reg Number', $this->vehicle->registration_no],
                 ['']
             );
         }
 
+        array_push($this->bolds, 'A'.(count($data) - 4));
         array_push($this->bolds, 'A'.(count($data) - 3));
         array_push($this->bolds, 'A'.(count($data) - 2));
         array_push($this->bolds, 'A'.(count($data) - 1));
 
-        $q->with('site', 'check_in_user', 'check_out_user');
+        $q = $this->vehicle
+            ->usages()
+            ->with('site', 'user');
 
         if($request->filled('filters') && $request->get('filters') == 1){
 
             // Activity
             $order = $request->get('order');
 
-            if($order == 'past') $q->oldest('time_in');
-            else $q->latest('time_in');
+            if($order == 'past') $q->oldest('time');
+            else $q->latest('time');
 
 
             if($request->filled('date')){
@@ -93,8 +92,8 @@ class OtherVehicleActivityExport implements FromArray, Responsable, ShouldAutoSi
                     array_push($data, ['From', $from], ['To', $to], ['']);
                 }
 
-                $q->whereDate('time_in', '>=', $from)
-                    ->whereDate('time_in', '<=', $to);
+                $q->whereDate('time', '>=', $from)
+                    ->whereDate('time', '<=', $to);
             }
 
         }
@@ -102,11 +101,10 @@ class OtherVehicleActivityExport implements FromArray, Responsable, ShouldAutoSi
 
         $headers = [
             'Site',
+            'Type',
             'Date',
-            'Time In',
-            'Checked In By',
-            'Time Out',
-            'Checked Out By',
+            'Time',
+            'Guard'
         ];
 
         // Add headers
@@ -117,16 +115,12 @@ class OtherVehicleActivityExport implements FromArray, Responsable, ShouldAutoSi
         $activities = $q->get();
 
         foreach($activities as $a){
-            $in = Carbon::createFromTimeString($a->time_in);
-            $out = $a->time_out ? Carbon::createFromTimeString($a->time_out):null;
-
             $row = [
                 $a->site->name,
-                $in->format('Y-m-d'),
-                $in->format('H:i'),
-                $a->check_in_user ? $a->check_in_user->name : null,
-                $out ? $out->format('H:i'):'',
-                $a->check_out_user ? $a->check_out_user->name:null,
+                $a->type,
+                $a->fmt_date,
+                $a->fmt_time,
+                $a->user->name,
             ];
 
             array_push($data, $row);

@@ -6,8 +6,6 @@ use App\Exports\CompanyVehiclesActivityExport;
 use App\Helpers\ResultSet;
 use App\Http\Controllers\Controller;
 use App\Models\Activity;
-use App\Models\Drive;
-use App\Models\Vehicle;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
@@ -34,9 +32,9 @@ class VehicleActivityController extends Controller
                         $d->where('name', 'like', $k);
                     });
                 })
-                ->orWhereHas('by', function($by) use($request){
+                ->orWhereHas('companyVehicle', function($v) use($request){
                     $k = '%'.$request->get('keyword').'%';
-                    $by->where('registration_no', 'like', $k);
+                    $v->where('registration_no', 'like', $k);
                 });
             });
         }

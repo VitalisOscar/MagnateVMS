@@ -71,7 +71,7 @@ class VehiclesExport implements FromArray, Responsable, ShouldAutoSize, WithStyl
                 $q->where(function($q1) use($k){
                     $q1->where('registration_no', 'like', $k)
                         ->orWhere('description', 'like', $k)
-                        ->orWhereHas('vehicleable', function($q2) use($k){
+                        ->orWhereHas('owner', function($q2) use($k){
                             $q2->where('name', 'like', $k);
                         });
                 });
@@ -95,10 +95,13 @@ class VehiclesExport implements FromArray, Responsable, ShouldAutoSize, WithStyl
             array_push($this->bolds, 'A1');
         }
 
+        $q->with('owner');
+
         if($this->type == "other"){
             $headers = [
                 'Owner',
                 'Owner Name',
+                'Contact',
                 'Registration No',
             ];
         }else{
@@ -121,6 +124,7 @@ class VehiclesExport implements FromArray, Responsable, ShouldAutoSize, WithStyl
                 $row = [
                     $vehicle->owner_type,
                     $vehicle->owner_name,
+                    $vehicle->owner->phone ?? $vehicle->owner->extension ?? 'None Found',
                     $vehicle->registration_no,
                 ];
             }else{

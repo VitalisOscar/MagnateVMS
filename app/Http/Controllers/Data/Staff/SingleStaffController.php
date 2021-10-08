@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Data\Staff;
 
 use App\Http\Controllers\Controller;
-use App\Models\Company;
 use App\Models\Staff;
 use Exception;
 use Illuminate\Http\Request;
@@ -37,7 +36,9 @@ class SingleStaffController extends Controller
 
         $validator = validator($request->post(), [
             'name' => 'required|string',
-            'phone' => 'required|regex:/0([0-9]){9}/'
+            'phone' => 'nullable|regex:/0([0-9]){9}/',
+            'extension' => 'nullable|string',
+            'department' => 'required|string'
         ],[
             'phone.required' => 'Please provide a phone number for the staff member',
             'phone.regex' => 'Enter a valid 10 digit phone number with no country code'
@@ -48,7 +49,9 @@ class SingleStaffController extends Controller
         }
 
         if($staff->name == $request->post('name') &&
-            $staff->phone == $request->post('phone')
+            $staff->phone == $request->post('phone') &&
+            $staff->extension == $request->post('extension') &&
+            $staff->department == $request->post('department')
         ){
             return back()
                 ->withInput()
@@ -57,6 +60,8 @@ class SingleStaffController extends Controller
 
         $staff->name = $request->post('name');
         $staff->phone = $request->post('phone');
+        $staff->extension = $request->post('extension');
+        $staff->department = $request->post('department');
 
         try{
             if($staff->save()){

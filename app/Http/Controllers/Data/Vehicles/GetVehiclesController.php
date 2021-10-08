@@ -34,7 +34,7 @@ class GetVehiclesController extends Controller
         elseif($order == 'za') $q->orderBy('registration_no', 'DESC');
 
         $result = new ResultSet($q, $limit);
-        
+
         return $request->is('api*') ?
             $this->json->mixed(null, $result->items)
             : response()->view('admin.vehicles.company',[
@@ -59,7 +59,7 @@ class GetVehiclesController extends Controller
             $q->where(function($q1) use($k){
                 $q1->where('registration_no', 'like', $k)
                     ->orWhere('description', 'like', $k)
-                    ->orWhereHas('vehicleable', function($q2) use($k){
+                    ->orWhereHas('owner', function($q2) use($k){
                         $q2->where('name', 'like', $k);
                     });
             });

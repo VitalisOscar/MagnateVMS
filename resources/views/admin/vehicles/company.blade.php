@@ -115,3 +115,13 @@
 </div>
 
 @endsection
+
+@section('scripts')
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script>
+        flatpickr("#flatpickr", {
+            mode: 'range',
+            maxDate: 'today'
+        });
+    </script>
+@endsection
