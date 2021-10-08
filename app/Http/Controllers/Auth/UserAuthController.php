@@ -77,6 +77,27 @@ class UserAuthController extends Controller
         return $this->json->data($user);
     }
 
+    function reLogin(Request $request){
+        if(validator()->make($request->post(), [
+            'password' => ['required'],
+        ])->fails()){
+            return $this->json->error('Please provide your password to authenticate yourself');
+        }
+
+        $user = auth('sanctum')->user();
+
+        if($user == null){
+            return $this->json->error('Unable to log you in. Please logout the app and do a fresh login');
+        }
+
+        // check password
+        if(!Hash::check($request->post('password'), $user->getAuthPassword())){
+            return $this->json->error('Incorrect password. Please try again, or contact admin if you forgot');
+        }
+
+        return $this->json->data($user, "You have logged in successfully");
+    }
+
     function changePassword(Request $request){
         if(validator()->make($request->post(), [
             'current_password' => 'required',

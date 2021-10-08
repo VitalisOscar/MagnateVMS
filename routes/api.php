@@ -29,6 +29,7 @@ Route::name('api.')
     Route::post('user/login', [UserAuthController::class, 'login'])->name('user.login');
 
     Route::middleware('auth:sanctum')->group(function(){
+        Route::post('user/re-login', [UserAuthController::class, 'reLogin'])->name('user.relogin');
 
         Route::prefix('activity')
         ->name('activity.')
