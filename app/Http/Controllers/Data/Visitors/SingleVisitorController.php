@@ -72,7 +72,7 @@ class SingleVisitorController extends Controller
 
         return $this->json->data([
             'visitor' => $visitor,
-            'vehicles' => $visitor->vehicles()->get()
+            'vehicles' => $visitor ? $visitor->vehicles()->get() : []
         ]);
     }
 
