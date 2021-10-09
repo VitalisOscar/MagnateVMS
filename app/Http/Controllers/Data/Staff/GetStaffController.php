@@ -63,22 +63,23 @@ class GetStaffController extends Controller
     function atSite(Request $request){
         $site = Site::where('id', auth('sanctum')->user()->site_id)->first();
 
-        $limit = 25;
-
-        $q = $site->staff();
-
-        if($request->filled('keyword')){
-            $k = "%".$request->get('keyword')."%";
-            $q->where(function($s) use($k){
-                $s->where('name', 'like', $k)
-                    ->orWhere('phone', 'like', $k)
-                    ->orWhere('extension', 'like', $k);
-            });
-        }
-
         if($site == null){
             $result = ResultSet::empty();
         }else{
+
+            $limit = 25;
+
+            $q = $site->staff();
+
+            if($request->filled('keyword')){
+                $k = "%".$request->get('keyword')."%";
+                $q->where(function($s) use($k){
+                    $s->where('name', 'like', $k)
+                        ->orWhere('phone', 'like', $k)
+                        ->orWhere('extension', 'like', $k);
+                });
+            }
+
             $result = new ResultSet($q, $limit);
         }
 
