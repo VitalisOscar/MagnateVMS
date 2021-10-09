@@ -74,7 +74,7 @@ class GetStaffController extends Controller
             if($request->filled('keyword')){
                 $k = "%".$request->get('keyword')."%";
                 $q->where(function($s) use($k){
-                    $s->where('name', 'like', $k)
+                    $s->where('staff.name', 'like', $k)
                         ->orWhere('phone', 'like', $k)
                         ->orWhere('extension', 'like', $k);
                 });
