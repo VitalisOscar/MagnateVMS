@@ -83,6 +83,6 @@ class GetStaffController extends Controller
             $result = new ResultSet($q, $limit);
         }
 
-        return $this->json->mixed(null, $result->items);
+        return $this->json->mixed($result, $result->items);
     }
 }
