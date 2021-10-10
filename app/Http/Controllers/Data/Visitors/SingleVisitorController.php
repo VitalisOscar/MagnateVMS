@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Data\Visitors;
 use App\Exports\SingleVisitorExport;
 use App\Helpers\ResultSet;
 use App\Http\Controllers\Controller;
+use App\Models\Company;
 use App\Models\Visitor;
 use Illuminate\Http\Request;
 
@@ -72,7 +73,8 @@ class SingleVisitorController extends Controller
 
         return $this->json->data([
             'visitor' => $visitor,
-            'vehicles' => $visitor ? $visitor->vehicles()->get() : []
+            'vehicles' => $visitor ? $visitor->vehicles()->get() : [],
+            'companies' => Company::where('site_id', $request->user('sanctum')->site_id)->get()
         ]);
     }
 
