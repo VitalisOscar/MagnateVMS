@@ -31,7 +31,9 @@ class AppVersionsController extends Controller
     function downloadLatest(){
         $latest = AppVersion::latest('time')->first();
 
-        return response()->download(storage_path('app/public/'.$latest->url), 'MagnateVMS_v'.$latest->version.'.apk');
+        return response()->download(storage_path('app/public/'.$latest->url), 'MagnateVMS_v'.$latest->version.'.apk', [
+            'Content-Type'=>'application/vnd.android.package-archive'
+        ]);
     }
 
     function add(Request $request){
