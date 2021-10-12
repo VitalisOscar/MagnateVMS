@@ -84,7 +84,7 @@
 
     <h4 class="font-weight-600">Import From File</h4>
     <p class="mt-0">
-        Import multiple vehicles from an excel or csv file. Ensure that the file has columns labelled '' and 'Phone'. The headings should be on the first row
+        Import multiple vehicles from an excel or csv file. Ensure that the file has columns labelled 'Type' and 'Reg No'. The headings should be on the first row
     </p>
 
     <form action="{{ route('admin.imports.vehicles') }}" method="post" enctype="multipart/form-data">
