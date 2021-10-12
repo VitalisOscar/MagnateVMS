@@ -13,7 +13,10 @@ class MakeDriverPhoneNullable extends Migration
      */
     public function up()
     {
-        //
+        Schema::table('drivers', function (Blueprint $table) {
+            $table->string('phone')->nullable()->change();
+            $table->string('department')->nullable()->change();
+        });
     }
 
     /**

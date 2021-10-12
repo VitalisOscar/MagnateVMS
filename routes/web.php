@@ -111,6 +111,7 @@ Route::prefix('admin')
     Route::prefix('imports')->group(function () {
         Route::post('staff/{site_id}/{company_id}', [\App\Http\Controllers\Data\Staff\AddStaffController::class, 'import'])->name('imports.staff');
         Route::post('vehicles', [\App\Http\Controllers\Data\Vehicles\AddVehicleController::class, 'import'])->name('imports.vehicles');
+        Route::post('drivers', [\App\Http\Controllers\Data\Drivers\AddDriverController::class, 'import'])->name('imports.drivers');
     });
 
 });
