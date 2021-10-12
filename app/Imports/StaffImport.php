@@ -23,10 +23,10 @@ class StaffImport implements ToModel, WithChunkReading, WithHeadingRow{
     public function model(array $row)
     {
         return new Staff([
-            'name' => $row["name"],
-            'phone' => $row["phone"] ?? null,
-            'department' => $row["department"] ?? "None",
-            'extension' => $row["extension"] ?? null,
+            'name' => $row["name"] ?? $row["Name"],
+            'phone' => $row["phone"] ?? $row["Phone"] ?? null,
+            'department' => $row["department"] ?? $row["Department"] ?? "None",
+            'extension' => $row["extension"] ??$row["Extension"] ?? null,
             'company_id' => $this->company_id
         ]);
     }
