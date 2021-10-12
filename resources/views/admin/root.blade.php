@@ -50,6 +50,13 @@ $current_route = \Illuminate\Support\Facades\Route::current()->getName();
                             </a>
                         </li>
 
+                        <li class="nav-item">
+                            <a class="nav-link @if($current_route == 'admin.app.versions'){{ __('active') }}@endif " href="{{ route('admin.app.versions') }}">
+                                <i class="fa fa-mobile text-primary mr-1"></i>
+                                <span class="nav-link-text">App Versions</span>
+                            </a>
+                        </li>
+
                     </ul>
 
                     <!-- Users -->

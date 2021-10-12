@@ -1,6 +1,9 @@
 <?php
 
+use App\Http\Controllers\App\AppVersionsController;
 use Illuminate\Support\Facades\Route;
+
+Route::get('app/download-latest', [AppVersionsController::class, 'downloadLatest'])->name('app.latest_url');
 
 Route::prefix('admin')
 ->middleware('auth:admin')
@@ -92,6 +95,10 @@ Route::prefix('admin')
         Route::get('', \App\Http\Controllers\Data\Visitors\GetVisitorsController::class)->name('visitors');
         Route::get('{visitor_id}', [\App\Http\Controllers\Data\Visitors\SingleVisitorController::class, 'get'])->name('visitors.single');
     });
+
+    Route::get('app', AppVersionsController::class)->name('app.versions');
+    Route::view('app/update', 'admin.app.update')->name('app.versions.update');
+    Route::post('app/update', [AppVersionsController::class, 'add'])->name('app.versions.update');
 
 
     // Exports

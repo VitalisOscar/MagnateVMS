@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\App\AppVersionsController;
 use App\Http\Controllers\Auth\UserAuthController;
 use App\Http\Controllers\CheckIn\StaffCheckInController;
 use App\Http\Controllers\CheckIn\VehicleCheckInController;
@@ -24,7 +25,7 @@ Route::name('api.')
 ->group(function(){
 
 
-
+    Route::get('get-update', [AppVersionsController::class, 'getUpdates'])->name('app.updates');
 
     Route::post('user/login', [UserAuthController::class, 'login'])->name('user.login');
 
