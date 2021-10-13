@@ -21,6 +21,7 @@ class VehicleCheckInController extends Controller
             'vehicle_id' => 'required|exists:vehicles,id',
             'mileage' => 'required|numeric',
             'task' => 'required|string',
+            'comments' => 'nullable'
         ]);
 
         if($validator->fails()){
@@ -84,6 +85,7 @@ class VehicleCheckInController extends Controller
                 'driver_id' => $data['driver_id'],
                 'task' => $data['task'] ?? 'Unspecified',
                 'mileage' => $data['mileage'] ?? 0,
+                'comments' => $data['comments'] ?? null
             ]);
 
             if(!($driver_activity->save() && $last_check_out->save())) return false;
