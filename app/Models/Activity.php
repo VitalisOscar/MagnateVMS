@@ -18,7 +18,7 @@ class Activity extends Model
     const BY_COMPANY_VEHICLE = 'Vehicle';
 
     protected $fillable = [
-        'time', 'type', 'site_id', 'by_id', 'by_type', 'user_id', 'vehicle_id'
+        'time', 'type', 'site_id', 'by_id', 'by_type', 'user_id', 'vehicle_id', 'checkin_activity_id', 'checkout_activity_id'
     ];
 
     public $timestamps = false;
@@ -32,6 +32,15 @@ class Activity extends Model
     protected $appends = ['fmt_time', 'fmt_date'];
 
     // Relations
+    function checkin_activity(){
+        return $this->hasOne(Activity::class, 'checkin_activity_id')->checkIn();
+    }
+
+    function checkout_activity(){
+        return $this->hasOne(Activity::class, 'checkout_activity_id')->checkOut();
+    }
+
+
     function user(){ return $this->belongsTo(User::class); }
 
     function site(){ return $this->belongsTo(Site::class); }
@@ -74,6 +83,18 @@ class Activity extends Model
         $q->whereDate('time', $d->format('Y-m-d'));
     }
 
+    function scopeNotCheckedOut($q){
+        $q->where('checkout_activity_id', null);
+    }
+
+    function scopeNotCheckedIn($q){
+        $q->where('checkin_activity_id', null);
+    }
+
+    function scopeCheckedOut($q){
+        $q->where('checkout_activity_id', '<>', null);
+    }
+
     // Attributes
     function getFmtDateAttribute(){
         return $this->time->day.' '.substr($this->time->monthName, 0, 3).' '.$this->time->year;
@@ -105,6 +126,18 @@ class Activity extends Model
         if($this->isByVisitor()){
             return $this->relationLoaded('by') ? $this->by : null;
         }
+    }
+
+    function isCheckIn(){
+        return $this->type == self::TYPE_CHECK_IN;
+    }
+
+    function isCheckOut(){
+        return $this->type == self::TYPE_CHECK_OUT;
+    }
+
+    function wasToday(){
+        return $this->time->isToday();
     }
 
     function isByStaff(){ return $this->by_type == self::BY_STAFF; }

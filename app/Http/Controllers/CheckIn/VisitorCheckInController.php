@@ -58,8 +58,15 @@ class VisitorCheckInController extends Controller
 
                 if(!$visitor){
                     DB::rollback();
-                    return $this->json->error('Unable to check in '.$visitor->first_name.'. Please report if this persists');
+                    return $this->json->error('Unable to check in the visitor. Please report if this persists');
                 }
+            }
+
+            // Check if visitor is already checked in
+            $last = $visitor->last_activity;
+
+            if($last && $last->isCheckIn() && $last->wasToday() && $last->site_id == auth('sanctum')->user()->site_id){
+                return $this->json->error($visitor->first_name.' has already been checked in via the app today at '.$last->fmt_time.', and has not been checked out. We suggest checking the visitor out first and trying again');
             }
 
             // Save the visit info

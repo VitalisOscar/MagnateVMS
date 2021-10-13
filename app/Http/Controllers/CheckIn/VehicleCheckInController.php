@@ -17,7 +17,7 @@ class VehicleCheckInController extends Controller
     function __invoke(Request $request)
     {
         $validator = Validator::make(array_merge($request->post(), $request->file()), [
-            'driver_id' => 'required|exists:staff,id',
+            'driver_id' => 'required|exists:drivers,id',
             'vehicle_id' => 'required|exists:vehicles,id',
             'mileage' => 'required|numeric',
             'task' => 'required|string',
@@ -37,6 +37,13 @@ class VehicleCheckInController extends Controller
         // save
         DB::beginTransaction();
         try{
+            // See if checked out
+            $last = $vehicle->last_activity;
+
+            if($last && $last->isCheckIn() && $last->site_id == auth('sanctum')->user()->site_id){
+                return $this->json->error('The vehicle '.$vehicle->registration_no.' has not been checked out via the app at your site since the last check in on '.$last->fmt_date.' at '.$last->fmt_time);
+            }
+
             // Save the visit info
             $activity = $this->saveActivity($vehicle, $validator->validated());
 
@@ -56,27 +63,32 @@ class VehicleCheckInController extends Controller
 
     function saveActivity($vehicle, $data){
         try{
-            $activity = new Activity([
+            $last_check_out = $vehicle->last_check_out;
+
+            $checkin = new Activity([
                 'user_id' => auth('sanctum')->id(),
                 'by_id' => $vehicle->id,
                 'by_type' => Activity::BY_COMPANY_VEHICLE, // A vehicle is being checked in
                 'site_id' => auth('sanctum')->user()->site_id,
                 'vehicle_id' => null, // This is only reserved for staff and visitor owned vehicle ids
-                'type' => Activity::TYPE_CHECK_IN
+                'type' => Activity::TYPE_CHECK_IN,
+                'checkout_activity_id' => $last_check_out->id
             ]);
 
-            if(!$activity->save()) return false;
+            if(!$checkin->save()) return false;
+
+            $last_check_out->checkin_activity_id = $checkin->id;
 
             $driver_activity = new DriverActivity([
-                'activity_id' => $activity->id,
+                'activity_id' => $checkin->id,
                 'driver_id' => $data['driver_id'],
                 'task' => $data['task'] ?? 'Unspecified',
                 'mileage' => $data['mileage'] ?? 0,
             ]);
 
-            if(!$driver_activity->save()) return false;
+            if(!($driver_activity->save() && $last_check_out->save())) return false;
 
-            return $activity;
+            return $checkin;
         }catch(Exception $e){
             return $e->getMessage();
         }

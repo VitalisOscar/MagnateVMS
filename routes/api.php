@@ -67,6 +67,7 @@ Route::name('api.')
 
             Route::get('checked-in/staff', [StaffActivityController::class, 'getCheckedIn'])->name('staff.checked_in');
             Route::get('checked-in/visitors', [VisitorActivityController::class, 'getCheckedIn'])->name('visitors.checked_in');
+            Route::get('checked-out/vehicles', [VehicleActivityController::class, 'getCheckedOut'])->name('visitors.checked_in');
 
             Route::get('visitor/by-id', [SingleVisitorController::class, 'getByIdNumber'])->name('visitor.get_by_id');
         });

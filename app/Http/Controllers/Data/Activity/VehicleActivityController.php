@@ -6,6 +6,7 @@ use App\Exports\CompanyVehiclesActivityExport;
 use App\Helpers\ResultSet;
 use App\Http\Controllers\Controller;
 use App\Models\Activity;
+use App\Models\Vehicle;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
@@ -77,6 +78,22 @@ class VehicleActivityController extends Controller
                 'result' => $result,
                 'dates' => $dates
             ]);
+    }
+
+    function getCheckedOut(){
+        $query = Vehicle::companyOwned()
+            ->whereHas('last_check_out', function($a){
+                $a->atSite(auth('sanctum')->user()->site_id)
+                    ->notCheckedIn();
+            })
+            ->with([
+                'last_activity', 'last_activity.driver_task',
+                'last_activity.driver_task.driver'
+            ]);
+
+        $result = new ResultSet($query);
+
+        return $this->json->mixed(null, $result->items);
     }
 
     function exportCompany(){

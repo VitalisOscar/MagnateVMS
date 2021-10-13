@@ -652,6 +652,7 @@ class ComposerStaticInit3d52cd5b5fed4405c08a7b0c9996fe08
         'App\\Helpers\\CustomJsonResponse' => __DIR__ . '/../..' . '/app/Helpers/CustomJsonResponse.php',
         'App\\Helpers\\ResultSet' => __DIR__ . '/../..' . '/app/Helpers/ResultSet.php',
         'App\\Http\\Controllers\\AdminDashboardController' => __DIR__ . '/../..' . '/app/Http/Controllers/AdminDashboardController.php',
+        'App\\Http\\Controllers\\App\\AppVersionsController' => __DIR__ . '/../..' . '/app/Http/Controllers/App/AppVersionsController.php',
         'App\\Http\\Controllers\\Auth\\AdminLoginController' => __DIR__ . '/../..' . '/app/Http/Controllers/Auth/AdminLoginController.php',
         'App\\Http\\Controllers\\Auth\\AdminPasswordController' => __DIR__ . '/../..' . '/app/Http/Controllers/Auth/AdminPasswordController.php',
         'App\\Http\\Controllers\\Auth\\UserAuthController' => __DIR__ . '/../..' . '/app/Http/Controllers/Auth/UserAuthController.php',

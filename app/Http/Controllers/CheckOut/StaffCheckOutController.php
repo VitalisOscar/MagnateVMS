@@ -32,6 +32,13 @@ class StaffCheckOutController extends Controller
             // Get the staff
             $staff = Staff::where('id', $request->post('staff_id'))->first();
 
+            // Check if the visitor last checked in
+            $last = $staff->last_activity;
+
+            if(!($last && $last->isCheckIn() && $last->wasToday() && $last->site_id == auth('sanctum')->user()->site_id)){
+                return $this->json->error($staff->first_name.' has not checked in at the site via the app since the last check out');
+            }
+
             // Save the activity
             $activity = $this->saveActivity($staff, $validator->validated());
 
@@ -59,18 +66,25 @@ class StaffCheckOutController extends Controller
                 if(!$vehicle || is_string($vehicle)) return false;
             }
 
-            $activity = new Activity([
+            $last_check_in = $staff->last_check_in;
+
+            $checkout = new Activity([
                 'user_id' => auth('sanctum')->id(),
                 'by_id' => $staff->id,
                 'by_type' => Activity::BY_STAFF,
                 'site_id' => auth('sanctum')->user()->site_id,
                 'vehicle_id' => $vehicle ? $vehicle->id : null,
-                'type' => Activity::TYPE_CHECK_OUT
+                'type' => Activity::TYPE_CHECK_OUT,
+                'checkin_activity_id' => $last_check_in->id
             ]);
 
-            if(!$activity->save()) return false;
+            if(!$checkout->save()) return false;
 
-            return $activity;
+            $last_check_in->checkout_activity_id = $checkout->id;
+
+            if(!$last_check_in->save()) return false;
+
+            return $checkout;
         }catch(Exception $e){
             return $e->getMessage();
         }

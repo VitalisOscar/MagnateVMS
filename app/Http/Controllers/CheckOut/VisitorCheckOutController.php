@@ -112,20 +112,21 @@ class VisitorCheckOutController extends Controller
                 if(!$vehicle || is_string($vehicle)) return false;
             }
 
-            $activity = new Activity([
+            $checkout = new Activity([
                 'user_id' => auth('sanctum')->id(),
                 'by_id' => $visitor->id,
                 'by_type' => Activity::BY_VISITOR,
                 'site_id' => auth('sanctum')->user()->site_id,
                 'vehicle_id' => $vehicle ? $vehicle->id : null,
-                'type' => Activity::TYPE_CHECK_OUT
+                'type' => Activity::TYPE_CHECK_OUT,
+                'checkin_activity_id' => $latest_check_in->id
             ]);
 
-            if(!$activity->save()) return false;
+            if(!$checkout->save()) return false;
 
             // Duplicate data of the last visit
             $check_out_visit = new Visit([
-                'activity_id' => $activity->id,
+                'activity_id' => $checkout->id,
                 'reason' => $latest_check_in->visit->reason,
                 'company_id' => $latest_check_in->visit->company_id,
                 'staff_id' => $latest_check_in->visit->staff_id,
@@ -137,9 +138,11 @@ class VisitorCheckOutController extends Controller
                 'check_in_visit_id' =>$latest_check_in->visit->id
             ]);
 
-            if(!$check_out_visit->save()) return false;
+            $latest_check_in->checkout_activity_id = $checkout->id;
 
-            return $activity;
+            if(!($check_out_visit->save() && $latest_check_in->save())) return false;
+
+            return $checkout;
         }catch(Exception $e){
             return $e->getMessage();
         }

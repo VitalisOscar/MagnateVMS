@@ -32,6 +32,13 @@ class StaffCheckInController extends Controller
             // Get the staff
             $staff = Staff::where('id', $request->post('staff_id'))->first();
 
+            // See if checked in
+            $last = $staff->last_activity;
+
+            if($last && $last->isCheckIn() && $last->wasToday() && $last->site_id == auth('sanctum')->user()->site_id){
+                return $this->json->error($staff->first_name.' has not been checked out via the app since the last check in');
+            }
+
             // Save the activity
             $activity = $this->saveActivity($staff, $validator->validated());
 

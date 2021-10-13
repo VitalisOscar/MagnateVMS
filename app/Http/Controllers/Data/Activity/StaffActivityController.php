@@ -86,10 +86,10 @@ class StaffActivityController extends Controller
     }
 
     function getCheckedIn(){
-        $query = Staff::whereHas('last_activity', function($a){
+        $query = Staff::whereHas('last_check_in', function($a){
                 $a->onDate(Carbon::today())
                     ->atSite(auth('sanctum')->user()->site_id)
-                    ->checkIn();
+                    ->notCheckedOut();
             })
             ->with('company', 'last_activity', 'last_activity.vehicle');
 

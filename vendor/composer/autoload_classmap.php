@@ -20,6 +20,7 @@ return array(
     'App\\Helpers\\CustomJsonResponse' => $baseDir . '/app/Helpers/CustomJsonResponse.php',
     'App\\Helpers\\ResultSet' => $baseDir . '/app/Helpers/ResultSet.php',
     'App\\Http\\Controllers\\AdminDashboardController' => $baseDir . '/app/Http/Controllers/AdminDashboardController.php',
+    'App\\Http\\Controllers\\App\\AppVersionsController' => $baseDir . '/app/Http/Controllers/App/AppVersionsController.php',
     'App\\Http\\Controllers\\Auth\\AdminLoginController' => $baseDir . '/app/Http/Controllers/Auth/AdminLoginController.php',
     'App\\Http\\Controllers\\Auth\\AdminPasswordController' => $baseDir . '/app/Http/Controllers/Auth/AdminPasswordController.php',
     'App\\Http\\Controllers\\Auth\\UserAuthController' => $baseDir . '/app/Http/Controllers/Auth/UserAuthController.php',

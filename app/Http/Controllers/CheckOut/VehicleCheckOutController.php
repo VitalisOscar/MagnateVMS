@@ -17,7 +17,7 @@ class VehicleCheckOutController extends Controller
     function __invoke(Request $request)
     {
         $validator = Validator::make(array_merge($request->post(), $request->file()), [
-            'driver_id' => 'required|exists:staff,id',
+            'driver_id' => 'required|exists:drivers,id',
             'vehicle_id' => 'required|exists:vehicles,id',
             'mileage' => 'required|numeric',
             'task' => 'required|string',
@@ -37,6 +37,13 @@ class VehicleCheckOutController extends Controller
         // save
         DB::beginTransaction();
         try{
+            // See if checked in
+            $last = $vehicle->last_activity;
+
+            if($last && $last->isCheckOut() && $last->site_id == auth('sanctum')->user()->site_id){
+                return $this->json->error('The vehicle '.$vehicle->registration_no.' was checked out of your site via the app on '.$last->fmt_date.' at '.$last->fmt_time.' and has not been checked in again');
+            }
+
             // Save the info
             $activity = $this->saveActivity($vehicle, $validator->validated());
 
@@ -53,7 +60,7 @@ class VehicleCheckOutController extends Controller
             return $this->json->error($e->getMessage().'Unable to capture all data. Please report if this persists', ['exception'=>$e->getMessage()]);
         }
     }
-  
+
     function saveActivity($vehicle, $data){
         try{
             $activity = new Activity([

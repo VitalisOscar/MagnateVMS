@@ -69,10 +69,10 @@ class VisitorActivityController extends Controller
     }
 
     function getCheckedIn(){
-        $query = Visitor::whereHas('last_activity', function($a){
+        $query = Visitor::whereHas('last_check_in', function($a){
                 $a->onDate(Carbon::today())
                     ->atSite(auth('sanctum')->user()->site_id)
-                    ->checkIn();
+                    ->notCheckedOut();
             })
             ->with([
                 'last_activity', 'last_activity.visit',

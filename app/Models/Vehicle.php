@@ -32,6 +32,21 @@ class Vehicle extends Model
 
     function check_outs(){ return $this->activities()->checkOut(); }
 
+    function last_activity(){
+        return $this->hasOne(Activity::class, 'by_id')
+            ->byCompanyVehicle()
+            ->with('driver_task')
+            ->latest('time');
+    }
+
+    function last_check_in(){
+        return $this->last_activity()->checkIn();
+    }
+
+    function last_check_out(){
+        return $this->last_activity()->checkOut();
+    }
+
     function drives(){
         // return $this->hasMany(Drive::class);
     }

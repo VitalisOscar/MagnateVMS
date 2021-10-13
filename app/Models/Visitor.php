@@ -28,6 +28,14 @@ class Visitor extends Model
             ->latest('time');
     }
 
+    function last_check_in(){
+        return $this->last_activity()->checkIn();
+    }
+
+    function last_check_out(){
+        return $this->last_activity()->checkOut();
+    }
+
     function check_ins(){ return $this->activities()->checkIn(); }
 
     function check_outs(){ return $this->activities()->checkOut(); }
