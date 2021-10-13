@@ -91,7 +91,7 @@ class VehicleActivityController extends Controller
                     ->notCheckedIn();
             })
             ->with([
-                'last_activity', 'last_activity.driver_task',
+                'last_activity', 'last_activity.site', 'last_activity.driver_task',
                 'last_activity.driver_task.driver'
             ]);
 

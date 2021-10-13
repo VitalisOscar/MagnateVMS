@@ -35,7 +35,6 @@ class Vehicle extends Model
     function last_activity(){
         return $this->hasOne(Activity::class, 'by_id')
             ->byCompanyVehicle()
-            ->with('driver_task')
             ->latest('time');
     }
 
