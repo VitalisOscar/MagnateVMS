@@ -15,7 +15,8 @@ class DriverActivity extends Model
         'driver_id',
         'activity_id',
         'mileage',
-        'task'
+        'task',
+        'comments'
     ];
 
     protected $appends = ['fmt_mileage'];
