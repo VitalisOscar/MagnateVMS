@@ -47,6 +47,10 @@ class StaffActivityController extends Controller
             $q->whereSiteId($request->get('site'));
         }
 
+        if($request->is('api*')){
+            $q->atSite(auth('sanctum')->user()->site_id);
+        }
+
         if($request->filled('date')){
             $date = explode(' to ', $request->get('date'));
             if(count($date) == 1){

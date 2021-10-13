@@ -70,6 +70,10 @@ class VehicleActivityController extends Controller
                 ->whereDate('time', '<=', $d);
         }
 
+        if($request->is('api*')){
+            $q->atSite(auth('sanctum')->user()->site_id);
+        }
+
         $result = new ResultSet($q, $limit);
 
         return $request->is('api*') ?
