@@ -85,6 +85,8 @@ class StaffCheckInController extends Controller
 
     function getVehicle($staff, $registration_no){
 
+        $registration_no = strtoupper($registration_no);
+
         try{
             $vehicle = $staff->vehicles()
                 ->regNo($registration_no)

@@ -28,7 +28,7 @@ class GetVisitorsController extends Controller
             });
         }
 
-        if($order == 'recent') $q->latest();
+        if($order == 'recent') $q->orderBy('id', 'desc');
         elseif($order == 'az') $q->orderBy('name', 'ASC');
         elseif($order == 'za') $q->orderBy('name', 'DESC');
 

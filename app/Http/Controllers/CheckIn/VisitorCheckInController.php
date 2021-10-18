@@ -153,6 +153,8 @@ class VisitorCheckInController extends Controller
 
     function getVehicle($visitor, $registration_no){
 
+        $registration_no = strtoupper($registration_no);
+
         try{
             $vehicle = $visitor->vehicles()
                 ->regNo($registration_no)
