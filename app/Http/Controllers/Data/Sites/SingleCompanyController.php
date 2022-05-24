@@ -2,74 +2,67 @@
 
 namespace App\Http\Controllers\Data\Sites;
 
+use App\Helpers\ApiResultSet;
 use App\Helpers\ResultSet;
 use App\Http\Controllers\Controller;
 use App\Models\Company;
 use App\Models\Site;
+use App\Models\Staff;
 use App\Models\User;
+use App\Services\ApiService;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class SingleCompanyController extends Controller
 {
-    function get(Request $request, $site_id, $company_id){
-        $company = Company::whereId($company_id)
-            ->whereSiteId($site_id)
-            ->withCount('staff')
-            ->first();
-
-        if($company == null){
-            return redirect()->route('admin.sites.single', $site_id);
-        }
-
-        $q = $company->staff();
+    function get(Request $request, ApiService $api, $site_id, $company_id){
+        $queryParams = [];
 
         if($request->filled('keyword')){
-            $k = "%".$request->get('keyword')."%";
-
-            $q->where(function($s) use($k){
-                $s->where('staff.name', 'like', $k)
-                    ->orWhere('phone', 'like', $k)
-                    ->orWhere('extension', 'like', $k);
-            });
+            $queryParams['search'] = $request->get('keyword');
         }
 
+        $response = $api->get(ApiService::ROUTE_GET_SINGLE_COMPANY, [
+            'site_id' => $site_id,
+            'company_id' => $company_id,
+        ], $queryParams);
 
-        $limit = intval($request->get('limit'));
-
-        if(!in_array($limit, [15,30,50,100])){
-            $limit = 15;
+        if(!$response->WasSuccessful()){
+            return redirect()->route('admin.sites.single', $site_id)->withErrors(['status' => $response->message]);
         }
+
+        $company = new Company($response->data['company']);
+        $company->created_at = $response->data['company']['timestamp'];
+        $company->site = new Site($response->data['company']['site']);
 
         return response()->view('admin.companies.single', [
             'company' => $company,
-            'result' => new ResultSet($q, $limit)
+            'result' => new ApiResultSet($response->getResult(), function($data) use($company){
+                $model = new Staff($data);
+                $model->created_at = $data['timestamp'];
+                $model->company = $company;
+                $model->company_id = $company->id;
+
+                return $model;
+            })
         ]);
     }
 
-    function delete(Request $request, $site_id){
-        $company_id = $request->post('company_id');
+    function delete(Request $request, ApiService $api, $site_id){
+        $response = $api->post(ApiService::ROUTE_DELETE_COMPANY, [
+            'site_id' => $site_id,
+            'company_id' => $request->post('company_id')
+        ], [], []);
 
-        $company = Company::whereId($company_id)
-            ->whereSiteId($site_id)
-            ->first();
-
-        if($company == null){
-            return redirect()->route('admin.sites.single', $site_id);
-        }
-
-        DB::beginTransaction();
-        if(!($company->staff()->delete() && $company->delete())){
-            DB::rollBack();
+        if(!$response->wasSuccessful()){
             return back()->withErrors([
-                'status' => 'Unable to delete company. Something went wrong'
+                'status' => $response->message
             ]);
         }
 
-        DB::commit();
         return back()->with([
-            'status' => 'Successfully deleted company and staff members from system'
+            'status' => 'Company and staff members have been deleted. Any activity for the deleted company and staff is still preserved'
         ]);
     }
 }

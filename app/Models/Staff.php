@@ -15,6 +15,7 @@ class Staff extends Model
     public $timestamps = false;
 
     protected $fillable = [
+        'id',
         'company_id',
         'name',
         'phone',
@@ -22,11 +23,23 @@ class Staff extends Model
         'department',
     ];
 
+    // primary key type to string
+    protected $keyType = 'string';
+
     protected $casts = [
         'added_at' => 'datetime'
     ];
 
     protected $with = ['vehicles', 'company'];
+
+    function __construct($data = []){
+        parent::__construct($data);
+
+        $this->created_at = $data['timestamp'] ?? null;
+        if(isset($data['company'])) $this->company = new Company($data['company'] ?? []);
+
+        $this->company_id = $data['company']['id'] ?? null;
+    }
 
     function company(){ return $this->belongsTo(Company::class); }
 

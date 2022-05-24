@@ -24,7 +24,7 @@
     <div class="">
 
         <div class="px-4 py-3 d-flex align-items-center">
-            <h4 class="font-weight-600 mb-0">Existing Vehicles {{ '('.$result->total.' total)' }}</h4>
+            <h4 class="font-weight-600 mb-0">Company Vehicles</h4>
             <a href="{{ route('admin.vehicles.add') }}" class="ml-auto btn btn-primary btn-sm shadow-none">Add New</a>
             <div class="dropdown">
                 <button class="ml-auto mr-0 btn btn-success btn-sm shadow-none dropdown-toggle" data-toggle="dropdown">Export to Excel</button>
@@ -48,12 +48,6 @@
                 <option value="30" @if($r->get('limit') == 30){{ __('selected') }}@endif>Upto 30 Records</option>
                 <option value="50" @if($r->get('limit') == 50){{ __('selected') }}@endif>Upto 50 Records</option>
                 <option value="100" @if($r->get('limit') == 100){{ __('selected') }}@endif>Upto 100 Records</option>
-            </select>
-
-            <select name="order" class="custom-select mr-3" style="width: auto !important">
-                <option value="">Sort by Default</option>
-                <option value="az" @if($r->get('order') == 'az'){{ __('selected') }}@endif>Reg Number (A-Z)</option>
-                <option value="za" @if($r->get('order') == 'za'){{ __('selected') }}@endif>Reg Number (Z-A)</option>
             </select>
 
             <button class="btn btn-default shadow-none">Go</button>
@@ -101,7 +95,7 @@
                 <td colspan="7">
                     <div class="d-flex align-items-center">
                         <a href="{{ $result->prevPageUrl() }}" class="@if(!$result->hasPreviousPage()){{ __('disabled') }}@endif mr-auto btn btn-link p-0"><i class="fa fa-angle-double-left"></i>&nbsp;Prev</a>
-                        <span>{{ 'Page '.$result->page.' of '.$result->max_pages }}</span>
+                        <span>{{ 'Page '.$result->page }}</span>
                         <a href="{{ $result->nextPageUrl() }}" class="@if(!$result->hasNextPage()){{ __('disabled') }}@endif ml-auto btn btn-link p-0">Next&nbsp;<i class="fa fa-angle-double-right"></i></a>
                     </div>
                 </td>

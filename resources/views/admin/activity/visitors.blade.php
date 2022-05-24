@@ -20,7 +20,7 @@
     <div class="">
 
         <div class="px-4 py-3 d-flex align-items-center">
-            <h4 class="font-weight-600 mb-0">Visitor Activity ({{ $result->total.' Visit'.($result->total != 1 ? 's':'') }})</h4>
+            <h4 class="font-weight-600 mb-0">Visits</h4>
 
             <?php $r = request(); ?>
 
@@ -41,7 +41,7 @@
         <form class="px-4 pb-3 d-flex align-items-center">
             <select name="site" class="custom-select mr-3" style="width: auto !important">
                 <option value="">All Sites</option>
-                @foreach(\App\Models\Site::all() as $site)
+                @foreach($sites as $site)
                 <option value="{{ $site->id }}" @if($r->get('site') == $site->id){{ __('selected') }}@endif>{{ $site->name }}</option>
                 @endforeach
             </select>
@@ -56,10 +56,10 @@
                     <option value="100" @if($r->get('limit') == 100){{ __('selected') }}@endif>Upto 100 Records</option>
                 </select>
 
-                <select name="order" class="custom-select mr-3" style="width: auto !important">
+                {{-- <select name="order" class="custom-select mr-3" style="width: auto !important">
                     <option value="">Latest Visits First</option>
                     <option value="past" @if($r->get('order') == 'past'){{ __('selected') }}@endif>Past Visits First</option>
-                </select>
+                </select> --}}
 
                 <button class="btn btn-default shadow-none">Go</button>
             </div>
@@ -116,7 +116,7 @@
                 <td colspan="9">
                     <div class="d-flex align-items-center">
                         <a href="{{ $result->prevPageUrl() }}" class="@if(!$result->hasPreviousPage()){{ __('disabled') }}@endif mr-auto btn btn-link p-0"><i class="fa fa-angle-double-left"></i>&nbsp;Prev</a>
-                        <span>{{ 'Page '.$result->page.' of '.$result->max_pages }}</span>
+                        <span>{{ 'Page '.$result->page }}</span>
                         <a href="{{ $result->nextPageUrl() }}" class="@if(!$result->hasNextPage()){{ __('disabled') }}@endif ml-auto btn btn-link p-0">Next&nbsp;<i class="fa fa-angle-double-right"></i></a>
                     </div>
                 </td>

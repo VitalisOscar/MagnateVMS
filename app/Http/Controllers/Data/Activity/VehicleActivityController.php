@@ -3,45 +3,41 @@
 namespace App\Http\Controllers\Data\Activity;
 
 use App\Exports\CompanyVehiclesActivityExport;
+use App\Helpers\ApiResultSet;
 use App\Helpers\ResultSet;
 use App\Http\Controllers\Controller;
 use App\Models\Activity;
+use App\Models\Site;
 use App\Models\Vehicle;
+use App\Services\ApiService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class VehicleActivityController extends Controller
 {
-    function company(Request $request){
+    function company(Request $request, ApiService $api){
+        $queryParams = [];
+
+
         $limit = intval($request->get('limit'));
         if(!in_array($limit, [15,30,50,100])) $limit = 15;
+        $queryParams['limit'] = $limit;
 
-        $q = Activity::byCompanyVehicle()
-            ->with('driver_task', 'driver_task.driver', 'user', 'by', 'site');
-
-        $order = $request->get('order');
-
-        if($order == 'past') $q->oldest('time');
-        else $q->latest('time');
-
-
-        if($request->filled('keyword')){
-            $q->where(function($q1) use($request){
-                $q1->whereHas('driver_task', function($dt) use($request){
-                    $dt->whereHas('driver', function($d) use($request){
-                        $k = '%'.$request->get('keyword').'%';
-                        $d->where('name', 'like', $k);
-                    });
-                })
-                ->orWhereHas('companyVehicle', function($v) use($request){
-                    $k = '%'.$request->get('keyword').'%';
-                    $v->where('registration_no', 'like', $k);
-                });
-            });
+        $queryParams['page'] = 1;
+        if($request->filled('page')){
+            $queryParams['page'] = $request->get('page');
         }
 
 
         $dates = null;
+
+        if($request->filled('site')){
+            $queryParams['site'] = $request->get('site');
+        }
+
+        if($request->filled('type')){
+            $queryParams['type'] = $request->get('type');
+        }
 
         if($request->filled('date')){
             $date = explode(' to ', $request->get('date'));
@@ -59,29 +55,40 @@ class VehicleActivityController extends Controller
                 $to = $x;
             }
 
-            $q->whereDate('time', '>=', $from)
-                ->whereDate('time', '<=', $to);
-
             $dates = $from.' to '.$to;
-        }else if($request->is('api*')){
-            $d = Carbon::today()->format('Y-m-d');
 
-            $q->whereDate('time', '>=', $d)
-                ->whereDate('time', '<=', $d);
+            $queryParams['date'] = $dates;
         }
 
-        if($request->is('api*')){
-            $q->atSite(auth('sanctum')->user()->site_id);
+
+        if($request->filled('keyword')){
+            $queryParams['search'] = $request->get('keyword');
         }
 
-        $result = new ResultSet($q, $limit);
 
-        return $request->is('api*') ?
-            $this->json->mixed($result, $result->items) :
-            response()->view('admin.activity.company_vehicles',[
+        $response = $api->get(ApiService::ROUTE_GET_ALL_VEHICLE_ACTIVITY, [], $queryParams);
+
+        $result = new ApiResultSet($response->getResult(), function($data){
+            return new Activity($data);
+        });
+
+        return response()->view('admin.activity.company_vehicles',[
                 'result' => $result,
                 'dates' => $dates
             ]);
+    }
+
+    function getSites($api){
+        $response = $api->get(ApiService::ROUTE_GET_SITES);
+
+        $result = new ApiResultSet($response->getResult(), function($data){
+            $site = new Site($data);
+            $site->created_at = $data['timestamp'];
+
+            return $site;
+        });
+
+        return $result->items;
     }
 
     function getCheckedOut(){

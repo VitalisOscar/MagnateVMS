@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Data\Vehicles;
 
 use App\Exports\OtherVehicleActivityExport;
+use App\Helpers\ApiResultSet;
 use App\Helpers\ResultSet;
 use App\Http\Controllers\Controller;
 use App\Models\Activity;
@@ -11,55 +12,31 @@ use App\Models\Site;
 use App\Models\StaffCheckIn;
 use App\Models\Vehicle;
 use App\Models\Visit;
+use App\Services\ApiService;
 use Exception;
 use Illuminate\Http\Request;
 
 class SingleVehicleController extends Controller
 {
-    function get(Request $request, $vehicle_id){
-        $vehicle = Vehicle::whereId($vehicle_id)
-            ->first();
+    function get(Request $request, ApiService $api, $vehicle_id){
+        $queryParams = [];
 
-        if($vehicle == null){
-            return redirect()->route('admin.vehicles');
-        }
-
-        if($vehicle->isCompanyVehicle()){
-            return $this->getCompany($request, $vehicle);
-        }
-
-        return $this->getOther($request, $vehicle);
-    }
-
-    function getCompany(Request $request, $vehicle){
-        // Activity
         $limit = intval($request->get('limit'));
         if(!in_array($limit, [15,30,50,100])) $limit = 15;
+        $queryParams['limit'] = $limit;
 
-        $q = $vehicle->activities()
-            ->with('driver_task', 'driver_task.driver', 'user', 'site');
-
-        $order = $request->get('order');
-
-        if($order == 'past') $q->oldest('time');
-        else $q->latest('time');
-
-
-        if($request->filled('keyword')){
-            $q->where(function($q1) use($request){
-                $q1->whereHas('driver_task', function($dt) use($request){
-                    $dt->whereHas('driver', function($d) use($request){
-                        $k = '%'.$request->get('keyword').'%';
-                        $d->where('name', 'like', $k);
-                    });
-                })
-                ->orWhereHas('by', function($by) use($request){
-                    $k = '%'.$request->get('keyword').'%';
-                    $by->where('registration_no', 'like', $k);
-                });
-            });
+        $queryParams['page'] = 1;
+        if($request->filled('page')){
+            $queryParams['page'] = $request->get('page');
         }
 
+        if($request->filled('keyword')){
+            $queryParams['search'] = $request->get('keyword');
+        }
+
+        if($request->filled('type')){
+            $queryParams['type'] = $request->get('type');
+        }
 
         $dates = null;
 
@@ -79,64 +56,47 @@ class SingleVehicleController extends Controller
                 $to = $x;
             }
 
-            $q->whereDate('time', '>=', $from)
-                ->whereDate('time', '<=', $to);
-
             $dates = $from.' to '.$to;
+
+            $queryParams['date'] = $dates;
         }
 
+        $response = $api->get(
+            ApiService::ROUTE_GET_SINGLE_VEHICLE,
+            ['vehicle_id' => $vehicle_id],
+            $queryParams
+        );
+
+        if(!$response->wasSuccessful()){
+            return back()->withErrors(['status' => $response->message]);
+        }
+
+        $data = $response->data;
+        $vehicle = new Vehicle($data['vehicle']);
+
+        $result = new ApiResultSet($response->getResult(), function($data){
+            return new Activity($data);
+        });
+
+        if($vehicle->isCompanyVehicle()){
+            return $this->getCompany($vehicle, $result, $dates);
+        }
+
+        return $this->getOther($vehicle, $result, $dates);
+    }
+
+    function getCompany($vehicle, $result, $dates){
         return response()->view('admin.vehicles.single', [
             'vehicle' => $vehicle,
-            'result' => new ResultSet($q, $limit),
+            'result' => $result,
             'dates' => $dates
         ]);
     }
 
-    function getOther(Request $request, $vehicle){
-        $q = Activity::whereHas('vehicle', function($v) use($vehicle){
-                $v->whereId($vehicle->id);
-            })
-            ->with('by', 'user', 'site');
-
-        // Activity
-        $limit = intval($request->get('limit'));
-        if(!in_array($limit, [15,30,50,100])) $limit = 15;
-
-
-        $order = $request->get('order');
-
-        if($order == 'past') $q->oldest('time');
-        else $q->latest('time');
-
-
-        $dates = null;
-
-        if($request->filled('date')){
-            $date = explode(' to ', $request->get('date'));
-            if(count($date) == 1){
-                $from = $date[0];
-                $to = $date[0];
-            }else{
-                $from = $date[0];
-                $to = $date[1];
-            }
-
-            if($from > $to){
-                $x = $from;
-                $from = $to;
-                $to = $x;
-            }
-
-            $q->whereDate('time', '>=', $from)
-                ->whereDate('time', '<=', $to);
-
-            $dates = $from.' to '.$to;
-        }
-        // Activity
-
+    function getOther($vehicle, $result, $dates){
         return response()->view('admin.vehicles.other_single', [
             'vehicle' => $vehicle,
-            'result' => new ResultSet($q, $limit),
+            'result' => $result,
             'dates' => $dates
         ]);
     }

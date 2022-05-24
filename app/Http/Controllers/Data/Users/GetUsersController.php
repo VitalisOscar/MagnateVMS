@@ -2,36 +2,41 @@
 
 namespace App\Http\Controllers\Data\Users;
 
+use App\Helpers\ApiResultSet;
 use App\Helpers\ResultSet;
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Services\ApiService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class GetUsersController extends Controller
 {
-    function __invoke(Request $request){
+    function __invoke(Request $request, ApiService $api){
+        $queryParams = [];
+
+        if($request->filled('keyword')){
+            $queryParams['search'] = $request->get('keyword');
+        }
+
         $limit = intval($request->get('limit'));
         if(!in_array($limit, [15,30,50,100])) $limit = 15;
+        $queryParams['limit'] = $limit;
 
-        $order = $request->get('order');
+        $queryParams['page'] = 1;
+        if($request->filled('page')){
+            $queryParams['page'] = $request->get('page');
+        }
 
-        $q = User::query()->with('last_login', 'last_login.site');
-        if($order == 'recent') $q->latest();
-        elseif($order == 'az') $q->orderBy('name', 'ASC');
-        elseif($order == 'za') $q->orderBy('name', 'DESC');
+
+        $response = $api->get(ApiService::ROUTE_GET_USERS, [], $queryParams);
+
+        $result = new ApiResultSet($response->getResult(), function($data){
+            return new User($data);
+        });
 
         return response()->view('admin.users.all',[
-            'result' => new ResultSet($q, $limit, function($user){
-                $c = $user->created_at;
-                $user->time = substr($c->monthName, 0, 3).' '.$c->day;
-
-                if(!$c->isCurrentYear()){
-                    $user->time .= ', '.$c->year;
-                }
-
-                return $user;
-            })
+            'result' => $result
         ]);
     }
 }

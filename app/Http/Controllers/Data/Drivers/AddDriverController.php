@@ -5,13 +5,14 @@ namespace App\Http\Controllers\Data\Drivers;
 use App\Http\Controllers\Controller;
 use App\Imports\DriversImport;
 use App\Models\Driver;
+use App\Services\ApiService;
 use Exception;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
 
 class AddDriverController extends Controller
 {
-    function __invoke(Request $request){
+    function __invoke(Request $request, ApiService $api){
         $validator = validator($request->post(), [
             'name' => 'required',
             'department' => 'required',
@@ -26,14 +27,14 @@ class AddDriverController extends Controller
                 ->withErrors($validator->errors());
         }
 
-        $driver = new Driver([
-            'name' => $request->post('name'),
-            'department' => $request->post('department'),
-            'phone' => $request->post('phone'),
-        ]);
-
         try{
-            if($driver->save()){
+            $response = $api->post(ApiService::ROUTE_ADD_DRIVER, [], [], [
+                'name' => $request->post('name'),
+                'department' => $request->post('department'),
+                'phone' => $request->post('phone'),
+            ]);
+
+            if($response->wasSuccessful()){
                 return back()
                     ->with(['status' => 'Driver has been added to the system']);
             }

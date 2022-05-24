@@ -4,18 +4,21 @@ namespace App\Http\Controllers\Data\Sites;
 
 use App\Http\Controllers\Controller;
 use App\Models\Site;
+use App\Services\ApiService;
 use Exception;
 use Illuminate\Http\Request;
 
 class AddCompanyController extends Controller
 {
-    function __invoke(Request $request, $site_id){
-        $site = Site::whereId($site_id)
-            ->first();
+    function __invoke(Request $request, ApiService $api, $site_id){
+        $response = $api->get(ApiService::ROUTE_GET_SINGLE_SITE, ['site_id' => $site_id]);
 
-        if($site == null){
-            return redirect()->route('admin.sites');
+        if(!$response->WasSuccessful()){
+            return redirect()->route('admin.sites')->withErrors(['status' => $response->message]);
         }
+
+        $site = new Site($response->data['site']);
+        $site->created_at = $response->data['site']['timestamp'];
 
         if($request->isMethod('GET')){
             return response()->view('admin.companies.add', [
@@ -35,15 +38,21 @@ class AddCompanyController extends Controller
             return back()->withInput()->withErrors($v->errors());
         }
 
-        $company = $site->companies()->create([
-            'name' => $request->post('name'),
-        ]);
 
         try{
-            if($company != null && $company->id != null){
+            $response = $api->post(
+                ApiService::ROUTE_ADD_COMPANY,
+                ['site_id' => $site_id],
+                [],
+                [
+                    'name' => $request->post('name')
+                ] // Data
+            );
+
+            if($response->wasSuccessful()){
                 return redirect()
-                    ->route('admin.sites.company', ['site_id' => $site_id, 'company_id' => $company->id])
-                    ->with(['status' => 'Company has been added to the site']);
+                    ->route('admin.sites.single', ['site_id' => $site_id])
+                    ->with(['status' => $request->post('name').' has been added to the site']);
             }
         }catch(Exception $e){}
 

@@ -12,6 +12,9 @@ class Driver extends Model
     public $timestamps = false;
 
     public $fillable = [
-        'name', 'phone', 'department',
+        'id','name', 'phone', 'department',
     ];
+
+    // primary key type to string
+    protected $keyType = 'string';
 }

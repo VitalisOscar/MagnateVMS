@@ -16,7 +16,7 @@
     <div class="">
 
         <div class="px-4 py-3 d-flex align-items-center">
-            <h4 class="font-weight-600 mb-0">In/Out Records ({{ $result->total.' Total' }})</h4>
+            <h4 class="font-weight-600 mb-0">Vehicle Activity Records</h4>
 
             <?php $r = request(); ?>
 
@@ -35,7 +35,7 @@
         </div>
 
         <form class="px-4 pb-3 d-flex align-items-center">
-            <input type="search" name="keyword" class="form-control bg-white mr-3" placeholder="Driver..." value="{{ $r->filled('keyword') ? $r->get('keyword'):'' }}">
+            <input type="search" name="keyword" class="form-control bg-white mr-3" placeholder="Search driver, task..." value="{{ $r->filled('keyword') ? $r->get('keyword'):'' }}">
 
             <input type="readonly" placeholder="Any Date" id="flatpickr" class="form-control flatpickr mr-3" name="date" value="{{ $dates }}">
 
@@ -45,11 +45,6 @@
                     <option value="30" @if($r->get('limit') == 30){{ __('selected') }}@endif>Upto 30 Records</option>
                     <option value="50" @if($r->get('limit') == 50){{ __('selected') }}@endif>Upto 50 Records</option>
                     <option value="100" @if($r->get('limit') == 100){{ __('selected') }}@endif>Upto 100 Records</option>
-                </select>
-
-                <select name="order" class="custom-select mr-3" style="width: auto !important">
-                    <option value="">Latest Records First</option>
-                    <option value="past" @if($r->get('order') == 'past'){{ __('selected') }}@endif>Past Records First</option>
                 </select>
 
                 <button class="btn btn-default shadow-none">Go</button>
@@ -70,7 +65,7 @@
 
             @if($result->isEmpty())
             <tr>
-                <td colspan="6">
+                <td colspan="8">
                     <p class="my-0">
                         No activity has been captured that matches the selected options
                     </p>
@@ -93,10 +88,10 @@
             @endforeach
 
             <tr>
-                <td colspan="6">
+                <td colspan="8">
                     <div class="d-flex align-items-center">
                         <a href="{{ $result->prevPageUrl() }}" class="@if(!$result->hasPreviousPage()){{ __('disabled') }}@endif mr-auto btn btn-link p-0"><i class="fa fa-angle-double-left"></i>&nbsp;Prev</a>
-                        <span>{{ 'Page '.$result->page.' of '.$result->max_pages }}</span>
+                        <span>{{ 'Page '.$result->page }}</span>
                         <a href="{{ $result->nextPageUrl() }}" class="@if(!$result->hasNextPage()){{ __('disabled') }}@endif ml-auto btn btn-link p-0">Next&nbsp;<i class="fa fa-angle-double-right"></i></a>
                     </div>
                 </td>

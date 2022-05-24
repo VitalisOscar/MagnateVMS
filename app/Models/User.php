@@ -11,8 +11,9 @@ class User extends Authenticatable
     use HasFactory, HasApiTokens;
 
     protected $fillable = [
+        'id',
         'name',
-        'username',
+        'email',
         'password',
     ];
 
@@ -20,28 +21,17 @@ class User extends Authenticatable
         'created_at' => 'datetime'
     ];
 
-    protected $with = ['last_login'];
-
     protected $hidden = ['password'];
 
     protected $appends = ['date_added'];
 
-    function site(){ return $this->belongsTo(Site::class, 'site_id'); }
+    protected $keyType = 'string';
 
-    function activities(){ return $this->hasMany(Activity::class); }
+    function __construct($data = []){
+        parent::__construct($data);
 
-    function check_ins(){ return $this->activities()->checkIn(); }
-
-    function check_outs(){ return $this->activities()->checkOut(); }
-
-    function logins(){ return $this->morphMany(Login::class, 'user'); }
-
-    function last_login(){
-        return $this->morphOne(Login::class, 'user')->latest('time')->successful();
-    }
-
-    function getSiteIdAttribute(){
-        return $this->last_login ? $this->last_login->site_id:null;
+        $this->created_at = $data['timestamp'] ?? null;
+        if(isset($data['last_login'])) $this->last_login = new Login($data['last_login'] ?? []);
     }
 
     function getDateAddedAttribute(){

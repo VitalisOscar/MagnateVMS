@@ -3,38 +3,40 @@
 namespace App\Http\Controllers\Data\Visitors;
 
 use App\Exports\SingleVisitorExport;
+use App\Helpers\ApiResultSet;
 use App\Helpers\ResultSet;
 use App\Http\Controllers\Controller;
+use App\Models\Activity;
 use App\Models\Company;
+use App\Models\Site;
 use App\Models\Visitor;
+use App\Services\ApiService;
 use Illuminate\Http\Request;
 
 class SingleVisitorController extends Controller
 {
-    function get(Request $request, $visitor_id){
-        $visitor = Visitor::whereId($visitor_id)
-            ->first();
-
-        if($visitor == null){
-            return redirect()->route('admin.visitors');
-        }
-
+    function get(Request $request, ApiService $api, $visitor_id){
+        $queryParams = [];
 
         $limit = intval($request->get('limit'));
         if(!in_array($limit, [15,30,50,100])) $limit = 15;
+        $queryParams['limit'] = $limit;
 
-        $q = $visitor->activities()
-            ->with('site', 'vehicle', 'user', 'visit', 'visit.staff', 'visit.company');
 
-        $order = $request->get('order');
+        $queryParams['page'] = 1;
+        if($request->filled('page')){
+            $queryParams['page'] = $request->get('page');
+        }
 
-        if($order == 'past') $q->oldest('time');
-        else $q->latest('time');
-
+        
         $dates = null;
 
         if($request->filled('site')){
-            $q->whereSiteId($request->get('site'));
+            $queryParams['site'] = $request->get('site');
+        }
+
+        if($request->filled('type')){
+            $queryParams['type'] = $request->get('type');
         }
 
         if($request->filled('date')){
@@ -53,19 +55,55 @@ class SingleVisitorController extends Controller
                 $to = $x;
             }
 
-            $q->whereDate('time', '>=', $from)
-                ->whereDate('time', '<=', $to);
-
             $dates = $from.' to '.$to;
+
+            $queryParams['date'] = $dates;
         }
 
-        $visits = new ResultSet($q, $limit);
+
+        if($request->filled('keyword')){
+            $queryParams['search'] = $request->get('keyword');
+        }
+
+
+        $response = $api->get(
+            ApiService::ROUTE_GET_SINGLE_VISITOR_ACTIVITY,
+            ['visitor_id' => $visitor_id],
+            $queryParams
+        );
+
+        if(!$response->WasSuccessful()){
+            return redirect()->route('admin.activity.visitors')->withErrors(['status' => $response->message]);
+        }
+
+
+        $result = new ApiResultSet($response->getResult(), function($data){
+            return new Activity($data);
+        });
+
+        $visitor = new Visitor($response->data['visitor']);
+
+        $sites = $this->getSites($api);
 
         return response()->view('admin.visitors.single', [
             'visitor' => $visitor,
-            'result' => $visits,
-            'dates' => $dates
+            'result' => $result,
+            'dates' => $dates,
+            'sites' => $sites
         ]);
+    }
+
+    function getSites($api){
+        $response = $api->get(ApiService::ROUTE_GET_SITES);
+
+        $result = new ApiResultSet($response->getResult(), function($data){
+            $site = new Site($data);
+            $site->created_at = $data['timestamp'];
+
+            return $site;
+        });
+
+        return $result->items;
     }
 
     function getByIdNumber(Request $request){

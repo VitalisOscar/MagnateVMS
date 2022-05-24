@@ -35,13 +35,13 @@
         </div>
 
         <form class="px-4 pb-3 d-flex align-items-center">
-            <input type="search" name="keyword" class="form-control bg-white mr-3" placeholder="Search User..." value="{{ $r->filled('keyword') ? $r->get('keyword'):'' }}">
+            <input type="search" name="user" class="form-control bg-white mr-3" placeholder="User's Email..." value="{{ $r->get('user') }}">
 
             <input type="readonly" placeholder="Any Date" id="flatpickr" class="form-control flatpickr mr-3" name="date" value="{{ $dates ?? '' }}">
 
             <select name="site" class="custom-select mr-3" style="width: auto !important; max-width: 160px">
                 <option value="">Any Site</option>
-                @foreach(\App\Models\Site::all() as $site)
+                @foreach($sites as $site)
                 <option value="{{ $site->id }}" @if($r->get('site') == $site->id){{ __('selected') }}@endif>{{ $site->name }}</option>
                 @endforeach
             </select>
@@ -51,11 +51,6 @@
                 <option value="30" @if($r->get('limit') == 30){{ __('selected') }}@endif>Upto 30 Records</option>
                 <option value="50" @if($r->get('limit') == 50){{ __('selected') }}@endif>Upto 50 Records</option>
                 <option value="100" @if($r->get('limit') == 100){{ __('selected') }}@endif>Upto 100 Records</option>
-            </select>
-
-            <select name="order" class="custom-select mr-3" style="width: auto !important">
-                <option value="recent" @if($r->get('order') == 'latest'){{ __('selected') }}@endif>Latest</option>
-                <option value="oldest" @if($r->get('order') == 'oldest'){{ __('selected') }}@endif>Oldest</option>
             </select>
 
             <button class="btn btn-default shadow-none">Go</button>
@@ -69,14 +64,14 @@
                 <th>Date</th>
                 <th>Time</th>
                 <th>Site</th>
-                <th>Outcome</th>
+                <th>IP</th>
             </tr>
 
             @if ($result->total == 0)
             <tr>
                 <td colspan="7">
                     <p class="my-0">
-                        There are no logins at the moment
+                        No logins found
                     </p>
                 </td>
             </tr>
@@ -92,7 +87,7 @@
                 <td>{{ $login->fmt_date }}</td>
                 <td>{{ $login->fmt_time }}</td>
                 <td>{{ $login->site_id ? $login->site->name:'-' }}</td>
-                <td>{{ \Illuminate\Support\Str::title($login->status) }}</td>
+                <td>{{ $login->ip_address }}</td>
             </tr>
             <?php $i++; ?>
             @endforeach
@@ -101,7 +96,7 @@
                 <td colspan="7">
                     <div class="d-flex align-items-center">
                         <a href="{{ $result->prevPageUrl() }}" class="@if(!$result->hasPreviousPage()){{ __('disabled') }}@endif mr-auto btn btn-link p-0"><i class="fa fa-angle-double-left"></i>&nbsp;Prev</a>
-                        <span>{{ 'Page '.$result->page.' of '.$result->max_pages }}</span>
+                        <span>{{ 'Page '.$result->page }}</span>
                         <a href="{{ $result->nextPageUrl() }}" class="@if(!$result->hasNextPage()){{ __('disabled') }}@endif ml-auto btn btn-link p-0">Next&nbsp;<i class="fa fa-angle-double-right"></i></a>
                     </div>
                 </td>

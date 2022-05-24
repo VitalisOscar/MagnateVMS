@@ -3,34 +3,38 @@
 namespace App\Http\Controllers\Data\History;
 
 use App\Exports\LoginsExport;
+use App\Helpers\ApiResultSet;
 use App\Helpers\ResultSet;
 use App\Http\Controllers\Controller;
 use App\Models\Login;
+use App\Models\Site;
+use App\Services\ApiService;
 use Exception;
 use Illuminate\Http\Request;
 
 class LoginHistoryController extends Controller
 {
-    function __invoke(Request $request){
+    function __invoke(Request $request, ApiService $api){
+        $queryParams = [];
+
         $limit = intval($request->get('limit'));
         if(!in_array($limit, [15,30,50,100])) $limit = 15;
+        $queryParams['limit'] = $limit;
 
-        $order = $request->get('order');
-
-        $q = Login::where('user_id', '<>', null)->with('user', 'site');
-        if($order == 'oldest') $q->oldest('time');
-        else $q->latest('time');
-
-        $dates = null;
+        $queryParams['page'] = 1;
+        if($request->filled('page')){
+            $queryParams['page'] = $request->get('page');
+        }
 
         if($request->filled('site')){
-            $q->whereSiteId($request->get('site'));
+            $queryParams['site'] = $request->get('site');
         }
 
-        if($request->filled('type')){
-            $q->whereUserType($request->get('type'));
+        if($request->filled('user')){
+            $queryParams['user'] = $request->get('user');
         }
 
+        $dates = null;
         if($request->filled('date')){
             $date = explode(' to ', $request->get('date'));
             if(count($date) == 1){
@@ -39,32 +43,44 @@ class LoginHistoryController extends Controller
             }else{
                 $from = $date[0];
                 $to = $date[1];
-
-                if($from > $to){
-                    $x = $from;
-                    $from = $to;
-                    $to = $x;
-                }
             }
 
-            $q->whereDate('time', '>=', $from)
-                ->whereDate('time', '<=', $to);
+            if($from > $to){
+                $x = $from;
+                $from = $to;
+                $to = $x;
+            }
 
             $dates = $from.' to '.$to;
+
+            $queryParams['date'] = $dates;
         }
 
-        if($request->filled('keyword')){
-            $keyword = "%".$request->get('keyword')."%";
-            $q->whereHas('user', function($q2) use ($keyword){
-                $q2->where('name', 'like', $keyword);
-            });
-        }
+        $response = $api->get(ApiService::ROUTE_GET_LOGINS, [], $queryParams);
+
+        $result = new ApiResultSet($response->getResult(), function($data){
+            return new Login($data);
+        });
 
 
         return response()->view('admin.history.logins',[
-            'result' => new ResultSet($q, $limit),
-            'dates' => $dates
+            'result' => $result,
+            'dates' => $dates,
+            'sites' => $this->getSites($api)
         ]);
+    }
+
+    function getSites($api){
+        $response = $api->get(ApiService::ROUTE_GET_SITES);
+
+        $result = new ApiResultSet($response->getResult(), function($data){
+            $site = new Site($data);
+            $site->created_at = $data['timestamp'];
+
+            return $site;
+        });
+
+        return $result->items;
     }
 
     function export(){

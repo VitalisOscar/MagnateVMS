@@ -20,7 +20,7 @@
     <div class="">
 
         <div class="px-4 py-3 d-flex align-items-center">
-            <h4 class="font-weight-600 mb-0">Visitors {{ '('.$result->total.' total)' }}</h4>
+            <h4 class="font-weight-600 mb-0">Recorded Visitors</h4>
             <a href="{{ route('admin.activity.visitors') }}" class="ml-auto btn btn-primary btn-sm shadow-none">Individual Visits</a>
             <div class="dropdown">
                 <button class="ml-auto mr-0 btn btn-success btn-sm shadow-none dropdown-toggle" data-toggle="dropdown">Export to Excel</button>
@@ -88,7 +88,7 @@
                 </td>
                 <td>{{ $visitor->id_number ?? 'None' }}</td>
                 <td>{{ $visitor->phone ?? 'None' }}</td>
-                <td>{{ $visitor->from }}</td>
+                <td>{{ $visitor->from ?? '-' }}</td>
                 <td>
                     {!! $visitor->last_activity ? ($visitor->last_activity->fmt_datetime.'<br>'.$visitor->last_activity->site->name) : 'No Activity' !!}
                 </td>
@@ -106,7 +106,7 @@
                 <td colspan="7">
                     <div class="d-flex align-items-center">
                         <a href="{{ $result->prevPageUrl() }}" class="@if(!$result->hasPreviousPage()){{ __('disabled') }}@endif mr-auto btn btn-link p-0"><i class="fa fa-angle-double-left"></i>&nbsp;Prev</a>
-                        <span>{{ 'Page '.$result->page.' of '.$result->max_pages }}</span>
+                        <span>{{ 'Page '.$result->page }}</span>
                         <a href="{{ $result->nextPageUrl() }}" class="@if(!$result->hasNextPage()){{ __('disabled') }}@endif ml-auto btn btn-link p-0">Next&nbsp;<i class="fa fa-angle-double-right"></i></a>
                     </div>
                 </td>

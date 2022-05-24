@@ -20,7 +20,7 @@
     <div class="">
 
         <div class="px-4 py-3 d-flex align-items-center">
-            <h4 class="font-weight-600 mb-0">Existing Users {{ '('.$result->total.' total)' }}</h4>
+            <h4 class="font-weight-600 mb-0">App Users</h4>
             <a href="{{ route('admin.users.add') }}" class="ml-auto btn btn-primary btn-sm shadow-none">Add User</a>
         </div>
 
@@ -32,13 +32,6 @@
                 <option value="100" @if($r->get('limit') == 100){{ __('selected') }}@endif>Upto 100 Records</option>
             </select>
 
-            <select name="order" class="custom-select mr-3" style="width: auto !important">
-                <option value="">Sort by Default</option>
-                <option value="recent" @if($r->get('order') == 'recent'){{ __('selected') }}@endif>Added Recently</option>
-                <option value="az" @if($r->get('order') == 'az'){{ __('selected') }}@endif>Name (A-Z)</option>
-                <option value="za" @if($r->get('order') == 'za'){{ __('selected') }}@endif>Name (Z-A)</option>
-            </select>
-
             <button class="btn btn-default shadow-none">Go</button>
         </form>
 
@@ -46,7 +39,7 @@
             <tr class="card-header">
                 <th class="text-center">#</th>
                 <th>Name</th>
-                <th>Username</th>
+                <th>Email</th>
                 <th>Date Added</th>
                 <th>Last Login</th>
                 <th></th>
@@ -54,7 +47,7 @@
 
             @if($result->isEmpty())
             <tr>
-                <td colspan="5">
+                <td colspan="6">
                     <p class="my-0">
                         There are no users who can log into the app. Once users are added, they'll appear here
                     </p>
@@ -69,15 +62,15 @@
             <tr>
                 <td class="text-center">{{ $result->from + $i }}</td>
                 <td>
-                    <a href="{{ route('admin.users.single', $user->username) }}">{{ $user->name }}</a>
+                    <a href="{{ route('admin.users.single', $user->id) }}">{{ $user->name }}</a>
                 </td>
-                <td>{{ $user->username }}</td>
-                <td>{{ $user->time }}</td>
+                <td>{{ $user->email }}</td>
+                <td>{{ $user->date_added }}</td>
                 <td>
-                    {!! $user->last_login ? $user->last_login->time.'<br>'.$user->last_login->site->name:'No Logins Yet' !!}
+                    {!! $user->last_login ? $user->last_login->fmt_datetime.'<br> at '.$user->last_login->site->name:'No Logins Yet' !!}
                 </td>
                 <td>
-                    <a href="{{ route('admin.users.single', $user->username) }}">View User&nbsp;<i class="fa fa-share"></i></a>
+                    <a href="{{ route('admin.users.single', $user->id) }}">View User&nbsp;<i class="fa fa-share"></i></a>
                 </td>
             </tr>
 
@@ -90,7 +83,7 @@
                 <td colspan="7">
                     <div class="d-flex align-items-center">
                         <a href="{{ $result->prevPageUrl() }}" class="@if(!$result->hasPreviousPage()){{ __('disabled') }}@endif mr-auto btn btn-link p-0"><i class="fa fa-angle-double-left"></i>&nbsp;Prev</a>
-                        <span>{{ 'Page '.$result->page.' of '.$result->max_pages }}</span>
+                        <span>{{ 'Page '.$result->page }}</span>
                         <a href="{{ $result->nextPageUrl() }}" class="@if(!$result->hasNextPage()){{ __('disabled') }}@endif ml-auto btn btn-link p-0">Next&nbsp;<i class="fa fa-angle-double-right"></i></a>
                     </div>
                 </td>

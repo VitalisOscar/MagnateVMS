@@ -1,14 +1,17 @@
 <?php
 
 use App\Http\Controllers\App\AppVersionsController;
+use App\Http\Controllers\Data\ExportDataController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('app/download-latest', [AppVersionsController::class, 'downloadLatest'])->name('app.latest_url');
 
 Route::prefix('admin')
-->middleware('auth:admin')
+// ->middleware('auth:admin')
 ->name('admin.')
 ->group(function () {
+
+    Route::get('export/{type}', ExportDataController::class)->name('exports');
 
     Route::get('logout', function(){
         auth('admin')->logout();
@@ -26,7 +29,7 @@ Route::prefix('admin')
     // Sites
     Route::prefix('sites')->group(function () {
         Route::get('', \App\Http\Controllers\Data\Sites\GetSitesController::class)->name('sites');
-        Route::view('add', 'sites.add')->name('sites.add');
+        Route::view('add', 'admin.sites.add')->name('sites.add');
         Route::post('add', \App\Http\Controllers\Data\Sites\AddSiteController::class)->name('sites.add');
 
         Route::get('{site_id}', [\App\Http\Controllers\Data\Sites\SingleSiteController::class, 'get'])->name('sites.single');
@@ -73,9 +76,9 @@ Route::prefix('admin')
         Route::post('add', \App\Http\Controllers\Data\Users\AddUserController::class)->name('users.add');
         Route::get('logins', \App\Http\Controllers\Data\Users\GetUsersController::class)->name('users.logins');
 
-        Route::get('{username}', [\App\Http\Controllers\Data\Users\SingleUserController::class, 'get'])->name('users.single');
-        Route::post('{username}/update', [\App\Http\Controllers\Data\Users\SingleUserController::class, 'update'])->name('users.update');
-        Route::post('{username}/delete', [\App\Http\Controllers\Data\Users\SingleUserController::class, 'delete'])->name('users.delete');
+        Route::get('{user_id}', [\App\Http\Controllers\Data\Users\SingleUserController::class, 'get'])->name('users.single');
+        Route::post('{user_id}/update', [\App\Http\Controllers\Data\Users\SingleUserController::class, 'update'])->name('users.update');
+        Route::post('{user_id}/delete', [\App\Http\Controllers\Data\Users\SingleUserController::class, 'delete'])->name('users.delete');
     });
 
     // History

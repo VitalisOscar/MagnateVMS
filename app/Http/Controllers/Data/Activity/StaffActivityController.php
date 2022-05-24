@@ -3,52 +3,45 @@
 namespace App\Http\Controllers\Data\Activity;
 
 use App\Exports\AllStaffCheckInsExport;
+use App\Helpers\ApiResultSet;
 use App\Helpers\ResultSet;
 use App\Http\Controllers\Controller;
 use App\Models\Activity;
 use App\Models\Company;
+use App\Models\Site;
 use App\Models\Staff;
+use App\Services\ApiService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class StaffActivityController extends Controller
 {
-    function __invoke(Request $request){
+    function __invoke(Request $request, ApiService $api){
+        $queryParams = [];
+
+        if($request->filled('company')){
+            $queryParams['company'] = $request->get('company');
+        }
+
+
         $limit = intval($request->get('limit'));
         if(!in_array($limit, [15,30,50,100])) $limit = 15;
+        $queryParams['limit'] = $limit;
 
-        $q = Activity::byStaff()
-            ->with('by', 'by.company', 'site', 'vehicle', 'user');
-
-        $order = $request->get('order');
-
-        if($order == 'past') $q->oldest('time');
-        else $q->latest('time');
+        $queryParams['page'] = 1;
+        if($request->filled('page')){
+            $queryParams['page'] = $request->get('page');
+        }
 
 
         $dates = null;
 
-        if($request->filled('keyword')){
-            $k = '%'.$request->get('keyword').'%';
-            $q->whereHas('staff', function($q2) use($k){
-                $q2->where('name', 'like', $k);
-            });
-        }
-
-        if($request->filled('company')){
-            $q->whereHas('staff', function($s) use($request){
-                $s->whereHas('company', function($c) use($request){
-                    $c->whereId($request->get('company'));
-                });
-            });
-        }
-
         if($request->filled('site')){
-            $q->whereSiteId($request->get('site'));
+            $queryParams['site'] = $request->get('site');
         }
 
-        if($request->is('api*')){
-            $q->atSite(auth('sanctum')->user()->site_id);
+        if($request->filled('type')){
+            $queryParams['type'] = $request->get('type');
         }
 
         if($request->filled('date')){
@@ -67,26 +60,59 @@ class StaffActivityController extends Controller
                 $to = $x;
             }
 
-            $q->whereDate('time', '>=', $from)
-                ->whereDate('time', '<=', $to);
-
             $dates = $from.' to '.$to;
-        }else if($request->is('api*')){
-            $d = Carbon::today()->format('Y-m-d');
 
-            $q->whereDate('time', '>=', $d)
-                ->whereDate('time', '<=', $d);
+            $queryParams['date'] = $dates;
         }
 
-        $activities = new ResultSet($q, $limit);
 
-        return $request->is('api*') ?
-            $this->json->mixed($activities, $activities->items) :
-            response()->view('admin.activity.staff', [
-                'result' => $activities,
+        if($request->filled('keyword')){
+            $queryParams['search'] = $request->get('keyword');
+        }
+
+
+        $response = $api->get(ApiService::ROUTE_GET_ALL_STAFF_ACTIVITY, [], $queryParams);
+
+        $result = new ApiResultSet($response->getResult(), function($data){
+            return new Activity($data);
+        });
+
+        $sites = $this->getSites($api);
+
+
+        return response()->view('admin.activity.staff', [
+                'result' => $result,
                 'dates' => $dates,
-                'companies' => Company::whereHas('site')->with('site')->get()
+                'sites' => $sites,
+                'companies' => []
             ]);
+
+    }
+
+    function getSites($api){
+        $response = $api->get(ApiService::ROUTE_GET_SITES);
+
+        $result = new ApiResultSet($response->getResult(), function($data){
+            $site = new Site($data);
+            $site->created_at = $data['timestamp'];
+
+            return $site;
+        });
+
+        return $result->items;
+    }
+
+    function getCompanies($api){
+        $response = $api->get(ApiService::ROUTE_GET_SITES);
+
+        $result = new ApiResultSet($response->getResult(), function($data){
+            $site = new Site($data);
+            $site->created_at = $data['timestamp'];
+
+            return $site;
+        });
+
+        return $result->items;
     }
 
     function getCheckedIn(){

@@ -1,8 +1,8 @@
 @extends('admin.root')
 
-@section('title', 'Staff Check In History')
+@section('title', 'Staff Activity')
 
-@section('page_heading', 'Staff Check In History')
+@section('page_heading', 'Staff Activiy')
 
 @section('links')
     <link rel="stylesheet" href="{{ asset('vendor/flatpickr/flatpickr.min.css') }}">
@@ -20,7 +20,7 @@
     <div class="">
 
         <div class="px-4 py-3 d-flex align-items-center">
-            <h4 class="font-weight-600 mb-0">Staff Activity ({{ $result->total.' Total' }})</h4>
+            <h4 class="font-weight-600 mb-0">Staff Activity</h4>
 
             <?php
                 $r = request();
@@ -44,7 +44,7 @@
             <div class="d-flex align-items-center mb-3">
                 <select name="site" class="custom-select mr-3" style="width: auto !important">
                     <option value="">At Any Site</option>
-                    @foreach(\App\Models\Site::all() as $site)
+                    @foreach($sites as $site)
                     <option value="{{ $site->id }}" @if($r->get('site') == $site->id){{ __('selected') }}@endif>{{ 'At '.$site->name }}</option>
                     @endforeach
                 </select>
@@ -68,11 +68,6 @@
                         <option value="30" @if($r->get('limit') == 30){{ __('selected') }}@endif>30 Records</option>
                         <option value="50" @if($r->get('limit') == 50){{ __('selected') }}@endif>50 Records</option>
                         <option value="100" @if($r->get('limit') == 100){{ __('selected') }}@endif>100 Records</option>
-                    </select>
-
-                    <select name="order" class="custom-select mr-3" style="width: auto !important">
-                        <option value="">Latest First</option>
-                        <option value="past" @if($r->get('order') == 'past'){{ __('selected') }}@endif>Past Dates First</option>
                     </select>
 
                     <button class="btn btn-default shadow-none">Go</button>
@@ -107,10 +102,10 @@
             @foreach ($result->items as $activity)
             <tr>
                 <td>{{ $activity->site->name }}</td>
-                <td><a href="{{ route('admin.sites.staff', ['site_id' => $activity->site->id, 'company_id' => $activity->staff->company->id, 'staff_id' => $activity->staff->id]) }}">{{ $activity->staff->name }}</a></td>
-                <td>{{ $activity->staff->phone }}</td>
-                <td>{{ $activity->staff->extension }}</td>
-                <td>{{ $activity->staff->company->name }}</td>
+                <td><a href="{{ route('admin.sites.staff', ['site_id' => $activity->site->id, 'company_id' => $activity->by->company->id, 'staff_id' => $activity->by->id]) }}">{{ $activity->by->name }}</a></td>
+                <td>{{ $activity->by->phone }}</td>
+                <td>{{ $activity->by->extension }}</td>
+                <td>{{ $activity->by->company->name }}</td>
                 <td>{{ $activity->fmt_datetime }}</td>
                 @if($activity->vehicle != null)
                 <td>
@@ -128,7 +123,7 @@
                 <td colspan="9">
                     <div class="d-flex align-items-center">
                         <a href="{{ $result->prevPageUrl() }}" class="@if(!$result->hasPreviousPage()){{ __('disabled') }}@endif mr-auto btn btn-link p-0"><i class="fa fa-angle-double-left"></i>&nbsp;Prev</a>
-                        <span>{{ 'Page '.$result->page.' of '.$result->max_pages }}</span>
+                        <span>{{ 'Page '.$result->page }}</span>
                         <a href="{{ $result->nextPageUrl() }}" class="@if(!$result->hasNextPage()){{ __('disabled') }}@endif ml-auto btn btn-link p-0">Next&nbsp;<i class="fa fa-angle-double-right"></i></a>
                     </div>
                 </td>

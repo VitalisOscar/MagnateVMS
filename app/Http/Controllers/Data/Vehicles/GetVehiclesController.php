@@ -3,73 +3,101 @@
 namespace App\Http\Controllers\Data\Vehicles;
 
 use App\Exports\VehiclesExport;
+use App\Helpers\ApiResultSet;
 use App\Helpers\ResultSet;
 use App\Http\Controllers\Controller;
 use App\Models\Vehicle;
+use App\Services\ApiService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class GetVehiclesController extends Controller
 {
-    function company(Request $request){
+    function company(Request $request, ApiService $api){
+        // $limit = intval($request->get('limit'));
+        // if(!in_array($limit, [15,30,50,100])) $limit = 15;
+
+        // if($request->is('api*')) $limit = null;
+
+        // $order = $request->get('order');
+
+        // $q = Vehicle::companyOwned();
+
+        // if($request->filled('keyword')){
+        //     $k = '%'.$request->get('keyword').'%';
+
+        //     $q->where(function($q1) use($k){
+        //         $q1->where('registration_no', 'like', $k)
+        //             ->orWhere('description', 'like', $k);
+        //     });
+        // }
+
+        // if($order == 'az') $q->orderBy('registration_no', 'ASC');
+        // elseif($order == 'za') $q->orderBy('registration_no', 'DESC');
+
+        // $result = new ResultSet($q, $limit);
+
+        // return $request->is('api*') ?
+        //     $this->json->mixed(null, $result->items)
+        //     : response()->view('admin.vehicles.company',[
+        //         'result' => $result,
+        //     ]);
+
+        $queryParams = [];
+
         $limit = intval($request->get('limit'));
         if(!in_array($limit, [15,30,50,100])) $limit = 15;
+        $queryParams['limit'] = $limit;
 
-        if($request->is('api*')) $limit = null;
-
-        $order = $request->get('order');
-
-        $q = Vehicle::companyOwned();
-
-        if($request->filled('keyword')){
-            $k = '%'.$request->get('keyword').'%';
-
-            $q->where(function($q1) use($k){
-                $q1->where('registration_no', 'like', $k)
-                    ->orWhere('description', 'like', $k);
-            });
+        $queryParams['page'] = 1;
+        if($request->filled('page')){
+            $queryParams['page'] = $request->get('page');
         }
 
-        if($order == 'az') $q->orderBy('registration_no', 'ASC');
-        elseif($order == 'za') $q->orderBy('registration_no', 'DESC');
+        if($request->filled('keyword')){
+            $queryParams['search'] = $request->get('keyword');
+        }
 
-        $result = new ResultSet($q, $limit);
+        $response = $api->get(ApiService::ROUTE_GET_COMPANY_VEHICLES, [], $queryParams);
 
-        return $request->is('api*') ?
-            $this->json->mixed(null, $result->items)
-            : response()->view('admin.vehicles.company',[
-                'result' => $result,
-            ]);
+        $result = new ApiResultSet($response->getResult(), function($data){
+            return new Vehicle($data);
+        });
+
+        return response()->view('admin.vehicles.company',[
+            'result' => $result
+        ]);
     }
 
-    function other(Request $request){
+    function other(Request $request, ApiService $api){
+        $queryParams = [];
+
         $limit = intval($request->get('limit'));
         if(!in_array($limit, [15,30,50,100])) $limit = 15;
+        $queryParams['limit'] = $limit;
 
-        $order = $request->get('order');
-        $show = $request->get('show');
-
-        if($show == 'staff') $q = Vehicle::staffOwned();
-        elseif($show == 'visitors') $q = Vehicle::visitorOwned();
-        else $q = Vehicle::otherOwned();
-
-        if($request->filled('keyword')){
-            $k = '%'.$request->get('keyword').'%';
-
-            $q->where(function($q1) use($k){
-                $q1->where('registration_no', 'like', $k)
-                    ->orWhere('description', 'like', $k)
-                    ->orWhereHas('owner', function($q2) use($k){
-                        $q2->where('name', 'like', $k);
-                    });
-            });
+        $queryParams['page'] = 1;
+        if($request->filled('page')){
+            $queryParams['page'] = $request->get('page');
         }
 
-        if($order == 'az') $q->orderBy('registration_no', 'ASC');
-        elseif($order == 'za') $q->orderBy('registration_no', 'DESC');
+        if($request->filled('keyword')){
+            $queryParams['search'] = $request->get('keyword');
+        }
+
+        $show = $request->get('show');
+
+        if($show == 'staff') $queryParams['owner'] = 'Staff';
+        elseif($show == 'visitors') $queryParams['owner'] = 'Visitor';
+
+        $response = $api->get(ApiService::ROUTE_GET_NON_COMPANY_VEHICLES, [], $queryParams);
+
+        $result = new ApiResultSet($response->getResult(), function($data){
+            return new Vehicle($data);
+        });
 
         return response()->view('admin.vehicles.others',[
-            'result' => new ResultSet($q, $limit)
+            'result' => $result
         ]);
     }
 

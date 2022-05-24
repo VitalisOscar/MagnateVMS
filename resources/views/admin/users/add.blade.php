@@ -56,13 +56,13 @@
                         <div class="input-group input-group-alternative border shadow-none">
                             <div class="input-group-prepend">
                                 <span class="input-group-text">
-                                    <i class="fa fa-user"></i>
+                                    <i class="fa fa-envelope"></i>
                                 </span>
                             </div>
-                            <input value="{{ old('username') }}" type="text" class="form-control" placeholder="e.g john_doe" name="username">
+                            <input value="{{ old('email') }}" type="email" class="form-control" placeholder="e.g john@gmail.com" name="email">
                         </div>
-                        @if($errors->has('username'))
-                        <small class="text-danger">{{ $errors->get('username')[0] }}</small>
+                        @if($errors->has('email'))
+                        <small class="text-danger">{{ $errors->get('email')[0] }}</small>
                         @else
                         <small>Username will be used when logging into the app</small>
                         @endif

@@ -10,11 +10,15 @@ class Company extends Model
     use HasFactory;
 
     public $fillable = [
+        'id',
         'site_id',
         'name',
     ];
 
-    public $withCount = ['staff'];
+    // primary key type to string
+    protected $keyType = 'string';
+
+    // public $withCount = ['staff'];
 
     public $timestamps = false;
 

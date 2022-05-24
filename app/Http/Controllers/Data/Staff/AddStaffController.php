@@ -5,23 +5,28 @@ namespace App\Http\Controllers\Data\Staff;
 use App\Http\Controllers\Controller;
 use App\Imports\StaffImport;
 use App\Models\Company;
+use App\Models\Site;
 use App\Models\Staff;
+use App\Services\ApiService;
 use Exception;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
 
 class AddStaffController extends Controller
 {
-    function __invoke(Request $request, $site_id, $company_id){
-        $company = Company::whereId($company_id)
-            ->whereSiteId($site_id)
-            ->with('site')
-            ->first();
+    function __invoke(Request $request, ApiService $api, $site_id, $company_id){
+        $response = $api->get(ApiService::ROUTE_GET_SINGLE_COMPANY, [
+            'site_id' => $site_id,
+            'company_id' => $company_id
+        ]);
 
-        if($company == null)
-        return redirect()
-            ->route('admin.sites.single', $site_id)
-            ->withErrors(['status' => 'Company not found']);
+        if(!$response->WasSuccessful()){
+            return redirect()->route('admin.sites.single', $site_id)->withErrors(['status' => $response->message]);
+        }
+
+        $company = new Company($response->data['company']);
+        $company->site = new Site($response->data['company']['site']);
+        $company->created_at = $response->data['company']['timestamp'];
 
         if($request->isMethod('GET')){
             return response()->view('admin.staff.add', [
@@ -43,20 +48,27 @@ class AddStaffController extends Controller
             return back()->withInput()->withErrors($validator->errors());
         }
 
-        $staff = new Staff([
-            'name' => $request->post('name'),
-            'phone' => $request->post('phone'),
-            'extension' => $request->post('extension'),
-            'department' => $request->post('department'),
-            'company_id' => $company_id
-        ]);
-
         try{
-            if($staff->save()){
+            $response = $api->post(ApiService::ROUTE_ADD_STAFF, [
+                'site_id' => $site_id,
+                'company_id' => $company_id
+            ], [], [
+                'name' => $request->post('name'),
+                'phone' => $request->post('phone'),
+                'extension' => $request->post('extension'),
+                'department' => $request->post('department'),
+                'company_id' => $company_id
+            ]);
+
+            if($response->wasSuccessful()){
                 return redirect()
                     ->route('admin.sites.company', ['site_id' => $site_id, 'company_id' => $company->id])
-                    ->with(['status' => $staff->name.' has been added to staff members']);
+                    ->with(['status' => 'Staff member record has been added']);
             }
+
+            return back()
+                ->withInput()
+                ->withErrors(['status' => $response->message]);
         }catch(Exception $e){}
 
         return back()

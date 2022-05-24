@@ -20,7 +20,7 @@
     <div class="">
 
         <div class="px-4 py-3 d-flex align-items-center">
-            <h4 class="font-weight-600 mb-0">{{ ($r->get('show') == 'staff' ? 'Staff':($r->get('show') == 'visitors' ? 'Visitor':'Other')).' Vehicles ('.$result->total.' total)' }}</h4>
+            <h4 class="font-weight-600 mb-0">{{ ($r->get('show') == 'staff' ? 'Staff':($r->get('show') == 'visitors' ? 'Visitor':'Other')).' Vehicles' }}</h4>
 
             <div class="dropdown ml-auto">
                 <button class="ml-auto mr-0 btn btn-primary btn-sm shadow-none dropdown-toggle" data-toggle="dropdown">Export to Excel</button>
@@ -50,12 +50,6 @@
                 <option value="">Show All</option>
                 <option value="staff" @if($r->get('show') == 'staff'){{ __('selected') }}@endif>Staff Vehicles</option>
                 <option value="visitors" @if($r->get('show') == 'visitors'){{ __('selected') }}@endif>Visitor Vehicles</option>
-            </select>
-
-            <select name="order" class="custom-select mr-3" style="width: auto !important">
-                <option value="">Sort by Default</option>
-                <option value="az" @if($r->get('order') == 'az'){{ __('selected') }}@endif>Reg Number (A-Z)</option>
-                <option value="za" @if($r->get('order') == 'za'){{ __('selected') }}@endif>Reg Number (Z-A)</option>
             </select>
 
             <button class="btn btn-default shadow-none">Go</button>
@@ -105,7 +99,7 @@
                 <td colspan="7">
                     <div class="d-flex align-items-center">
                         <a href="{{ $result->prevPageUrl() }}" class="@if(!$result->hasPreviousPage()){{ __('disabled') }}@endif mr-auto btn btn-link p-0"><i class="fa fa-angle-double-left"></i>&nbsp;Prev</a>
-                        <span>{{ 'Page '.$result->page.' of '.$result->max_pages }}</span>
+                        <span>{{ 'Page '.$result->page }}</span>
                         <a href="{{ $result->nextPageUrl() }}" class="@if(!$result->hasNextPage()){{ __('disabled') }}@endif ml-auto btn btn-link p-0">Next&nbsp;<i class="fa fa-angle-double-right"></i></a>
                     </div>
                 </td>

@@ -18,7 +18,7 @@ class Site extends Model
     ];
 
     public $fillable = [
-        'name', 'options'
+        'id', 'name', 'options'
     ];
 
     public $casts = [
@@ -26,6 +26,9 @@ class Site extends Model
     ];
 
     public $timestamps = false;
+
+    // primary key type to string
+    protected $keyType = 'string';
 
     function companies(){
         return $this->hasMany(Company::class);

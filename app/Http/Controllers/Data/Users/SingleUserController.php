@@ -4,37 +4,36 @@ namespace App\Http\Controllers\Data\Users;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Services\ApiService;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
 class SingleUserController extends Controller
 {
-    function get($username){
-        $user = User::whereUsername($username)->first();
+    function get(ApiService $api, $user_id){
+        $response = $api->get(ApiService::ROUTE_GET_SINGLE_USER, [
+            'user_id' => $user_id
+        ]);
 
-        if($user == null){
-            return redirect()->route('admin.users');
+        if(!$response->WasSuccessful()){
+            return redirect()->route('admin.users')->withErrors([
+                'status' => $response->message
+            ]);
         }
+
+        $user = new User($response->data['user']);
 
         return response()->view('admin.users.single', [
             'user' => $user,
-            'recent_logins' => $user->logins()->latest('time')->limit(3)->get()
+            'recent_logins' => []
         ]);
     }
 
-    function update(Request $request, $username){
-        $user = User::whereUsername($username)->first();
-
-        if($user == null){
-            return back()
-                ->withInput()
-                ->withErrors(['status' => "Unable to find user with username '$username'"]);
-        }
-
+    function update(Request $request, ApiService $api, $user_id){
         $validator = validator($request->post(), [
             'name' => 'required',
-            'username' => 'required|unique:users,username,'.$user->id,
+            'email' => 'required',
             'password' => 'nullable',
         ],[
             'username.unique' => 'This username belongs to another account'
@@ -46,32 +45,22 @@ class SingleUserController extends Controller
                 ->withErrors($validator->errors());
         }
 
-        if($user->username == $request->post('username') &&
-            $user->name == $request->post('name') &&
-            !$request->filled('password')
-        ){
+        $response = $api->post(ApiService::ROUTE_UPDATE_USER, [
+            'user_id' => $user_id
+        ], [], [
+            'name' => $request->post('name'),
+            'email' => $request->post('email'),
+            'password' => $request->post('password'),
+        ]);
+
+        if(!$response->WasSuccessful()){
             return back()
                 ->withInput()
-                ->with(['status' => 'No changes have been made to be saved']);
+                ->withErrors(['status' => $response->message]);
         }
-
-        $user->username = $request->post('username');
-        $user->name = $request->post('name');
-
-        if($request->filled('password')){
-            $user->password = Hash::make($request->post('password'));
-        }
-
-        try{
-            if($user->save()){
-                return back()
-                    ->with(['status' => 'Changes have been saved']);
-            }
-        }catch(Exception $e){}
 
         return back()
-            ->withInput()
-            ->withErrors(['status' => 'Something went wrong. Please try again']);
+            ->with(['status' => 'Changes have been saved']);
     }
 
     function delete($username){

@@ -16,7 +16,7 @@
 
     <h4 class="font-weight-600 mb-3">Account Info</h4>
 
-    <form action="{{ route('admin.users.update', $user->username) }}" method="post">
+    <form action="{{ route('admin.users.update', $user->id) }}" method="post">
         @csrf
 
         <div class="form-group">
@@ -46,7 +46,7 @@
         <div class="form-group">
             <div class="form-row">
                 <div class="col-md-4">
-                    <label for=""><strong>Username:</strong></label>
+                    <label for=""><strong>Email:</strong></label>
                 </div>
 
                 <div class="col-md-8">
@@ -56,12 +56,12 @@
                                 <i class="fa fa-user"></i>
                             </span>
                         </div>
-                        <input type="text" value="{{ old('username') != null ? old('username'):$user->username }}" class="form-control" placeholder="e.g john_doe" name="username">
+                        <input type="text" value="{{ old('email') != null ? old('email'):$user->email }}" class="form-control" placeholder="e.g john_doe" name="email">
                     </div>
-                    @if($errors->has('username'))
-                    <small class="text-danger">{{ $errors->get('username')[0] }}</small>
+                    @if($errors->has('email'))
+                    <small class="text-danger">{{ $errors->get('email')[0] }}</small>
                     @else
-                    <small>Username will be used when logging into the app</small>
+                    <small>Email will be used when logging into the app</small>
                     @endif
                 </div>
             </div>

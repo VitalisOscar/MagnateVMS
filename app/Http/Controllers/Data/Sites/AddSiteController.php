@@ -4,12 +4,13 @@ namespace App\Http\Controllers\Data\Sites;
 
 use App\Http\Controllers\Controller;
 use App\Models\Site;
+use App\Services\ApiService;
 use Exception;
 use Illuminate\Http\Request;
 
 class AddSiteController extends Controller
 {
-    function __invoke(Request $request){
+    function __invoke(Request $request, ApiService $api){
         $validator = validator($request->post(), [
             'name' => 'required',
         ]);
@@ -20,15 +21,15 @@ class AddSiteController extends Controller
                 ->withErrors($validator->errors());
         }
 
-        $site = new Site([
-            'name' => $request->post('name'),
-        ]);
-
         try{
-            if($site->save()){
+            $response = $api->post(ApiService::ROUTE_ADD_SITE, [], [], [
+                'name' => $request->post('name')
+            ]);
+
+            if($response->wasSuccessful()){
                 return redirect()
-                    ->route('admin.sites.single', $site->id)
-                    ->with(['status' => 'Site has been saved']);
+                    ->route('admin.sites')
+                    ->with(['status' => 'Site has been added']);
             }
         }catch(Exception $e){}
 

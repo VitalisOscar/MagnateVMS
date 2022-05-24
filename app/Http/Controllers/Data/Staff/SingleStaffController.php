@@ -3,37 +3,42 @@
 namespace App\Http\Controllers\Data\Staff;
 
 use App\Http\Controllers\Controller;
+use App\Models\Company;
+use App\Models\Site;
 use App\Models\Staff;
+use App\Services\ApiService;
 use Exception;
 use Illuminate\Http\Request;
 
 class SingleStaffController extends Controller
 {
-    function get($site_id, $company_id, $staff_id){
-        $staff = Staff::whereId($staff_id)
-            ->whereCompanyId($company_id)
-            ->with('company', 'company.site')
-            ->first();
+    function get(ApiService $api, $site_id, $company_id, $staff_id){
+        $response = $api->get(ApiService::ROUTE_GET_SINGLE_STAFF, [
+            'site_id' => $site_id,
+            'company_id' => $company_id,
+            'staff_id' => $staff_id,
+        ]);
 
-        if($staff == null)
-        return redirect()
-            ->route('admin.sites.company', ['site_id' => $site_id, 'company_id' => $company_id])
-            ->withErrors(['status' => 'Staff member not found. Might have been deleted or url is incorrect']);
+        if(!$response->WasSuccessful()){
+            return redirect()
+                ->route('admin.sites.company', ['site_id' => $site_id, 'company_id' => $company_id])
+                ->withErrors(['status' => 'Staff member not found. Might have been deleted or url is incorrect']);
+        }
+
+        $staff = new Staff($response->data['staff']);
+        $staff->created_at = $response->data['staff']['timestamp'];
+        $company = new Company($response->data['staff']['company']);
+        $site = new Site($response->data['staff']['company']['site']);
+
+        $company->site = $site;
+        $staff->company = $company;
 
         return response()->view('admin.staff.single', [
             'staff' => $staff
         ]);
     }
 
-    function update(Request $request, $site_id, $company_id, $staff_id){
-        $staff = Staff::whereId($staff_id)
-            ->whereCompanyId($company_id)
-            ->first();
-
-        if($staff == null)
-        return back()
-            ->withErrors(['status' => 'Staff member not found. Might have been deleted or url is incorrect']);
-
+    function update(Request $request, ApiService $api, $site_id, $company_id, $staff_id){
         $validator = validator($request->post(), [
             'name' => 'required|string',
             'phone' => 'nullable|regex:/0([0-9]){9}/',
@@ -48,52 +53,42 @@ class SingleStaffController extends Controller
             return back()->withInput()->withErrors($validator->errors());
         }
 
-        if($staff->name == $request->post('name') &&
-            $staff->phone == $request->post('phone') &&
-            $staff->extension == $request->post('extension') &&
-            $staff->department == $request->post('department')
-        ){
-            return back()
-                ->withInput()
-                ->with(['status' => 'No changes have been made to be saved']);
+
+        $response = $api->post(ApiService::ROUTE_UPDATE_STAFF, [
+            'site_id' => $site_id,
+            'company_id' => $company_id,
+            'staff_id' => $staff_id,
+        ], [], [
+            'name' => $request->post('name'),
+            'phone' => $request->post('phone'),
+            'extension' => $request->post('extension'),
+            'department' => $request->post('department')
+        ]);
+
+        if(!$response->WasSuccessful()){
+            return back()->withInput()
+                ->withErrors(['status' => $response->message]);
         }
 
-        $staff->name = $request->post('name');
-        $staff->phone = $request->post('phone');
-        $staff->extension = $request->post('extension');
-        $staff->department = $request->post('department');
-
-        try{
-            if($staff->save()){
-                return back()
-                    ->with(['status' => 'Staff info has been updated']);
-            }
-        }catch(Exception $e){}
-
         return back()
-            ->withInput()
-            ->withErrors(['status' => 'Something went wrong. Please try again']);
+            ->with(['status' => 'Staff info has been updated']);
     }
 
-    function delete(Request $request, $site_id, $company_id, $staff_id){
-        $staff = Staff::whereId($staff_id)
-            ->whereCompanyId($company_id)
-            ->first();
+    function delete(Request $request, ApiService $api, $site_id, $company_id, $staff_id){
+        $response = $api->post(ApiService::ROUTE_DELETE_STAFF, [
+            'site_id' => $site_id,
+            'company_id' => $company_id,
+            'staff_id' => $staff_id,
+        ], [], []);
 
-        if($staff == null)
-        return back()
-            ->withErrors(['status' => 'Staff member not found. Might have been deleted or url is incorrect']);
+        if(!$response->wasSuccessful()){
+            return back()->withErrors([
+                'status' => $response->message
+            ]);
+        }
 
-        try{
-            if(!$staff->delete()){
-                return back()
-                    ->withErrors(['status' => 'Unable to delete staff member. Please retry']);
-            }
-
-            return back();
-        }catch(Exception $e){}
-
-        return back()
-            ->withErrors(['status' => 'Unable to delete staff member. PLease retry']);
+        return back()->with([
+            'status' => 'Staff member record deleted. Any activity for the staff is still preserved'
+        ]);
     }
 }

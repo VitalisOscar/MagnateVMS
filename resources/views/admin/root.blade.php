@@ -232,7 +232,7 @@ $current_route = \Illuminate\Support\Facades\Route::current()->getName();
             </ul>
 
             <div class="float-right ml-auto d-flex align-items-center dropdown-toggle btn btn-outline-white py-2" data-toggle="dropdown">
-                {{ auth('admin')->user()->name }}
+                {{ auth('admin')->user()->name ?? ''}}
             </div>
         </div>
     </div>
@@ -297,7 +297,7 @@ $current_route = \Illuminate\Support\Facades\Route::current()->getName();
         </ul>
 
         <div class="float-right ml-auto d-flex align-items-center dropdown-toggle btn btn-outline btn-link text-white px-2 py-2" data-toggle="dropdown">
-            <i class="fa fa-user-circle mr-2"></i>{{ auth('admin')->user()->name }}
+            <i class="fa fa-user-circle mr-2"></i>{{ auth('admin')->user()->name ?? '' }}
         </div>
     </div>
 

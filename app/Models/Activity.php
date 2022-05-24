@@ -18,18 +18,50 @@ class Activity extends Model
     const BY_COMPANY_VEHICLE = 'Vehicle';
 
     protected $fillable = [
-        'time', 'type', 'site_id', 'by_id', 'by_type', 'user_id', 'vehicle_id', 'checkin_activity_id', 'checkout_activity_id'
+        'timestamp', 'date', 'time', 'type', 'site_id', 'by_id', 'by_type', 'user_id', 'vehicle_id', 'checkin_activity_id', 'checkout_activity_id'
     ];
 
     public $timestamps = false;
 
     protected $casts = [
-        'time' => 'datetime'
+        'created_at' => 'datetime'
     ];
 
     protected $with = ['user'];
 
     protected $appends = ['fmt_time', 'fmt_date'];
+
+    protected $keyType = 'string';
+
+    function __construct($data = []){
+        parent::__construct($data);
+
+        $this->created_at = $data['timestamp'] ?? null;
+        $this->site = new Site($data['site'] ?? []);
+        if(isset($data['user'])) $this->user = new User($data['user'] ?? []);
+        if(isset($data['vehicle'])) $this->vehicle = new Vehicle($data['vehicle'] ?? []);
+        if(isset($data['visit'])) $this->visit = new Visit($data['visit'] ?? []);
+        if(isset($data['driver_activity'])) $this->driver_task = new DriverActivity($data['driver_activity'] ?? []);
+        if(isset($data['check_in_activity'])) $this->checkin_activity = new Activity($data['check_in_activity']);
+        if(isset($data['check_out_activity'])) $this->checkout_activity = new Activity($data['check_out_activity'] ?? []);
+
+        if($this->isByStaff()){
+            $this->by = new Staff($data['by'] ?? []);
+        }
+
+        if($this->isByVisitor()){
+            $this->by = new Visitor($data['by'] ?? []);
+        }
+
+        if($this->isByCompanyVehicle()){
+            $this->by = new Vehicle($data['by'] ?? []);
+        }
+
+        $this->user_id = $data['user']['id'] ?? null;
+        $this->site_id = $data['site']['id'] ?? null;
+        $this->vehicle_id = $data['vehicle']['id'] ?? null;
+        $this->by_id = $data['by']['id'] ?? null;
+    }
 
     // Relations
     function checkin_activity(){
@@ -97,16 +129,16 @@ class Activity extends Model
 
     // Attributes
     function getFmtDateAttribute(){
-        return $this->time->day.' '.substr($this->time->monthName, 0, 3).' '.$this->time->year;
+        return $this->created_at->day.' '.substr($this->created_at->monthName, 0, 3).' '.$this->created_at->year;
     }
 
     function getFmtTimeAttribute(){
-        if(is_string($this->time)){
-            $d = Carbon::createFromTimeString($this->time);
-        }else if($this->time == null){
+        if(is_string($this->created_at)){
+            $d = Carbon::createFromTimeString($this->created_at);
+        }else if($this->created_at == null){
             $d = Carbon::now();
         }else{
-            $d = $this->time;
+            $d = $this->created_at;
         }
 
         return $d->format('H:i');

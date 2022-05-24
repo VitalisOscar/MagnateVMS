@@ -71,7 +71,7 @@
 
 </div>
 
-<h4 class="font-weight-600">Site Settings</h4>
+<h4 class="font-weight-600">Edit Site</h4>
 
 <div class="bg-white border rounded mb-4 p-4" id="options">
 
@@ -99,9 +99,13 @@
                     @endif
                 </div>
             </div>
+
+            <div class="info info-box mt-3">
+                Note that this new name will reflect only in site activities that will be recorded after the change is made. Filters will still work perfectly for previous activities
+            </div>
         </div>
 
-        <div class="form-group mb-4">
+        {{-- <div class="form-group mb-4">
             <h5 class="font-weight-600">Logins</h5>
             <p class="mt-0 mb-3">
                 Disabling logins will mean app users at {{ $site->name }} will not be able to sign in and track visitors, staff or vehicles leaving or coming in.
@@ -116,9 +120,9 @@
                     </label>
                 </div>
             </div>
-        </div>
+        </div> --}}
 
-        <div class="form-group">
+        {{-- <div class="form-group">
             <h5 class="font-weight-600">Data Collection</h5>
             <p class="mt-0 mb-3">
                 Please select what is to be tracked by the guards at the site
@@ -136,7 +140,7 @@
                 </div>
                 @endforeach
             </div>
-        </div>
+        </div> --}}
 
         <div>
             <button class="btn btn-primary shadow-none">Save Changes</button>

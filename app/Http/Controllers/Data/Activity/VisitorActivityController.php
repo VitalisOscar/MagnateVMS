@@ -3,36 +3,40 @@
 namespace App\Http\Controllers\Data\Activity;
 
 use App\Exports\AllVisitsExport;
+use App\Helpers\ApiResultSet;
 use App\Helpers\ResultSet;
 use App\Http\Controllers\Controller;
 use App\Models\Activity;
+use App\Models\Site;
 use App\Models\Visitor;
+use App\Services\ApiService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class VisitorActivityController extends Controller
 {
-    function __invoke(Request $request){
+    function __invoke(Request $request, ApiService $api){
+        $queryParams = [];
+
+
         $limit = intval($request->get('limit'));
         if(!in_array($limit, [15,30,50,100])) $limit = 15;
+        $queryParams['limit'] = $limit;
 
-        $q = Activity::byVisitor()
-            ->with('by', 'site', 'vehicle', 'user', 'visit', 'visit.staff', 'visit.company');
-
-        $order = $request->get('order');
-
-        if($order == 'past') $q->oldest('time');
-        else $q->latest('time');
+        $queryParams['page'] = 1;
+        if($request->filled('page')){
+            $queryParams['page'] = $request->get('page');
+        }
 
 
         $dates = null;
 
         if($request->filled('site')){
-            $q->whereSiteId($request->get('site'));
+            $queryParams['site'] = $request->get('site');
         }
 
-        if($request->is('api*')){
-            $q->atSite(auth('sanctum')->user()->site_id);
+        if($request->filled('type')){
+            $queryParams['type'] = $request->get('type');
         }
 
         if($request->filled('date')){
@@ -51,25 +55,44 @@ class VisitorActivityController extends Controller
                 $to = $x;
             }
 
-            $q->whereDate('time', '>=', $from)
-                ->whereDate('time', '<=', $to);
-
             $dates = $from.' to '.$to;
-        }else if($request->is('api*')){
-            $d = Carbon::today()->format('Y-m-d');
 
-            $q->whereDate('time', '>=', $d)
-                ->whereDate('time', '<=', $d);
+            $queryParams['date'] = $dates;
         }
 
-        $visits = new ResultSet($q, $limit);
 
-        return $request->is('api*') ?
-            $this->json->mixed($visits, $visits->items) :
-            response()->view('admin.activity.visitors', [
-                'result' => $visits,
-                'dates' => $dates
+        if($request->filled('keyword')){
+            $queryParams['search'] = $request->get('keyword');
+        }
+
+
+        $response = $api->get(ApiService::ROUTE_GET_ALL_VISITOR_ACTIVITY, [], $queryParams);
+
+        $result = new ApiResultSet($response->getResult(), function($data){
+            return new Activity($data);
+        });
+
+        $sites = $this->getSites($api);
+
+
+        return response()->view('admin.activity.visitors', [
+                'result' => $result,
+                'dates' => $dates,
+                'sites' => $sites
             ]);
+    }
+
+    function getSites($api){
+        $response = $api->get(ApiService::ROUTE_GET_SITES);
+
+        $result = new ApiResultSet($response->getResult(), function($data){
+            $site = new Site($data);
+            $site->created_at = $data['timestamp'];
+
+            return $site;
+        });
+
+        return $result->items;
     }
 
     function getCheckedIn(){

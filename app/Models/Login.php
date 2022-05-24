@@ -13,59 +13,46 @@ class Login extends Model
     const TYPE_USER = 'User';
     const TYPE_ADMIN = 'Admin';
 
-    const STATUS_SUCCESS = 'Success';
-    const STATUS_FAILED = 'Failed';
-    const STATUS_INVALID_CREDENTIAL = 'Invalid Credential';
-    const STATUS_INVALID_PASSWORD = 'Invalid Password';
-
     public $timestamps = false;
 
     public $fillable = [
-        'credential',
+        'id',
         'user_id',
+        'site_id',
         'user_type',
         'user_agent',
-        'site_id',
         'ip_address',
-        'status',
+        'timestamp'
     ];
 
     protected $casts = [
-        'time' => 'datetime'
+        'created_at' => 'datetime'
     ];
 
-    function site(){
-        return $this->belongsTo(Site::class);
-    }
+    protected $keyType = 'string';
 
-    function user(){
-        return $this->morphTo();
-    }
+    function __construct($data = []){
+        parent::__construct($data);
 
-    function scopeSuccessful($q){
-        $q->whereStatus(self::STATUS_SUCCESS);
-    }
+        $this->created_at = $data['timestamp'] ?? null;
+        if(isset($data['user'])) $this->user = new User($data['user'] ?? []);
+        if(isset($data['site'])) $this->site = new Site($data['site'] ?? []);
 
-    function scopeByUser($q){
-        $q->whereUserType(self::TYPE_USER);
+        $this->site_id = $data['site']['id'] ?? null;
+        $this->user_id = $data['user']['id'] ?? null;
     }
-
-    function scopeByAdmin($q){
-        $q->whereUserType(self::TYPE_ADMIN);
-    }
-
 
     function getFmtDateAttribute(){
-        return $this->time->day.' '.substr($this->time->monthName, 0, 3).' '.$this->time->year;
+        return $this->created_at->day.' '.substr($this->created_at->monthName, 0, 3).' '.$this->created_at->year;
     }
 
     function getFmtTimeAttribute(){
-        if(is_string($this->time)){
-            $d = Carbon::createFromTimeString($this->time);
-        }else if($this->time == null){
+        if(is_string($this->created_at)){
+            $d = Carbon::createFromTimeString($this->created_at);
+        }else if($this->created_at == null){
             $d = Carbon::now();
         }else{
-            $d = $this->time;
+            $d = $this->created_at;
         }
 
         return $d->format('H:i');

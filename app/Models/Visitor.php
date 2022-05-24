@@ -10,6 +10,7 @@ class Visitor extends Model
     use HasFactory;
 
     protected $fillable = [
+        'id',
         'name',
         'id_number',
         'id_photo',
@@ -17,7 +18,16 @@ class Visitor extends Model
         'from'
     ];
 
+    // primary key type to string
+    protected $keyType = 'string';
+
     public $timestamps = false;
+
+    function __construct($data = []){
+        parent::__construct($data);
+
+        $this->last_activity = new Activity($data['last_activity'] ?? []);
+    }
 
     function activities(){ return $this->morphMany(Activity::class, 'by'); }
 

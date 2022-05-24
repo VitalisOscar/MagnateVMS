@@ -3,20 +3,16 @@
 namespace App\Http\Controllers\Data\Users;
 
 use App\Http\Controllers\Controller;
-use App\Models\User;
-use Exception;
+use App\Services\ApiService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
 
 class AddUserController extends Controller
 {
-    function __invoke(Request $request){
+    function __invoke(Request $request, ApiService $api){
         $validator = validator($request->post(), [
             'name' => 'required',
-            'username' => 'required|unique:users,username',
+            'email' => 'required',
             'password' => 'required',
-        ],[
-            'username.unique' => 'This username belongs to another account'
         ]);
 
         if($validator->fails()){
@@ -25,19 +21,16 @@ class AddUserController extends Controller
                 ->withErrors($validator->errors());
         }
 
-        $user = new User([
-            'username' => $request->post('username'),
+        $response = $api->post(ApiService::ROUTE_ADD_USER, [], [], [
             'name' => $request->post('name'),
-            'password' => Hash::make($request->post('password')),
-            'site_id' => 1, // TODO remove this
+            'email' => $request->post('email'),
+            'password' => $request->post('password'),
         ]);
 
-        try{
-            if($user->save()){
-                return back()
-                    ->with(['status' => 'User account has been created']);
-            }
-        }catch(Exception $e){}
+        if($response->wasSuccessful()){
+            return back()
+                ->with(['status' => 'User account has been created']);
+        }
 
         return back()
             ->withInput()

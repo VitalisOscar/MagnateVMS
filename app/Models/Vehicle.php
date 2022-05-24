@@ -16,11 +16,35 @@ class Vehicle extends Model
     public $timestamps = false;
 
     protected $fillable = [
+        'id',
         'registration_no',
         'description',
         'owner_id',
         'owner_type',
     ];
+
+    // primary key type to string
+    protected $keyType = 'string';
+
+    function __construct($data = []){
+        parent::__construct($data);
+
+        $this->created_at = $data['timestamp'] ?? null;
+
+        if(isset($data['owner'])){
+            if($this->isStaffVehicle()){
+                $this->owner = new Staff($data['owner'] ?? []);
+            }
+
+            if($this->isVisitorVehicle()){
+                $this->owner = new Staff($data['owner'] ?? []);
+            }
+        }
+
+        if(isset($data['last_activity'])) $this->last_activity = new Activity($data['last_activity'] ?? []);
+
+        $this->owner_id = $data['owner']['id'] ?? null;
+    }
 
     function owner(){ return $this->morphTo('owner'); }
 

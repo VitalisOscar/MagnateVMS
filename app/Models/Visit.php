@@ -26,6 +26,21 @@ class Visit extends Model
 
     protected $appends = ['fmt_host'];
 
+    protected $keyType = 'string';
+
+    function __construct($data = []){
+        parent::__construct($data);
+
+        $this->created_at = $data['timestamp'] ?? null;
+        if(isset($data['staff'])) $this->staff = new Staff($data['staff'] ?? []);
+        if(isset($data['company'])) $this->company = new Company($data['company']);
+        if(isset($data['activity'])) $this->activity = new Activity($data['activity'] ?? []);
+
+        $this->staff_id = $data['staff']['id'] ?? null;
+        $this->company_id = $data['company']['id'] ?? null;
+        $this->activity_id = $data['activity']['id'] ?? null;
+    }
+
     function staff(){ return $this->belongsTo(Staff::class); }
 
     function company(){ return $this->belongsTo(Company::class); }

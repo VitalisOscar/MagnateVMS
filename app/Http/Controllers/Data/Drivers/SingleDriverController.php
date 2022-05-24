@@ -2,29 +2,40 @@
 
 namespace App\Http\Controllers\Data\Drivers;
 
+use App\Helpers\ApiResultSet;
 use App\Http\Controllers\Controller;
 use App\Models\Driver;
 use App\Models\Site;
 use App\Models\Vehicle;
+use App\Services\ApiService;
 use Exception;
 use Illuminate\Http\Request;
 
 class SingleDriverController extends Controller
 {
-    function get($driver_id){
-        $driver = Driver::whereId($driver_id)
-            ->first();
+    function get(ApiService $api, $driver_id){
 
-        if($driver == null){
-            return redirect()->route('admin.vehicles.drivers');
+        $response = $api->get(ApiService::ROUTE_GET_SINGLE_DRIVER, ['driver_id' => $driver_id]);
+
+        if(!$response->wasSuccessful()){
+            return redirect()->route('admin.vehicles.drivers')->withErrors(['status' => $response->message]);
         }
+
+        $data = $response->data;
+        $driver = new Driver($data['driver']);
+        $driver->created_at = $data['timestamp'] ?? null;
+
+
+        // $result = new ApiResultSet($response->getResult(), function($data){
+        //     return new Driver($data);
+        // });
 
         return response()->view('admin.drivers.single', [
             'driver' => $driver
         ]);
     }
 
-    function update(Request $request, $driver_id){
+    function update(Request $request, ApiService $api, $driver_id){
         $validator = validator($request->post(), [
             'name' => 'required',
             'department' => 'required',
@@ -39,22 +50,16 @@ class SingleDriverController extends Controller
                 ->withErrors($validator->errors());
         }
 
-        $driver = Driver::whereId($driver_id)
-            ->first();
+        $response = $api->post(ApiService::ROUTE_UPDATE_DRIVER, ['driver_id' => $driver_id], [], [
+            'name' => $request->post('name'),
+            'department' => $request->post('department'),
+            'phone' => $request->post('phone'),
+        ]);
 
-        if($driver == null){
-            return redirect()->route('admin.vehicles.drivers');
+        if($response->wasSuccessful()){
+            return back()
+                ->with(['status' => 'Driver details have been updated']);
         }
-
-        $driver->name = $request->post('name');
-        $driver->phone = $request->post('phone');
-        $driver->department = $request->post('department');
-
-        try{
-            if($driver->save()){
-                return back()->with(['status' => 'Driver details have been updated']);
-            }
-        }catch(Exception $e){}
 
         return back()
             ->withInput()

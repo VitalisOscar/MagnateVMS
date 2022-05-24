@@ -7,6 +7,7 @@ use App\Imports\VehiclesImport;
 use App\Models\Site;
 use App\Models\User;
 use App\Models\Vehicle;
+use App\Services\ApiService;
 use App\Services\VehicleService;
 use Exception;
 use Illuminate\Http\Request;
@@ -15,10 +16,10 @@ use Maatwebsite\Excel\Facades\Excel;
 
 class AddVehicleController extends Controller
 {
-    function __invoke(Request $request, VehicleService $vehicleService){
+    function __invoke(Request $request, ApiService $api){
         $validator = validator($request->post(), [
             'description' => 'required',
-            'registration_no' => 'required|unique:vehicles',
+            'registration_no' => 'required',
         ],[
             'registration_no.unique' => 'A vehicle with the provided registration number has already been added'
         ]);
@@ -30,14 +31,12 @@ class AddVehicleController extends Controller
         }
 
         try{
-            $vehicle = new Vehicle([
+            $response = $api->post(ApiService::ROUTE_ADD_VEHICLE, [], [], [
                 'registration_no' => strtoupper(preg_replace('/ +/', ' ', $request->post('registration_no'))),
                 'description' => $request->post('description'),
-                'owner_id' => 0,
-                'owner_type' => Vehicle::OWNER_COMPANY,
             ]);
 
-            if($vehicle->save()){
+            if($response->wasSuccessful()){
                 return back()
                     ->with(['status' => 'Vehicle has been added to the system']);
             }
