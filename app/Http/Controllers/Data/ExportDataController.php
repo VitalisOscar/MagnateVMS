@@ -180,7 +180,7 @@ class ExportDataController extends Controller
         $ca = str_replace("Z", "ff", $ca);
         $model->timestamp = $ca;
         $username = $model->username;
-        $model->email = $username.'@gmail.com';
+        $model->email = str_replace(" ", "", $username).'@gmail.com';
         $model->searchKey = $this->createSearchKey($model->searchKey, $model->name, $model->email);
 
         // unset($model->created_at);
