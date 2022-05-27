@@ -30,6 +30,7 @@ class AdminDashboardController extends Controller
         // }
 
         $stat = $response->data['stats'] ?? null;
+        $totals = $response->data['totals'] ?? null;
 
         $activity_data = [];
 
@@ -57,12 +58,6 @@ class AdminDashboardController extends Controller
                 'value' => $stat['company_vehicles'] ?? 0,
                 'color' => 'coral'
             ],
-        ];
-
-        $totals = [
-            'visitors' => 744,
-            'sites' => 6,
-            'users' => 17,
         ];
 
         return view('admin.dashboard', [
