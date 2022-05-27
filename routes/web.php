@@ -4,10 +4,10 @@ use App\Http\Controllers\App\AppVersionsController;
 use App\Http\Controllers\Data\ExportDataController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('app/download-latest', [AppVersionsController::class, 'downloadLatest'])->name('app.latest_url');
+// Route::get('app/download-latest', [AppVersionsController::class, 'downloadLatest'])->name('app.latest_url');
 
 Route::prefix('admin')
-// ->middleware('auth:admin')
+->middleware('auth:admin')
 ->name('admin.')
 ->group(function () {
 
