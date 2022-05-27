@@ -29,7 +29,7 @@ class Activity extends Model
 
     protected $with = ['user'];
 
-    protected $appends = ['fmt_time', 'fmt_date'];
+    // protected $appends = ['fmt_time', 'fmt_date'];
 
     protected $keyType = 'string';
 
@@ -129,7 +129,8 @@ class Activity extends Model
 
     // Attributes
     function getFmtDateAttribute(){
-        return $this->created_at->day.' '.substr($this->created_at->monthName, 0, 3).' '.$this->created_at->year;
+        if(!$this->created_at) $this->created_at = now();
+        return $this->created_at->format('Y-m-d');
     }
 
     function getFmtTimeAttribute(){

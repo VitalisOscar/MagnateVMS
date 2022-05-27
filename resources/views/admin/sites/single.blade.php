@@ -52,7 +52,7 @@
                 <td>
                     <a href="{{ route('admin.sites.company', ['company_id' => $company->id, 'site_id' => $site->id]) }}">{{ $company->name }}</a>
                 </td>
-                <td>{{ $company->staff_count }}</td>
+                <td>{{ $company->total_staff }}</td>
                 <td>
                     <a class="mr-3 btn btn-link py-1 px-0" href="{{ route('admin.sites.company', ['company_id' => $company->id, 'site_id' => $site->id]) }}">View&nbsp;<i class="fa fa-share"></i></a>
                     <button class="btn btn-link py-1 px-0" onclick="deleteCo('{{ $company->name }}', '{{ $company->id }}')">Delete&nbsp;<i class="fa fa-trash"></i></button>

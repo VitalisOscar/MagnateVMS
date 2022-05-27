@@ -2,130 +2,88 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\ApiResultSet;
 use App\Http\Controllers\Controller;
-use App\Models\Activity;
 use App\Models\Site;
-use App\Models\Staff;
-use App\Models\User;
-use App\Models\Vehicle;
-use App\Models\Visit;
-use App\Models\Visitor;
+use App\Services\ApiService;
 use Carbon\Carbon;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
 class AdminDashboardController extends Controller
 {
 
-    function __invoke(Request $request){
-        $date = $request->filled('date') ? $request->get('date') : Carbon::today()->format('Y-m-d');
-        $site = $request->filled('site') ? $request->get('site') : false;
+    function __invoke(Request $request, ApiService $api){
+        $queryParams = [];
 
-        $summaries_fetch = DB::select(
-            'select ('.
-            $this->getSql(
-                Vehicle::whereHas('usages', function($a) use($date, $site){
-                    $a->whereRaw("date(time) = '".$date."'")
-                        ->when($site, function($q, $site){
-                            return $q->whereRaw("site_id = $site");
-                        });
-                })
-                ->selectRaw('count(*)')
-            ).') as vehicles_used, ('.
+        $sites = $this->getSites($api);
 
-            $this->getSql(
-                Visitor::whereHas('activities', function($a) use($date, $site) {
-                    $a->whereRaw("date(time) = '".$date."'")
-                        ->when($site, function($s, $site){
-                            return $s->whereRaw("site_id = $site");
-                        });
-                })
-                ->selectRaw('count(*)')
-            ).') as visitors, ('.
+        $queryParams['date'] = $request->get('date') ?? Carbon::today()->format('Y-m-d');
+        $queryParams['site'] = $request->get('site') ?? $sites[0]->id ?? null;
 
-            $this->getSql(
-                Staff::whereHas('activities', function($q) use($date, $site){
-                    $q->whereRaw("date(time) = '".$date."'")
-                        ->when($site, function($s, $site){
-                            return $s->whereRaw("site_id = $site");
-                        });
-                })
-                ->selectRaw('count(*)')
-            ).') as staff'
-        );
+        $response = $api->get(ApiService::ROUTE_GET_DAILY_SITE_STATS, [], $queryParams);
 
-        $summaries_fetch = $summaries_fetch[0];
+        // if(!$response->WasSuccessful()){
+        //     return redirect()->route('admin.sites.add')->withErrors([
+        //         'status' => $response->message,
+        //     ]);
+        // }
 
-        $visit_activity = DB::select(
-            $this->getSql(
-                Activity::byVisitor()
-                ->whereRaw("date(time) = '".$date."'")
-                ->when($site, function($q, $site){
-                    return $q->whereRaw("site_id = $site");
-                })
-                ->groupBy(Activity::query()->raw('HOUR(time)'))
-                ->selectRaw('count(*) as count, HOUR(time) as hour')
-            )
-        );
-
-        $staff_activity = DB::select(
-            $this->getSql(
-                Activity::byStaff()
-                ->whereRaw("date(time) = '".$date."'")
-                ->when($site, function($q, $site){
-                    return $q->whereRaw("site_id = $site");
-                })
-                ->groupBy(Activity::query()->raw('HOUR(time)'))
-                ->selectRaw('count(*) as count, HOUR(time) as hour')
-            )
-        );
-
-        // return $activity_fetch;
+        $stat = $response->data['stats'] ?? null;
 
         $activity_data = [];
 
-        foreach ($visit_activity as $a){
-            $hour_activity = $activity_data[$a->hour] ?? [];
-            $hour_activity['visitors'] = $a->count;
-            $activity_data[$a->hour] = $hour_activity;
-        }
+        for($i = 0; $i<24; $i++){
+            $hour_activity['visitors'] = $stat['hours']['visitors'][$i] ?? 0;
+            $hour_activity['staff'] = $stat['hours']['staff'][$i] ?? 0;
+            $hour_activity['vehicles'] = $stat['hours']['vehicles'][$i] ?? 0;
 
-        foreach ($staff_activity as $a){
-            $hour_activity = $activity_data[$a->hour] ?? [];
-            $hour_activity['staff'] = $a->count;
-            $activity_data[$a->hour] = $hour_activity;
+            $activity_data[$i] = $hour_activity;
         }
 
         $summaries = [
             [
                 'label' => 'Visitors',
-                'value' => $summaries_fetch->visitors,
+                'value' => $stat['visitors'] ?? 0,
                 'color' => '#2dce89'
             ],
             [
                 'label' => 'Staff',
-                'value' => $summaries_fetch->staff,
+                'value' => $stat['staff'] ?? 0,
                 'color' => '#5e72e4'
             ],
             [
-                'label' => 'Vehicles Used',
-                'value' => ($summaries_fetch->vehicles_used),
+                'label' => 'Company Vehicles',
+                'value' => $stat['company_vehicles'] ?? 0,
                 'color' => 'coral'
             ],
         ];
 
         $totals = [
-            'visitors' => Visitor::count(),
-            'sites' => Site::count(),
-            'users' => User::count(),
+            'visitors' => 744,
+            'sites' => 6,
+            'users' => 17,
         ];
 
         return view('admin.dashboard', [
             'activity_data' => $activity_data,
             'summaries' => $summaries,
-            'totals' => $totals
+            'totals' => $totals,
+            'sites' => $sites
         ]);
+    }
+
+    function getSites($api){
+        $response = $api->get(ApiService::ROUTE_GET_SITES);
+
+        $result = new ApiResultSet($response->getResult(), function($data){
+            $site = new Site($data);
+            $site->created_at = $data['timestamp'];
+
+            return $site;
+        });
+
+        return $result->items;
     }
 
     /**

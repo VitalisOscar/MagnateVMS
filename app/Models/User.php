@@ -23,7 +23,7 @@ class User extends Authenticatable
 
     protected $hidden = ['password'];
 
-    protected $appends = ['date_added'];
+    // protected $appends = ['date_added'];
 
     protected $keyType = 'string';
 
@@ -35,6 +35,7 @@ class User extends Authenticatable
     }
 
     function getDateAddedAttribute(){
+        if(!$this->created_at) return null;
         return substr($this->created_at->monthName, 0, 3).' '.$this->created_at->day.' '.$this->created_at->year;
     }
 }

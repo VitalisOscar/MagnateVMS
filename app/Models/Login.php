@@ -61,4 +61,7 @@ class Login extends Model
     function getFmtDatetimeAttribute(){
         return $this->fmt_date.' at '.$this->fmt_time;
     }
+
+    function user(){ return $this->belongsTo(User::class); }
+    function site(){ return $this->belongsTo(Site::class); }
 }

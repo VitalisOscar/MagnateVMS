@@ -31,6 +31,13 @@ class Visitor extends Model
 
     function activities(){ return $this->morphMany(Activity::class, 'by'); }
 
+    function first_activity(){
+        return $this->hasOne(Activity::class, 'by_id')
+            ->byVisitor()
+            ->with('visit')
+            ->orderBy('time', 'asc');
+    }
+
     function last_activity(){
         return $this->hasOne(Activity::class, 'by_id')
             ->byVisitor()

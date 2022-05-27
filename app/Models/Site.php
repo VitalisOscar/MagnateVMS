@@ -18,7 +18,7 @@ class Site extends Model
     ];
 
     public $fillable = [
-        'id', 'name', 'options'
+        'id', 'name', 'options', 'total_companies', 'total_staff'
     ];
 
     public $casts = [
@@ -48,5 +48,16 @@ class Site extends Model
 
     function tracks($trackable){
         return isset($this->options['tracking'][$trackable]) && $this->options['tracking'][$trackable];
+    }
+
+
+    function getTotalStaffAttribute($val) {
+        if($val == null) return 0;
+        return $val;
+    }
+
+    function getTotalCompaniesAttribute($val) {
+        if($val == null) return 0;
+        return $val;
     }
 }

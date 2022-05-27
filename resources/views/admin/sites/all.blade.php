@@ -52,8 +52,8 @@
                 <td>
                     <a href="{{ route('admin.sites.single', $site->id) }}">{{ $site->name }}</a>
                 </td>
-                <td>{{ $site->companies_count }}</td>
-                <td>{{ $site->staff_count }}</td>
+                <td>{{ $site->total_companies }}</td>
+                <td>{{ $site->total_staff }}</td>
                 <td>
                     <a href="{{ route('admin.sites.single', $site->id) }}">View Site&nbsp;<i class="fa fa-share"></i></a>
                 </td>

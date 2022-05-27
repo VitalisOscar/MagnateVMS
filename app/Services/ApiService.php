@@ -7,7 +7,10 @@ use Illuminate\Support\Facades\Http;
 
 class ApiService{
 
-    const ROUTE_API = 'http://localhost:3000/api/';
+    const ROUTE_API = 'https://magnatevms.herokuapp.com/api/';
+    // const ROUTE_API = 'http://localhost:3000/api/';
+
+    const ROUTE_GET_DAILY_SITE_STATS = 'get_daily_stats';
 
     const ROUTE_GET_USERS = 'get_users';
     const ROUTE_ADD_USER = 'add_user';
@@ -48,6 +51,8 @@ class ApiService{
 
     function getRoute($key, $urlParams = [], $queryParams = []){
         $routes = [
+            self::ROUTE_GET_DAILY_SITE_STATS => self::ROUTE_API.'stats',
+
             self::ROUTE_GET_USERS => self::ROUTE_API.'users',
             self::ROUTE_ADD_USER => self::ROUTE_API.'users/add',
             self::ROUTE_GET_SINGLE_USER => self::ROUTE_API.'users/{user_id}',

@@ -13,7 +13,10 @@ class Company extends Model
         'id',
         'site_id',
         'name',
+        'total_staff'
     ];
+
+    protected $with = ['site'];
 
     // primary key type to string
     protected $keyType = 'string';
@@ -21,6 +24,11 @@ class Company extends Model
     // public $withCount = ['staff'];
 
     public $timestamps = false;
+
+    function getTotalStaffAttribute($val) {
+        if($val == null) return 0;
+        return $val;
+    }
 
     function staff(){ return $this->hasMany(Staff::class); }
 

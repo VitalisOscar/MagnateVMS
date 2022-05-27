@@ -13,7 +13,7 @@
 <div class="card mb-4">
     <div class="card-body">
 
-        <h4 class="mb-4 font-weight-800">Welcome {{ auth('admin')->user()->name }}</h4>
+        <h4 class="mb-4 font-weight-800">Welcome {{ auth('admin')->user()->name ?? 'Admin' }}</h4>
 
         <div class="row">
             <div class="col-sm-6 col-md-4 col-lg-6 col-xl-4 mb-4 mb-xl-0">
@@ -91,8 +91,7 @@
             <input type="date" name="date" class="w-auto form-control bg-white mr-3" placeholder="Date..." value="{{ $r->filled('date') ? $r->get('date'):\Carbon\Carbon::today()->format('Y-m-d') }}">
 
             <select name="site" class="custom-select mr-3" style="width: auto !important">
-                <option value="">All Sites</option>
-                @foreach(\App\Models\Site::all() as $site)
+                @foreach($sites as $site)
                 <option value="{{ $site->id }}" @if($r->get('site') == $site->id){{ __('selected') }}@endif>{{ $site->name }}</option>
                 @endforeach
             </select>
@@ -147,6 +146,15 @@
                     ],
                     borderWidth: 2,
                     borderColor: 'coral',
+                    type: 'line',
+                },
+                {
+                    label: 'Company Vehicles',
+                    data: [
+                        @for($i=0; $i<24; $i++){{ ($activity_data[$i]['vehicles'] ?? 0).',' }}@endfor
+                    ],
+                    borderWidth: 2,
+                    borderColor: '#2dca89',
                     type: 'line',
                 }
             ]
