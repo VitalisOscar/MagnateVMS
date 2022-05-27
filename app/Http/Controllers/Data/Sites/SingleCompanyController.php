@@ -23,6 +23,15 @@ class SingleCompanyController extends Controller
             $queryParams['search'] = $request->get('keyword');
         }
 
+        $limit = intval($request->get('limit'));
+        if(!in_array($limit, [15,30,50,100])) $limit = 15;
+        $queryParams['limit'] = $limit;
+
+        $queryParams['page'] = 1;
+        if($request->filled('page')){
+            $queryParams['page'] = $request->get('page');
+        }
+
         $response = $api->get(ApiService::ROUTE_GET_SINGLE_COMPANY, [
             'site_id' => $site_id,
             'company_id' => $company_id,

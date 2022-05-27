@@ -24,7 +24,7 @@
         <div>
 
             <div class="px-4 py-3 d-flex align-items-center">
-                <h4 class="font-weight-600 mb-0">Staff Members ({{ $result->total.' Total' }})</h4>
+                <h4 class="font-weight-600 mb-0">Staff Members</h4>
 
                 <a href="{{ route('admin.sites.staff.add', ['site_id' => $company->site->id, 'company_id' => $company->id]) }}" class="ml-auto btn btn-primary btn-sm shadow-none">Add New</a>
             </div>
