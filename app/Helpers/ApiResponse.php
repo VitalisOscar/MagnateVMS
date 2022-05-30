@@ -17,9 +17,9 @@ class ApiResponse{
      */
     function __construct($response)
     {
-        $this->data = $response['data'];
-        $this->success = $response['success'];
-        $this->message = $response['message'];
+        $this->data = $response['data'] ?? null;
+        $this->success = $response['success'] ?? false;
+        $this->message = $response['message'] ?? null;
     }
 
     /**

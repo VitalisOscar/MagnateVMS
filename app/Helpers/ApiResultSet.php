@@ -30,12 +30,12 @@ class ApiResultSet{
      */
     function __construct($result, $model_func)
     {
-        $this->limit = $result['limit'];
+        $this->limit = $result['limit'] ?? 0;
 
-        $this->page = $result['page'];
+        $this->page = $result['page'] ?? 1;
         $this->max_pages = $this->page + 1;
-        $this->total = count($result['items']);
-        if(count($result['items']) > $this->limit){
+        $this->total = count($result['items'] ?? []);
+        if($this->total > $this->limit){
             $this->next_page = $this->page + 1;
         }
 

@@ -32,6 +32,14 @@ class AdminDashboardController extends Controller
         $stat = $response->data['stats'] ?? null;
         $totals = $response->data['totals'] ?? null;
 
+        if($totals == null){
+            $totals = [
+                'sites' => 0,
+                'users' => 0,
+                'visitors' => 0
+            ];
+        }
+
         $activity_data = [];
 
         for($i = 0; $i<24; $i++){
