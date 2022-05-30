@@ -48,8 +48,14 @@ class ExportDataController extends Controller
     }
 
     function activities(){
+        $page = request()->query->get('page');
+        $offset = ($page - 1) * 1000;
+
         // Get all
-        $models = Activity::with('checkin_activity', 'checkout_activity', 'user', 'vehicle', 'site', 'by', 'visit', 'driver_task')->get();
+        $models = Activity::with('checkin_activity', 'checkout_activity', 'user', 'vehicle', 'site', 'by', 'visit', 'driver_task')
+            ->limit(1000)
+            ->offset($offset)
+            ->get();
 
         foreach($models as $key => $model){
             $this->fmt_user($models[$key]->user);
