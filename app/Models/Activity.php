@@ -36,7 +36,7 @@ class Activity extends Model
     function __construct($data = []){
         parent::__construct($data);
 
-        $this->created_at = $data['timestamp'] ?? null;
+        $this->created_at = $data['timestamp'] ?? $data['created_at'] ?? $data['time'] ?? null;
         $this->site = new Site($data['site'] ?? []);
         if(isset($data['user'])) $this->user = new User($data['user'] ?? []);
         if(isset($data['vehicle'])) $this->vehicle = new Vehicle($data['vehicle'] ?? []);
