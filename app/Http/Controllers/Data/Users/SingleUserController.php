@@ -63,25 +63,19 @@ class SingleUserController extends Controller
             ->with(['status' => 'Changes have been saved']);
     }
 
-    function delete($username){
-        $user = User::whereUsername($username)->first();
+    function delete(Request $request, ApiService $api, $user_id){
+        $response = $api->post(ApiService::ROUTE_DELETE_USER, [
+            'user_id' => $user_id
+        ], [], []);
 
-        if($user == null){
-            return back()
-                ->withInput()
-                ->withErrors(['status' => "Unable to find user with username '$username'"]);
+        if(!$response->WasSuccessful()){
+            return redirect()->route('admin.users')->withErrors([
+                'status' => $response->message
+            ]);
         }
 
-        try{
-            if($user->delete()){
-                return back()
-                    ->withInput()
-                    ->with(['status' => 'User account has been deleted from the system']);
-            }
-        }catch(Exception $e){}
-
-        return back()
-            ->withInput()
-            ->withErrors(['status' => 'Something went wrong. Please try again']);
+        return redirect()->route('admin.users')->with([
+            'status' => 'User account has been deleted'
+        ]);
     }
 }

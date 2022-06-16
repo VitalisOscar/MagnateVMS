@@ -17,6 +17,7 @@ class ApiService{
     const ROUTE_GET_SINGLE_USER = 'get_single_user';
     const ROUTE_UPDATE_USER = 'update_user';
     const ROUTE_GET_LOGINS = 'get_logins';
+    const ROUTE_DELETE_USER = 'delete_user';
 
     const ROUTE_GET_SITES = 'get_sites';
     const ROUTE_ADD_SITE = 'add_site';
@@ -57,6 +58,7 @@ class ApiService{
             self::ROUTE_ADD_USER => self::ROUTE_API.'users/add',
             self::ROUTE_GET_SINGLE_USER => self::ROUTE_API.'users/{user_id}',
             self::ROUTE_UPDATE_USER => self::ROUTE_API.'users/{user_id}/update',
+            self::ROUTE_DELETE_USER => self::ROUTE_API.'users/{user_id}/delete',
             self::ROUTE_GET_LOGINS => self::ROUTE_API.'users/logins',
 
             self::ROUTE_GET_SITES => self::ROUTE_API.'sites',

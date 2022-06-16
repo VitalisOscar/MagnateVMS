@@ -14,7 +14,14 @@
 
 <div class="bg-white border rounded mb-4 p-4">
 
-    <h4 class="font-weight-600 mb-3">Account Info</h4>
+
+    <div class="mb-3 d-flex align-items-center">
+        <h4 class="font-weight-600">Account Info</h4>
+        <form id="delete_user_form" class="d-inline-block ml-auto" method="post" action="{{ route('admin.users.delete', $user->id) }}">
+            @csrf
+            <button class="btn btn-danger btn-sm shadow-none">Delete User</button>
+        </form>
+    </div>
 
     <form action="{{ route('admin.users.update', $user->id) }}" method="post">
         @csrf
@@ -99,4 +106,16 @@
 
 </div>
 
+@endsection
+
+@section('scripts')
+<script>
+document.querySelector('#delete_user_form').addEventListener('submit', function(evt){
+    evt.preventDefault();
+
+    if(confirm("Are you sure you want to delete the account for {{ $user->name }}")){
+        document.querySelector('#delete_user_form').submit();
+    }
+});
+</script>
 @endsection

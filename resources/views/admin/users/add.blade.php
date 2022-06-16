@@ -49,7 +49,7 @@
             <div class="form-group">
                 <div class="form-row">
                     <div class="col-md-4">
-                        <label for=""><strong>Username:</strong></label>
+                        <label for=""><strong>Email:</strong></label>
                     </div>
 
                     <div class="col-md-8">
@@ -64,7 +64,7 @@
                         @if($errors->has('email'))
                         <small class="text-danger">{{ $errors->get('email')[0] }}</small>
                         @else
-                        <small>Username will be used when logging into the app</small>
+                        <small>Email will be used when logging into the app</small>
                         @endif
                     </div>
                 </div>

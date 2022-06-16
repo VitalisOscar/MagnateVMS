@@ -34,6 +34,6 @@ class AddUserController extends Controller
 
         return back()
             ->withInput()
-            ->withErrors(['status' => 'Something went wrong. Please try again']);
+            ->withErrors(['status' => $response->message]);
     }
 }
