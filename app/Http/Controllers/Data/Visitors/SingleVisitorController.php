@@ -28,7 +28,7 @@ class SingleVisitorController extends Controller
             $queryParams['page'] = $request->get('page');
         }
 
-        
+
         $dates = null;
 
         if($request->filled('site')){
@@ -76,6 +76,8 @@ class SingleVisitorController extends Controller
             return redirect()->route('admin.activity.visitors')->withErrors(['status' => $response->message]);
         }
 
+        dump($response);
+        return;
 
         $result = new ApiResultSet($response->getResult(), function($data){
             return new Activity($data);

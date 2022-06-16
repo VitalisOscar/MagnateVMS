@@ -118,7 +118,7 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min.js"></script>
 
 <script>
-    var amount_chart = new Chart(document.querySelector('#chart'), {
+    var chart1 = new Chart(document.querySelector('#chart'), {
         type: 'line',
         data: {
             labels: [
@@ -145,7 +145,7 @@
                         @for($i=0; $i<24; $i++){{ ($activity_data[$i]['visitors'] ?? 0).',' }}@endfor
                     ],
                     borderWidth: 2,
-                    borderColor: 'coral',
+                    borderColor: '#2dca89',
                     type: 'line',
                 },
                 {
@@ -154,7 +154,7 @@
                         @for($i=0; $i<24; $i++){{ ($activity_data[$i]['vehicles'] ?? 0).',' }}@endfor
                     ],
                     borderWidth: 2,
-                    borderColor: '#2dca89',
+                    borderColor: 'coral',
                     type: 'line',
                 }
             ]
@@ -171,14 +171,14 @@
         }
     });
 
-var invoices_volume = new Chart(document.querySelector('#summary_chart'), {
+var chart2 = new Chart(document.querySelector('#summary_chart'), {
     type: 'doughnut',
     data: {
         labels: [
             @foreach($summaries as $s){!! "'".$s['label']."'," !!}@endforeach
         ],
         datasets: [{
-            label: 'Invoice Volume',
+            label: 'Total Activity',
             data: [
                 @foreach($summaries as $s){{ $s['value'].',' }}@endforeach
             ],
